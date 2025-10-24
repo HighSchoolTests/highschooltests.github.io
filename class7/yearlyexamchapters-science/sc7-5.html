@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>পরিপাকতন্ত্র ও রক্ত সংবহনতন্ত্র কুইজ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&family=Poppins:wght@600&display=swap');
+
+        :root {
+            --primary-bg: #c0392b; /* Red theme for blood/organs */
+            --secondary-bg: #e74c3c;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-color: #333;
+            --accent-color: #f1c40f;
+            --correct-color: #2ecc71;
+            --incorrect-color: #e74c3c;
+            --light-gray: #f0f0f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --border-radius: 15px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary-bg);
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--primary-bg);
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .start-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), #f39c12);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4);
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(241, 196, 15, 0.6);
+        }
+        
+        .btn.continue-btn {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+             box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+        .btn.continue-btn:hover {
+             box-shadow: 0 7px 20px rgba(52, 152, 219, 0.6);
+        }
+
+
+        #quiz-screen .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        #question-counter, #score-display {
+             background: var(--light-gray);
+             padding: 8px 15px;
+             border-radius: 20px;
+        }
+
+        #timer {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-bg);
+        }
+        
+        #progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--correct-color), var(--accent-color));
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+        }
+        
+        #question-text {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            min-height: 80px;
+        }
+        
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .option-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1em;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--light-gray);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-bg);
+            background-color: #fff7f7;
+            transform: scale(1.02);
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-color);
+            color: white;
+            border-color: var(--incorrect-color);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        #overview-screen h2 { margin-bottom: 10px; }
+        #overview-summary { font-size: 1.2em; font-weight: bold; margin-bottom: 25px; background: var(--light-gray); padding: 15px; border-radius: 10px; display: flex; justify-content: center; gap: 30px; }
+        .summary-correct { color: var(--correct-color); }
+        .summary-incorrect { color: var(--incorrect-color); }
+        #overview-list { max-height: 40vh; overflow-y: auto; text-align: left; margin-bottom: 25px; }
+        .overview-item { background: #fff; border: 1px solid var(--light-gray); border-radius: 10px; padding: 15px; margin-bottom: 10px; position: relative; padding-right: 40px; }
+        .overview-item p { margin-bottom: 8px; font-size: 1em; }
+        .overview-item .question { font-weight: bold; }
+        .overview-item .explanation { font-size: 0.9em; color: #555; background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 5px; }
+        .overview-status { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); font-size: 2em; }
+        .status-correct { color: var(--correct-color); }
+        .status-incorrect { color: var(--incorrect-color); }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
+            #question-text { font-size: 1.2em; min-height: 70px; }
+            #options-container { grid-template-columns: 1fr; }
+            .option-btn { padding: 15px; font-size: 1em; }
+            #quiz-screen .header { flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>পরিপাকতন্ত্র ও রক্ত সংবহনতন্ত্র কুইজ</h1>
+            <p>এই অধ্যায়ের উপর আপনার দক্ষতা যাচাই করুন। প্রতিটি প্রশ্নের জন্য সময় পাবেন ২৫ সেকেন্ড।</p>
+            <p><strong>মোট ৫০টি প্রশ্ন</strong></p>
+            <div class="start-buttons-container">
+                <button id="start-btn" class="btn">নতুন কুইজ শুরু করুন</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div id="question-counter"></div>
+                <div id="timer">
+                    <span id="timer-text">25</span>
+                </div>
+                <div id="score-display">স্কোর: 0</div>
+            </div>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="question-text"></div>
+            <div id="options-container"></div>
+        </div>
+        
+        <!-- Overview Screen -->
+        <div id="overview-screen" class="screen">
+            <h2 id="overview-title"></h2>
+            <div id="overview-summary"></div>
+            <div id="overview-list"></div>
+            <button id="continue-btn" class="btn continue-btn"></button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // পাঠ ১-২: খাদ্য পরিপাক, লালা ও এনজাইম (1-7)
+            { question: "জটিল, অদ্রবণীয় খাদ্যবস্তু নির্দিষ্ট এনজাইমের সহায়তায় সরল ও দ্রবণীয় উপাদানে পরিণত হওয়াকে কী বলে?", options: ["শ্বসন", "সংবহন", "পরিপাক", "রেচন"], answer: "পরিপাক", explanation: "পাঠ-১ অনুযায়ী, শারীরবৃত্তীয় প্রক্রিয়ায় জটিল খাদ্যবস্তু এনজাইমের সাহায্যে দেহের গ্রহণ উপযোগী সরল উপাদানে পরিণত হওয়ার প্রক্রিয়াকে পরিপাক বলে।" },
+            { question: "খাবার চিবানোর পর মুখে রাখলে মিষ্টি লাগে কেন?", options: ["লালার এনজাইম আমিষকে শর্করায় পরিণত করে", "লালার এনজাইম শ্বেতসারকে শর্করায় (মলটোজ) পরিণত করে", "জিহ্বার স্বাদকোরকের জন্য", "খাবারে চিনি মিশ্রিত হয় বলে"], answer: "লালার এনজাইম শ্বেতসারকে শর্করায় (মলটোজ) পরিণত করে", explanation: "পাঠ-২ এ বলা হয়েছে, লালার এনজাইম শ্বেতসারকে পরিবর্তন করে শর্করায় (মলটোজ) পরিণত করে, তাই শর্করা জাতীয় খাবার মুখে রাখলে মিষ্টি লাগে।" },
+            { question: "এনজাইম কী?", options: ["এক প্রকার খাদ্য উপাদান", "রাসায়নিক বিক্রিয়ায় অংশ নেয় কিন্তু নিজে অপরিবর্তিত থাকে", "এক প্রকার হরমোন", "এক প্রকার এসিড"], answer: "রাসায়নিক বিক্রিয়ায় অংশ নেয় কিন্তু নিজে অপরিবর্তিত থাকে", explanation: "পাঠ-২ অনুযায়ী, এনজাইম হলো এমন একটি বস্তু, যা খাদ্যবস্তুর সাথে মিশে রাসায়নিক ক্রিয়ায় সাহায্য করে, কিন্তু ক্রিয়া শেষে নিজে অপরিবর্তিত থাকে।" },
+            { question: "খাদ্যবস্তুকে পাকস্থলিতে পৌঁছাতে অন্ননালির পেশির সংকোচন ও প্রসারণকে কী বলে?", options: ["শ্বসন", " ব্যাপন", "অভিস্রবণ", "পেরিস্টালসিস (ক্রমসংকোচন)"], answer: "পেরিস্টালসিস (ক্রমসংকোচন)", explanation: "পাঠ-২ এ বর্ণিত আছে, অন্ননালির সংকোচন ও প্রসারণকে ক্রমসংকোচন বা পেরিস্টালসিস বলে, যার মাধ্যমে খাদ্য পাকস্থলিতে পৌঁছায়।" },
+            { question: "লালাগ্রন্থি থেকে নিঃসৃত লালার প্রধান কাজ কোনটি?", options: ["শুধুমাত্র খাদ্যকে ভেজানো", "খাদ্যকে পিচ্ছিল করা ও শ্বেতসার পরিপাক শুরু করা", "শুধুমাত্র স্বাদ গ্রহণ করা", "আমিষ পরিপাক করা"], answer: "খাদ্যকে পিচ্ছিল করা ও শ্বেতসার পরিপাক শুরু করা", explanation: "পাঠ-২ এবং পাঠ-৩ অনুযায়ী লালা খাদ্যকে পিচ্ছিল করে গিলতে সাহায্য করে এবং এর এনজাইম শ্বেতসারকে আংশিক পরিপাক করে।" },
+            { question: "ট্রিপসিন এনজাইম কোন ধরনের খাদ্যের উপর কাজ করে?", options: ["শ্বেতসার", "স্নেহ পদার্থ", "আমিষ", "ভিটামিন"], answer: "আমিষ", explanation: "পাঠ-২ এ উদাহরণ হিসেবে বলা হয়েছে, ট্রিপসিন এনজাইম শুধুমাত্র আমিষের উপর ক্রিয়া করে।" },
+            { question: "মুখগহ্বরের কোন অংশ খাদ্যবস্তুকে নেড়েচেড়ে দাঁতের নিচে পাঠাতে সাহায্য করে?", options: ["তালু", "ঠোঁট", "জিহ্বা", "লালাগ্রন্থি"], answer: "জিহ্বা", explanation: "পাঠ-৪ অনুযায়ী, জিহ্বা খাদ্যবস্তুর স্বাদ গ্রহণ করে এবং খাদ্যবস্তুকে বার বার দাঁতের নিচে পাঠিয়ে চিবাতে সাহায্য করে।" },
+            // পাঠ ৩-৫: পরিপাকতন্ত্র (8-20)
+            { question: "মানুষের স্থায়ী দাঁতের সংখ্যা মোট কতটি?", options: ["২০টি", "২৮টি", "৩২টি", "২৪টি"], answer: "৩২টি", explanation: "পাঠ-৪ এ উল্লেখ করা হয়েছে, মানুষের স্থায়ী দাঁতের সংখ্যা ৩২টি এবং প্রতি চোয়ালে ১৬টি করে থাকে।" },
+            { question: "কোন ধরনের দাঁত দিয়ে মাংস ও অন্যান্য শক্ত জিনিস ছেঁড়া হয়?", options: ["কর্তন দাঁত", "ছেদন দাঁত", "অগ্রপেষণ দাঁত", "পেষণ দাঁত"], answer: "ছেদন দাঁত", explanation: "পাঠ-৪ অনুযায়ী, ছেদন দাঁত দিয়ে মাংস ও অন্যান্য শক্ত জিনিস ছিঁড়ে ও কাটা যায়।" },
+            { question: "পরিপাকনালির কোন অংশে কোনো এনজাইম নিঃসৃত হয় না?", options: ["মুখগহ্বর", "পাকস্থলি", "গলবিল", "ক্ষুদ্রান্ত্র"], answer: "গলবিল", explanation: "পাঠ-৫ অনুযায়ী, গলবিলে কোনো এনজাইম নিঃসৃত হয় না, তাই এখানে কোনো খাদ্যবস্তু পরিপাক হয় না। এটি শুধু খাদ্য পরিবহনের পথ।" },
+            { question: "পাকস্থলির প্রাচীরে অবস্থিত গ্যাস্ট্রিক গ্রন্থি থেকে নিঃসৃত রসের কাজ কী?", options: ["শ্বেতসার পরিপাক করা", "খাদ্য সাময়িক জমা রাখা ও পরিপাকে সাহায্য করা", "শুধুমাত্র স্নেহ পরিপাক করা", "পানি শোষণ করা"], answer: "খাদ্য সাময়িক জমা রাখা ও পরিপাকে সাহায্য করা", explanation: "পাঠ-৫ এ বলা হয়েছে, গ্যাস্ট্রিক গ্রন্থির পাচক রস পরিপাকে সাহায্য করে এবং পাকস্থলিতে খাদ্য সাময়িক জমা থাকে।" },
+            { question: "ক্ষুদ্রান্ত্রের প্রথম 'C' বা 'U' আকৃতির অংশটির নাম কী?", options: ["জেজুনাম", "ইলিয়াম", "সিকাম", "ডিওডেনাম"], answer: "ডিওডেনাম", explanation: "পাঠ-৫ এ ক্ষুদ্রান্ত্রের তিনটি ভাগের মধ্যে প্রথম অংশ ডিওডেনামকে 'C' আকৃতির বলা হয়েছে।" },
+            { question: "পিত্তরস কোথা থেকে তৈরি হয়?", options: ["অগ্ন্যাশয়", "পিত্তথলি", "যকৃৎ", "পাকস্থলি"], answer: "যকৃৎ", explanation: "পাঠ-৫ এ যকৃতের বর্ণনায় বলা হয়েছে, দেহের সবচেয়ে বড় গ্রন্থি যকৃৎ থেকে পিত্তরস তৈরি হয়।" },
+            { question: "পরিপাক হওয়া খাদ্যের সারাংশ শোষিত হয় পরিপাকনালির কোন অংশে?", options: ["পাকস্থলি", "বৃহদন্ত্র", "ইলিয়াম", "মলাশয়"], answer: "ইলিয়াম", explanation: "পাঠ-৫ অনুযায়ী, ক্ষুদ্রান্ত্রের শেষ অংশ ইলিয়ামের ভিতরের প্রাচীরে থাকা ভিলাই বা ভিলাস দ্বারা খাদ্যের সারাংশ রক্তে শোষিত হয়।" },
+            { question: "ভিলাই (Villi) এর প্রধান কাজ কী?", options: ["এনজাইম তৈরি করা", "শোষণকার্যের জন্য প্রাচীরগাত্রের ক্ষেত্রফল বৃদ্ধি করা", "খাদ্যকে পিচ্ছিল করা", "ব্যাকটেরিয়া ধ্বংস করা"], answer: "শোষণকার্যের জন্য প্রাচীরগাত্রের ক্ষেত্রফল বৃদ্ধি করা", explanation: "পাঠ-৫ এ বলা হয়েছে, ইলিয়ামের প্রাচীরগাত্রে আঙ্গুলের মতো প্রক্ষেপিত অংশ বা ভিলাই শোষণকার্য সমাধার জন্য থাকে, যা মূলত শোষণতল বৃদ্ধি করে।" },
+            { question: "দেহের সবচেয়ে বড় গ্রন্থি কোনটি?", options: ["অগ্ন্যাশয়", "লালাগ্রন্থি", "যকৃৎ", "পিটুইটারি"], answer: "যকৃৎ", explanation: "পাঠ-৫ এ যকৃৎকে দেহের সবচেয়ে বড় গ্রন্থি হিসেবে উল্লেখ করা হয়েছে।" },
+            { question: "অ্যামাইলেজ, ট্রিপসিন ও লাইপেজ এনজাইমগুলো কোন গ্রন্থিতে তৈরি হয়?", options: ["যকৃৎ", "গ্যাস্ট্রিক গ্রন্থি", "আন্ত্রিক গ্রন্থি", "অগ্ন্যাশয়"], answer: "অগ্ন্যাশয়", explanation: "পাঠ-৫ এর অগ্ন্যাশয়ের বর্ণনায় বলা হয়েছে, এখানে অ্যামাইলেজ (শর্করা), ট্রিপসিন (আমিষ) এবং লাইপেজ (স্নেহ) এনজাইম তৈরি হয়।" },
+            { question: "পিত্তরস কোন জাতীয় খাদ্য হজমে সাহায্য করে?", options: ["আমিষ", "শর্করা", "স্নেহ", "খনিজ লবণ"], answer: "স্নেহ", explanation: "পাঠ-৫ অনুযায়ী, যকৃৎ থেকে তৈরি পিত্তরস স্নেহ জাতীয় খাদ্য হজমে সাহায্য করে।" },
+            { question: "বৃহদন্ত্রের প্রধান কাজ কী?", options: ["খাদ্য পরিপাক করা", "এনজাইম তৈরি করা", "খাদ্যের জলীয় অংশ থেকে পানি শোষণ করা", "খাদ্য জমা রাখা"], answer: "খাদ্যের জলীয় অংশ থেকে পানি শোষণ করা", explanation: "পাঠ-৫ অনুযায়ী, বৃহদন্ত্রে খাদ্য হজম হয় না, এটি মূলত খাদ্যের অপাচ্য অংশ থেকে পানি শোষণ করে।" },
+            { question: "খাদ্যের অপাচ্য বা অহজমকৃত অংশ মলরূপে কোথায় জমা হয়?", options: ["সিকাম", "কোলন", "মলাশয়", "পায়ু"], answer: "মলাশয়", explanation: "পাঠ-৫ অনুযায়ী, মলাশয় বৃহদন্ত্রের শেষ প্রান্ত এবং খাদ্যের অপাচ্য অংশ এখানে মলরূপে জমা হয়।" },
+            // পাঠ ৬: সাধারণ রোগ ও প্রতিকার (21-25)
+            { question: "পাকস্থলি ও অন্ত্রে ক্ষতের সৃষ্টি হলে তাকে কী বলে?", options: ["গ্যাস্ট্রাইটিস", "আমাশয়", "গ্যাস্ট্রিক আলসার", "কোষ্ঠকাঠিন্য"], answer: "গ্যাস্ট্রিক আলসার", explanation: "পাঠ-৬ এ বলা হয়েছে, গ্যাস্ট্রাইটিস রোগের সময়মতো চিকিৎসা না করালে পাকস্থলি ও অন্ত্রে ক্ষতের সৃষ্টি হয়, যাকে গ্যাস্ট্রিক আলসার বলে।" },
+            { question: "সিগেলা (Shigella) নামক ব্যাকটেরিয়া কোন রোগ সৃষ্টি করে?", options: ["অ্যামিবিক আমাশয়", "টাইফয়েড", "কলেরা", "ব্যাসিলারি আমাশয়"], answer: "ব্যাসিলারি আমাশয়", explanation: "পাঠ-৬ অনুযায়ী, সিগেলা নামের এক ধরনের ব্যাকটেরিয়া অন্ত্রকে আক্রমণ করলে ব্যাসিলারি আমাশয় হয়।" },
+            { question: "মলের সাথে রক্ত বা শ্লেষ্মা বের হওয়া কোন রোগের উপসর্গ?", options: ["গ্যাস্ট্রাইটিস", "আমাশয়", "কোষ্ঠকাঠিন্য", "জন্ডিস"], answer: "আমাশয়", explanation: "পাঠ-৬ এ অ্যামিবিক ও ব্যাসিলারি উভয় আমাশয়ের উপসর্গ হিসেবে তলপেটে ব্যথা এবং মলের সাথে রক্ত বা শ্লেষ্মা যাওয়ার কথা বলা হয়েছে।" },
+            { question: "কোষ্ঠকাঠিন্য দূর করার সবচেয়ে ভালো উপায় কী?", options: ["বেশি ওষুধ খাওয়া", "কম পানি পান করা", "আঁশযুক্ত খাবার, ফলমূল ও শাকসবজি খাওয়া", "বেশি তেলযুক্ত খাবার খাওয়া"], answer: "আঁশযুক্ত খাবার, ফলমূল ও শাকসবজি খাওয়া", explanation: "পাঠ-৬ অনুযায়ী, নিয়মিত শাকসবজি, ফলমূল ও আঁশযুক্ত খাবার খাওয়ার মাধ্যমে কোষ্ঠকাঠিন্য দূর করা যায়।" },
+            { question: "অ্যামিবিক আমাশয়ের জন্য দায়ী কোনটি?", options: ["এন্টামিবা নামক এককোষী প্রাণী", "সিগেলা নামক ব্যাকটেরিয়া", "দূষিত বাতাস", "অতিরিক্ত মসলাযুক্ত খাবার"], answer: "এন্টামিবা নামক এককোষী প্রাণী", explanation: "পাঠ-৬ এ বলা আছে, এন্টামিবা নামক এক প্রকার এককোষী প্রাণী মানুষের অন্ত্রে প্রবেশ করলে অ্যামিবিক আমাশয় হয়।" },
+            // পাঠ ৭-৮: রক্ত সংবহনতন্ত্র, রক্ত ও রক্তের উপাদান (26-35)
+            { question: "রক্তের তরল অংশের নাম কী?", options: ["লসিকা", "রক্তকণিকা", "হিমোগ্লোবিন", "রক্তরস (Plasma)"], answer: "রক্তরস (Plasma)", explanation: "পাঠ-৭ এ বলা হয়েছে, রক্তরস হলো রক্তের তরল অংশ এবং এটি রক্তের প্রায় ৫৫ ভাগ।" },
+            { question: "কোন উপাদানটি রক্ত জমাট বাঁধতে সাহায্য করে?", options: ["রক্তরস", "লোহিত রক্তকণিকা", "ফাইব্রিনোজেন", "হিমোগ্লোবিন"], answer: "ফাইব্রিনোজেন", explanation: "পাঠ-৭ অনুযায়ী, রক্তরসে থাকা ফাইব্রিনোজেন নামক উপাদানটি রক্ত জমাট বাঁধতে সাহায্য করে।" },
+            { question: "রক্তের রং লাল দেখায় কোনটির উপস্থিতির জন্য?", options: ["লোহিত রক্তকণিকা ও হিমোগ্লোবিন", "শ্বেত রক্তকণিকা", "রক্তরস", "অণুচক্রিকা"], answer: "লোহিত রক্তকণিকা ও হিমোগ্লোবিন", explanation: "পাঠ-৮ অনুযায়ী, লোহিত রক্তকণিকায় হিমোগ্লোবিন নামক রঞ্জক পদার্থ থাকায় রক্তের রং লাল দেখায়।" },
+            { question: "দেহে রোগ-জীবাণু প্রবেশ করলে কোনটি সেগুলোকে ধ্বংস করে?", options: ["লোহিত রক্তকণিকা", "শ্বেত রক্তকণিকা", "অণুচক্রিকা", "রক্তরস"], answer: "শ্বেত রক্তকণিকা", explanation: "পাঠ-৮ এ বলা হয়েছে, শ্বেত রক্তকণিকা দেহে কোনো রোগ-জীবাণু প্রবেশ করলে সেগুলোকে ধ্বংস করে, তাই এদের দেহের প্রহরী বলা হয়।" },
+            { question: "দেহের কোনো অংশ কেটে গেলে রক্তপাত বন্ধ করতে সাহায্য করে কোনটি?", options: ["শ্বেত রক্তকণিকা", "হিমোগ্লোবিন", "অণুচক্রিকা (Platelets)", "লোহিত রক্তকণিকা"], answer: "অণুচক্রিকা (Platelets)", explanation: "পাঠ-৮ অনুযায়ী, দেহের কোনো অংশ কেটে গেলে অণুচক্রিকা রক্ত জমাট বাঁধতে সাহায্য করে, ফলে রক্তপাত বন্ধ হয়।" },
+            { question: "অক্সিজেন পরিবহন করা কোন রক্তকণিকার প্রধান কাজ?", options: ["শ্বেত রক্তকণিকা", "অণুচক্রিকা", "লোহিত রক্তকণিকা", "সবগুলোই"], answer: "লোহিত রক্তকণিকা", explanation: "পাঠ-৮ এ রক্তের কাজের বর্ণনায় বলা হয়েছে, লোহিত রক্তকণিকায় থাকা হিমোগ্লোবিন ফুসফুস থেকে অক্সিজেন গ্রহণ করে প্রতিটি কোষে বহন করে।" },
+            { question: "পরিণত লোহিত রক্তকণিকায় কোনটি অনুপস্থিত থাকে?", options: ["সাইটোপ্লাজম", "কোষঝিল্লি", "হিমোগ্লোবিন", "নিউক্লিয়াস"], answer: "নিউক্লিয়াস", explanation: "পাঠ-৮ এ লোহিত রক্তকণিকার বর্ণনায় বলা আছে, পরিণত লোহিত রক্তকণিকায় নিউক্লিয়াস থাকে না।" },
+            { question: "শ্বেত রক্তকণিকাকে 'দেহের প্রহরী' বা 'সৈনিক' বলা হয় কেন?", options: ["এরা সংখ্যায় অনেক বেশি", "এরা রোগ প্রতিরোধ করে", "এরা অক্সিজেন পরিবহন করে", "এরা আকারে অনেক বড়"], answer: "এরা রোগ প্রতিরোধ করে", explanation: "পাঠ-৮ অনুযায়ী, শ্বেত রক্তকণিকা রোগ-জীবাণুকে ধ্বংস করে রোগ প্রতিরোধ করে বলে এদেরকে দেহের প্রহরী বা সৈনিকের সাথে তুলনা করা হয়।" },
+            { question: "রক্তরস দেহের বিভিন্ন অংশ থেকে কোন বর্জ্য পদার্থটি বহন করে ফুসফুসে নিয়ে যায়?", options: ["ইউরিয়া", "কার্বন ডাই-অক্সাইড", "ল্যাকটিক এসিড", "অ্যামোনিয়া"], answer: "কার্বন ডাই-অক্সাইড", explanation: "পাঠ-৮ এ রক্তের কাজের অংশে বলা হয়েছে, রক্তরস কোষগুলোতে উৎপন্ন কার্বন ডাই-অক্সাইড বহন করে ফুসফুসে নিয়ে যায়।" },
+            { question: "দেহের তাপমাত্রা নিয়ন্ত্রণ করা কার কাজ?", options: ["পরিপাকতন্ত্র", "শ্বসনতন্ত্র", "রক্ত", "স্নায়ুতন্ত্র"], answer: "রক্ত", explanation: "পাঠ-৯ এ বলা হয়েছে, রক্ত দেহের বিভিন্ন অংশের তাপ পরিবহন করে দেহের সর্বত্র তাপমাত্রা ঠিক রাখে।" },
+            // পাঠ ৯-১২: রক্তনালি, হৃৎপিণ্ড ও হৃদরোগ (36-50)
+            { question: "যেসব রক্তনালি হৃৎপিণ্ড থেকে দেহের বিভিন্ন অংশে রক্ত বহন করে, তাদের কী বলে?", options: ["শিরা", "ধমনি", "কৈশিকনালি", "লসিকা নালি"], answer: "ধমনি", explanation: "পাঠ-৯ এ ধমনির সংজ্ঞায় বলা হয়েছে, যে সকল রক্তবাহী নালি হৃৎপিণ্ড থেকে উৎপন্ন হয়ে দেহের বিভিন্ন অঙ্গে রক্ত বহন করে, তাকে ধমনি বলে।" },
+            { question: "কোন রক্তনালির প্রাচীর পুরু ও গহ্বর ছোট থাকে?", options: ["শিরা", "ধমনি", "কৈশিকনালি", "লসিকা নালি"], answer: "ধমনি", explanation: "পাঠ-৯ এর বর্ণনা অনুযায়ী, ধমনির প্রাচীর পুরু এবং গহ্বর ছোট থাকে।" },
+            { question: "কোন রক্তনালিতে কপাটিকা থাকে?", options: ["ধমনি", "শিরা", "কৈশিকনালি", "সবগুলোতে"], answer: "শিরা", explanation: "পাঠ-৯ এ বলা হয়েছে, শিরার গহ্বরের প্রাচীরগাত্রে কপাটিকা থাকে যা রক্তকে পুনরায় বিপরীত দিকে যেতে বাধা দেয়।" },
+            { question: "সাধারণত ধমনি কোন ধরনের রক্ত পরিবহন করে?", options: ["অক্সিজেনসমৃদ্ধ রক্ত", "কার্বন ডাই-অক্সাইডযুক্ত রক্ত", "মিশ্র রক্ত", "রক্তরস"], answer: "অক্সিজেনসমৃদ্ধ রক্ত", explanation: "পাঠ-৯ অনুযায়ী, ধমনি সাধারণত অক্সিজেনসমৃদ্ধ রক্ত পরিবহন করে (ব্যতিক্রম: ফুসফুসীয় ধমনি)।" },
+            { question: "ব্যতিক্রমধর্মী ফুসফুসীয় ধমনি কোন প্রকার রক্ত বহন করে?", options: ["অক্সিজেনসমৃদ্ধ", "কার্বন ডাই-অক্সাইডযুক্ত", "উভয়ই", "কোনোটিই নয়"], answer: "কার্বন ডাই-অক্সাইডযুক্ত", explanation: "পাঠ-১২ 'এ অধ্যায়ে আমরা যা শিখলাম' অংশে বলা হয়েছে, ফুসফুসীয় ধমনি ব্যতিক্রম, এটি কার্বন ডাই-অক্সাইডযুক্ত রক্ত ফুসফুসে নিয়ে যায়।" },
+            { question: "মানব হৃৎপিণ্ড কত প্রকোষ্ঠবিশিষ্ট?", options: ["দুই", "তিন", "চার", "পাঁচ"], answer: "চার", explanation: "পাঠ-১০ অনুযায়ী, হৃৎপিণ্ড একটি চার প্রকোষ্ঠবিশিষ্ট ফাঁপা অঙ্গ। ডান ও বাম অলিন্দ এবং ডান ও বাম নিলয়।" },
+            { question: "হৃৎপিণ্ডের আবরণীর নাম কী?", options: ["প্লুরা", "পেরিকার্ডিয়াম", "পেরিটোনিয়াম", "মেনিনজেস"], answer: "পেরিকার্ডিয়াম", explanation: "পাঠ-১০ এ বলা হয়েছে, হৃৎপিণ্ড পেরিকার্ডিয়াম নামে দুই স্তরবিশিষ্ট একটি পাতলা পর্দা দ্বারা আবৃত।" },
+            { question: "একজন সুস্থ মানুষের হৃৎপিণ্ড প্রতি মিনিটে গড়ে কতবার সংকুচিত ও প্রসারিত হয়?", options: ["৫০ বার", "৬০ বার", "৭২ বার", "৮৫ বার"], answer: "৭২ বার", explanation: "পাঠ-১০ এ উল্লেখ করা হয়েছে, প্রতি মিনিটে কমবেশি ৭২ বার হৃৎপিণ্ড সংকুচিত ও প্রসারিত হয়, যাকে হৃদস্পন্দন বলে।" },
+            { question: "হৃৎপিণ্ডের কোন প্রকোষ্ঠের প্রাচীর সবচেয়ে পুরু থাকে?", options: ["ডান অলিন্দ", "বাম অলিন্দ", "ডান নিলয়", "বাম নিলয়"], answer: "বাম নিলয়", explanation: "পাঠ-১০ এ বলা হয়েছে, অলিন্দের প্রাচীর পাতলা ও নিলয়ের প্রাচীর পুরু থাকে, এবং বাম নিলয়ের প্রাচীর অধিকতর পুরু থাকে কারণ এটি সারা দেহে রক্ত পাম্প করে।" },
+            { question: "রক্তের গতিপথ একদিকে নিয়ন্ত্রণ করে কোনটি?", options: ["অলিন্দ", "নিলয়", "কপাটিকা", "হৃৎপেশি"], answer: "কপাটিকা", explanation: "পাঠ-১১ তে বলা হয়েছে, হৃৎপিণ্ডের কপাটিকাগুলো রক্তের গতিপথ একদিকে নিয়ন্ত্রণ করে।" },
+            { question: "নাড়ি স্পন্দন (Pulse) কোথায় অনুভূত হয়?", options: ["শিরায়", "ধমনিতে", "কৈশিকনালিতে", "হৃৎপিণ্ডে"], answer: "ধমনিতে", explanation: "পাঠ-১১ এর 'নিজেরা কর' অংশে বলা হয়েছে, হৃৎপিণ্ডের সংকোচন ও প্রসারণের ফলে ধমনির মধ্যে যে স্পন্দন সৃষ্টি হয় তাকে নাড়ি স্পন্দন বলে।" },
+            { question: "হৃৎপিণ্ডের সংকোচনের ফলে রক্ত কোথায় যায়?", options: ["শিরা পথে হৃৎপিণ্ডে ফেরে", "ধমনি পথে বিভিন্ন অঙ্গে যায়", "ফুসফুসে যায়", "কৈশিকনালিতে যায়"], answer: "ধমনি পথে বিভিন্ন অঙ্গে যায়", explanation: "পাঠ-১১ অনুযায়ী, যখন হৃৎপিণ্ডের সংকোচন হয় তখন হৃৎপিণ্ড থেকে রক্ত ধমনি পথে বিভিন্ন অংশে সঞ্চালিত হয়।" },
+            { question: "কোন অভ্যাসটি হৃদরোগের ঝুঁকি বাড়ায়?", options: ["নিয়মিত ব্যায়াম করা", "ধূমপান করা", "ফলমূল খাওয়া", "পর্যাপ্ত ঘুমানো"], answer: "ধূমপান করা", explanation: "পাঠ-১১ ও ১২ তে হৃদরোগের কারণ হিসেবে ধূমপানকে উল্লেখ করা হয়েছে, যা ধমনিগাত্র শক্ত করে রক্ত প্রবাহে ব্যাঘাত ঘটায়।" },
+            { question: "কীভাবে দেহের ওজন নিয়ন্ত্রণ করে হৃদরোগ প্রতিরোধ করা যায়?", options: ["ওজন বাড়লে রক্তচাপ কমে যায়", "ওজন বাড়লে হৃৎপিণ্ডের উপর রক্ত সঞ্চালনের চাপ কমে", "ওজন বাড়লে হৃৎপিণ্ডের উপর রক্ত সঞ্চালনের চাপ পড়ে", "ওজনের সাথে হৃদরোগের সম্পর্ক নেই"], answer: "ওজন বাড়লে হৃৎপিণ্ডের উপর রক্ত সঞ্চালনের চাপ পড়ে", explanation: "পাঠ-১২ অনুযায়ী, দেহের ওজন বেড়ে গেলে হৃৎপিন্ডের উপর রক্ত সঞ্চালনের চাপ পড়ে, ফলে হৃৎপিণ্ড ক্ষতিগ্রস্থ হয়।" },
+            { question: "ফুসফুসীয় শিরা কোন প্রকোষ্ঠে রক্ত নিয়ে আসে?", options: ["ডান অলিন্দ", "বাম অলিন্দ", "ডান নিলয়", "বাম নিলয়"], answer: "বাম অলিন্দ", explanation: "পাঠ-১২ এর সারাংশে বলা হয়েছে, ফুসফুসীয় শিরা অক্সিজেনসমৃদ্ধ রক্ত বাম অলিন্দে নিয়ে আসে।" }
+        ];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const overviewScreen = document.getElementById('overview-screen');
+        const startBtn = document.getElementById('start-btn');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerText = document.getElementById('timer-text');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const overviewTitle = document.getElementById('overview-title');
+        const overviewSummary = document.getElementById('overview-summary');
+        const overviewList = document.getElementById('overview-list');
+        const continueBtn = document.getElementById('continue-btn');
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const TIME_LIMIT = 25; // Timer set to 25 seconds as requested
+        let timeLeft = TIME_LIMIT;
+        let userAnswers = [];
+
+        // --- Data Persistence Functions ---
+        function saveQuizState() {
+            const state = {
+                currentQuestionIndex,
+                score,
+                userAnswers
+            };
+            localStorage.setItem('quizProgressDigestion', JSON.stringify(state));
+        }
+
+        function loadQuizState() {
+            const savedState = localStorage.getItem('quizProgressDigestion');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                currentQuestionIndex = state.currentQuestionIndex;
+                score = state.score;
+                userAnswers = state.userAnswers;
+                
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+
+        function clearQuizState() {
+            localStorage.removeItem('quizProgressDigestion');
+        }
+
+        // Check for saved data on page load
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('quizProgressDigestion');
+            if (savedData) {
+                const startButtonsContainer = document.querySelector('.start-buttons-container');
+                if(!document.getElementById('continue-saved-btn')){
+                    const continueSavedBtn = document.createElement('button');
+                    continueSavedBtn.id = 'continue-saved-btn';
+                    continueSavedBtn.className = 'btn continue-btn';
+                    continueSavedBtn.textContent = 'আগেরটি চালিয়ে যান';
+                    startButtonsContainer.appendChild(continueSavedBtn);
+                    
+                    continueSavedBtn.addEventListener('click', loadQuizState);
+                }
+            }
+        });
+
+        // --- Core Quiz Functions ---
+
+        startBtn.addEventListener('click', startGame);
+        continueBtn.addEventListener('click', continueQuiz);
+
+        function startGame() {
+            clearQuizState();
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            scoreDisplay.textContent = 'স্কোর: 0';
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            resetState();
+            
+            progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+
+            if(currentQuestionIndex >= questions.length){
+                showOverview(true); 
+                return;
+            }
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionCounter.textContent = `প্রশ্ন ${currentQuestionIndex + 1}/${questions.length}`;
+            questionText.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(button, option));
+                optionsContainer.appendChild(button);
+            });
+            startTimer();
+        }
+        
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerText.textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    selectAnswer(null, null); 
+                }
+            }, 1000);
+        }
+
+        function resetState() {
+            clearInterval(timer);
+            optionsContainer.innerHTML = '';
+        }
+        
+        function selectAnswer(selectedButton, selectedOption) {
+            clearInterval(timer);
+            const correctOption = questions[currentQuestionIndex].answer;
+            const isCorrect = selectedOption === correctOption;
+            
+            userAnswers.push({
+                question: questions[currentQuestionIndex].question,
+                yourAnswer: selectedOption === null ? 'সময় শেষ' : selectedOption,
+                correctAnswer: correctOption,
+                explanation: questions[currentQuestionIndex].explanation,
+                isCorrect: isCorrect,
+            });
+
+            Array.from(optionsContainer.children).forEach(button => {
+                if(button.textContent === correctOption) button.classList.add('correct');
+                if(button === selectedButton && !isCorrect) button.classList.add('incorrect');
+                button.disabled = true;
+            });
+            
+            if (isCorrect) {
+                score++;
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+            }
+
+            saveQuizState(); // Save progress after each answer
+
+            setTimeout(handleNext, 1500);
+        }
+
+        function handleNext(){
+            currentQuestionIndex++;
+            if(currentQuestionIndex % 10 === 0 && currentQuestionIndex > 0) {
+                showOverview(currentQuestionIndex === questions.length);
+            } else {
+                 loadQuestion();
+            }
+        }
+
+        function showOverview(isFinal) {
+            showScreen('overview-screen');
+            if (isFinal) {
+                clearQuizState(); // Clear data when quiz is finished
+                 const continueSavedBtn = document.getElementById('continue-saved-btn');
+                if (continueSavedBtn) {
+                    continueSavedBtn.remove();
+                }
+            }
+
+            let start = Math.floor((currentQuestionIndex -1) / 10) * 10;
+            let end = currentQuestionIndex;
+
+            overviewTitle.textContent = isFinal ? 'চূড়ান্ত ফলাফল' : `পার্ট ${end/10} এর সারসংক্ষেপ`;
+            
+            overviewList.innerHTML = '';
+            // Display only the last 10 answers in the intermediate overview
+            const startIndex = isFinal ? 0 : start;
+            for(let i = startIndex; i < end; i++){
+                const answer = userAnswers[i];
+                const item = document.createElement('div');
+                item.classList.add('overview-item');
+                const statusIcon = answer.isCorrect ? '✔' : '✖';
+                const statusClass = answer.isCorrect ? 'status-correct' : 'status-incorrect';
+                
+                item.innerHTML = `
+                    <div class="overview-status ${statusClass}">${statusIcon}</div>
+                    <p class="question"><strong>প্রশ্ন ${i + 1}:</strong> ${answer.question}</p>
+                    <p><strong>তোমার উত্তর:</strong> ${answer.yourAnswer}</p>
+                    <p><strong>সঠিক উত্তর:</strong> ${answer.correctAnswer}</p>
+                    <p class="explanation"><strong>ব্যাখ্যা:</strong> ${answer.explanation}</p>
+                `;
+                overviewList.prepend(item);
+            }
+            
+            overviewSummary.innerHTML = `
+                <span class="summary-correct">✔ মোট সঠিক: ${score}</span>
+                <span class="summary-incorrect">✖ মোট ভুল: ${currentQuestionIndex - score}</span>
+            `;
+            
+            if(isFinal) {
+                continueBtn.textContent = 'পুনরায় খেলুন';
+            } else {
+                continueBtn.textContent = 'পরবর্তী ধাপে যান';
+            }
+        }
+
+        function continueQuiz() {
+            if (currentQuestionIndex >= questions.length) {
+                // Instead of reloading, just go back to the start screen for a smoother experience
+                clearQuizState();
+                const continueSavedBtn = document.getElementById('continue-saved-btn');
+                if (continueSavedBtn) {
+                    continueSavedBtn.remove();
+                }
+                showScreen('start-screen');
+            } else {
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+    </script>
+</body>
+</html>

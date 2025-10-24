@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বিদ্যুৎ ও চুম্বকের ঘটনা কুইজ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&family=Poppins:wght@600&display=swap');
+
+        :root {
+            --primary-bg: #2980b9; /* Blue theme for electricity/magnetism */
+            --secondary-bg: #3498db;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-color: #333;
+            --accent-color: #e67e22;
+            --correct-color: #2ecc71;
+            --incorrect-color: #e74c3c;
+            --light-gray: #f0f0f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --border-radius: 15px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary-bg);
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--primary-bg);
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .start-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), #d35400);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(230, 126, 34, 0.6);
+        }
+        
+        .btn.continue-btn {
+            background: linear-gradient(45deg, #16a085, #1abc9c);
+             box-shadow: 0 4px 15px rgba(22, 160, 133, 0.4);
+        }
+        .btn.continue-btn:hover {
+             box-shadow: 0 7px 20px rgba(22, 160, 133, 0.6);
+        }
+
+
+        #quiz-screen .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        #question-counter, #score-display {
+             background: var(--light-gray);
+             padding: 8px 15px;
+             border-radius: 20px;
+        }
+
+        #timer {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-bg);
+        }
+        
+        #progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--correct-color), var(--accent-color));
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+        }
+        
+        #question-text {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            min-height: 80px;
+        }
+        
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .option-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1em;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--light-gray);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-bg);
+            background-color: #f0f8ff;
+            transform: scale(1.02);
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-color);
+            color: white;
+            border-color: var(--incorrect-color);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        #overview-screen h2 { margin-bottom: 10px; }
+        #overview-summary { font-size: 1.2em; font-weight: bold; margin-bottom: 25px; background: var(--light-gray); padding: 15px; border-radius: 10px; display: flex; justify-content: center; gap: 30px; }
+        .summary-correct { color: var(--correct-color); }
+        .summary-incorrect { color: var(--incorrect-color); }
+        #overview-list { max-height: 40vh; overflow-y: auto; text-align: left; margin-bottom: 25px; }
+        .overview-item { background: #fff; border: 1px solid var(--light-gray); border-radius: 10px; padding: 15px; margin-bottom: 10px; position: relative; padding-right: 40px; }
+        .overview-item p { margin-bottom: 8px; font-size: 1em; }
+        .overview-item .question { font-weight: bold; }
+        .overview-item .explanation { font-size: 0.9em; color: #555; background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 5px; }
+        .overview-status { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); font-size: 2em; }
+        .status-correct { color: var(--correct-color); }
+        .status-incorrect { color: var(--incorrect-color); }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
+            #question-text { font-size: 1.2em; min-height: 70px; }
+            #options-container { grid-template-columns: 1fr; }
+            .option-btn { padding: 15px; font-size: 1em; }
+            #quiz-screen .header { flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>বিদ্যুৎ ও চুম্বকের ঘটনা কুইজ</h1>
+            <p>এই অধ্যায়ের উপর আপনার দক্ষতা যাচাই করুন। প্রতিটি প্রশ্নের জন্য সময় পাবেন ২৫ সেকেন্ড।</p>
+            <p><strong>মোট ৫০টি প্রশ্ন</strong></p>
+            <div class="start-buttons-container">
+                <button id="start-btn" class="btn">নতুন কুইজ শুরু করুন</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div id="question-counter"></div>
+                <div id="timer">
+                    <span id="timer-text">25</span>
+                </div>
+                <div id="score-display">স্কোর: 0</div>
+            </div>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="question-text"></div>
+            <div id="options-container"></div>
+        </div>
+        
+        <!-- Overview Screen -->
+        <div id="overview-screen" class="screen">
+            <h2 id="overview-title"></h2>
+            <div id="overview-summary"></div>
+            <div id="overview-list"></div>
+            <button id="continue-btn" class="btn continue-btn"></button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // পাঠ ১-৩: আধান বা চার্জ (1-10)
+            { question: "পরমাণুর নিউক্লিয়াসে কোন দুটি কণা থাকে?", options: ["ইলেকট্রন ও প্রোটন", "প্রোটন ও নিউট্রন", "ইলেকট্রন ও নিউট্রন", "শুধুমাত্র প্রোটন"], answer: "প্রোটন ও নিউট্রন", explanation: "পাঠ-১ অনুযায়ী, পরমাণুর কেন্দ্রে নিউক্লিয়াস থাকে, যা প্রোটন ও নিউট্রনের সমন্বয়ে গঠিত।" },
+            { question: "স্বাভাবিক অবস্থায় পরমাণু আধান নিরপেক্ষ হয় কেন?", options: ["প্রোটন না থাকায়", "ইলেকট্রন না থাকায়", "প্রোটন ও ইলেকট্রনের সংখ্যা সমান হওয়ায়", "নিউট্রনের সংখ্যা বেশি হওয়ায়"], answer: "প্রোটন ও ইলেকট্রনের সংখ্যা সমান হওয়ায়", explanation: "পাঠ-১ এ বলা হয়েছে, একটি পরমাণুতে যে কয়টি প্রোটন (ধনাত্মক) থাকে, সেই কয়টিই ইলেকট্রন (ঋণাত্মক) থাকে, ফলে মোট চার্জ শূন্য হয়ে পরমাণু নিরপেক্ষ হয়।" },
+            { question: "ঘর্ষণের ফলে দুটি বস্তুর মধ্যে কীসের আদান-প্রদান ঘটে?", options: ["প্রোটন", "নিউট্রন", "ইলেকট্রন", "পরমাণু"], answer: "ইলেকট্রন", explanation: "পাঠ-১ এ বলা হয়েছে, যখনই দুটো পদার্থকে ঘর্ষণ করা হয়, তখন একটি পদার্থের ইলেকট্রন অন্য একটি পদার্থে চলে যেতে পারে।" },
+            { question: "সমধর্মী দুটি আধান পরস্পরকে কী করে?", options: ["আকর্ষণ করে", "বিকর্ষণ করে", "কোনোটিই করে না", "প্রথমে আকর্ষণ পরে বিকর্ষণ করে"], answer: "বিকর্ষণ করে", explanation: "পাঠ-২ এর পরীক্ষা থেকে সিদ্ধান্ত নেওয়া হয়েছে যে, সমধর্মী আধান পরস্পরকে বিকর্ষণ করে (যেমন- দুটি আহিত চিরুনি বা বেলুন)।" },
+            { question: "বিপরীতধর্মী দুটি আধান পরস্পরকে কী করে?", options: ["আকর্ষণ করে", "বিকর্ষণ করে", "কোনোটিই করে না", "প্রথমে বিকর্ষণ পরে আকর্ষণ করে"], answer: "আকর্ষণ করে", explanation: "পাঠ-২ এর পরীক্ষা থেকে সিদ্ধান্ত নেওয়া হয়েছে যে, বিপরীতধর্মী আধান পরস্পরকে আকর্ষণ করে (যেমন- উলের কাপড় ও আহিত বেলুন)।" },
+            { question: "একটি কাচদণ্ডকে সিল্ক দিয়ে ঘষলে কাচদণ্ডটি ধনাত্মক আধানে আহিত হয়। এর কারণ কী?", options: ["কাচদণ্ড প্রোটন গ্রহণ করে", "সিল্ক ইলেকট্রন গ্রহণ করে", "কাচদণ্ড ইলেকট্রন বর্জন করে", "সিল্ক প্রোটন বর্জন করে"], answer: "কাচদণ্ড ইলেকট্রন বর্জন করে", explanation: "পাঠ-১ এর উদাহরণ অনুযায়ী, সিল্কের কাপড় কাচ থেকে ইলেকট্রন আকর্ষণ করে। ফলে কাচে ইলেকট্রনের ঘাটতি হওয়ায় তা ধনাত্মক আধানে আহিত হয়।" },
+            { question: "একটি চিরুনি দিয়ে চুল আঁচড়ানোর পর তা কাগজের টুকরোকে আকর্ষণ করে কেন?", options: ["চিরুনি চুম্বকে পরিণত হয়", "কাগজে আধান থাকে", "আহিত চিরুনি আবেশের মাধ্যমে কাগজকে আকৃষ্ট করে", "বাতাসের কারণে"], answer: "আহিত চিরুনি আবেশের মাধ্যমে কাগজকে আকৃষ্ট করে", explanation: "পাঠ-৩ অনুযায়ী, চিরুনি ঘর্ষণের ফলে আহিত হয় এবং আবেশ প্রক্রিয়ায় কাগজের টুকরোগুলোর নিকট প্রান্তে বিপরীত আধান সৃষ্টি করে আকর্ষণ করে।" },
+            { question: "আধানের অস্তিত্ব প্রমাণের পরীক্ষায় চিরুনিকে কী দিয়ে ঘষা হয়েছিল?", options: ["সিল্কের কাপড়", "শুকনো চুল বা পশম", "ধাতব পাত", "কাগজ"], answer: "শুকনো চুল বা পশম", explanation: "পাঠ-৩ এর কাজে প্লাস্টিকের চিরুনিকে পশম বা উলের কাপড় অথবা শুকনো চুল দিয়ে ঘষতে বলা হয়েছে।" },
+            { question: "যদি কোনো বস্তু ইলেকট্রন গ্রহণ করে, তবে বস্তুটি কী ধরনের আধানে আহিত হয়?", options: ["ধনাত্মক", "ঋণাত্মক", "নিরপেক্ষ", "উভধর্মী"], answer: "ঋণাত্মক", explanation: "ইলেকট্রনের চার্জ ঋণাত্মক। কোনো বস্তু অতিরিক্ত ইলেকট্রন গ্রহণ করলে তাতে ঋণাত্মক চার্জের আধিক্য ঘটে, ফলে বস্তুটি ঋণাত্মক আধানে আহিত হয়।" },
+            { question: "স্থির বিদ্যুৎ কী?", options: ["প্রবাহিত বিদ্যুৎ", "আহিত বস্তুতে স্থির অবস্থায় থাকা বিদ্যুৎ", "ব্যাটারির বিদ্যুৎ", "চুম্বকের শক্তি"], answer: "আহিত বস্তুতে স্থির অবস্থায় থাকা বিদ্যুৎ", explanation: "ঘর্ষণের ফলে উৎপন্ন আধান যখন কোনো বস্তুতে চলাচল না করে স্থির অবস্থায় থাকে, তখন তাকে স্থিরবিদ্যুৎ বলে।" },
+            // পাঠ ৪-৬: পরিবাহী, অপরিবাহী, বর্তনী (11-25)
+            { question: "যেসব পদার্থের মধ্য দিয়ে ইলেকট্রন সহজে চলাচল করতে পারে, তাদের কী বলে?", options: ["অপরিবাহী", "অর্ধপরিবাহী", "পরিবাহী", "অচৌম্বক পদার্থ"], answer: "পরিবাহী", explanation: "পাঠ-৪ অনুযায়ী, পরিবাহী পদার্থের ইলেকট্রনসমূহ এক পরমাণু থেকে অন্য পরমাণুতে সহজেই চলাচল করতে পারে।" },
+            { question: "নিচের কোনটি বিদ্যুৎ সুপরিবাহী?", options: ["প্লাস্টিক", "রাবার", "তামা", "শুকনো কাঠ"], answer: "তামা", explanation: "পাঠ-৪ এ পরিবাহীর উদাহরণ হিসেবে রৌপ্য, তামা, অ্যালুমিনিয়াম ইত্যাদি ধাতুর কথা বলা হয়েছে।" },
+            { question: "অর্ধপরিবাহী পদার্থের একটি উদাহরণ কী?", options: ["রুপা", "কাচ", "সিলিকন", "পানি"], answer: "সিলিকন", explanation: "পাঠ-৪ অনুযায়ী, সিলিকন, জার্মেনিয়াম, গ্যালিয়াম ইত্যাদি অর্ধপরিবাহী পদার্থের উদাহরণ।" },
+            { question: "তাপমাত্রা বাড়ালে অর্ধপরিবাহীর পরিবাহিতা কী হয়?", options: ["কমে যায়", "বেড়ে যায়", "অপরিবর্তিত থাকে", "শূন্য হয়ে যায়"], answer: "বেড়ে যায়", explanation: "পাঠ-৪ এ বলা হয়েছে, নিম্ন তাপমাত্রায় অর্ধপরিবাহী অপরিবাহীর মতো আচরণ করলেও তাপমাত্রা বাড়ালে এটি পরিবাহীর মতো আচরণ করে।" },
+            { question: "আহিত চিরুনিকে হাত দিয়ে স্পর্শ করলে এর আধান কোথায় চলে যায়?", options: ["হাতে থেকে যায়", "বাতাসে মিলিয়ে যায়", "হাতের মধ্য দিয়ে মাটিতে চলে যায়", "চিরুনিতেই থাকে"], answer: "হাতের মধ্য দিয়ে মাটিতে চলে যায়", explanation: "পাঠ-৫ অনুযায়ী, স্থিরবিদ্যুৎ হাতের মধ্য দিয়ে প্রবাহিত হয়ে মাটিতে চলে যায়, কারণ মানবদেহ ও পৃথিবী বিদ্যুৎ পরিবাহী।" },
+            { question: "কোনো পরিবাহীর মধ্য দিয়ে আধানের প্রবাহকে কী বলে?", options: ["স্থিরবিদ্যুৎ", "চলবিদ্যুৎ", "রোধ", "বিভব"], answer: "চলবিদ্যুৎ", explanation: "পাঠ-৫ এ বলা হয়েছে, যে বিদ্যুৎ কোনো পদার্থের মধ্য দিয়ে প্রবাহিত হয়ে এক স্থান থেকে অন্য স্থানে চলে যায় তা হলো চলবিদ্যুৎ।" },
+            { question: "বিদ্যুৎ প্রবাহ চলার সম্পূর্ণ পথকে কী বলা হয়?", options: ["রোধ", "বর্তনী", "অ্যাম্পিয়ার", "বিভব"], answer: "বর্তনী", explanation: "পাঠ-৬ অনুযায়ী, বিদ্যুৎপ্রবাহ চলার আবদ্ধ পথকে বর্তনী বলে।" },
+            { question: "একটি সরল বর্তনীতে সাধারণত কী কী থাকে?", options: ["শুধু বাল্ব ও তার", "শুধু ব্যাটারি ও তার", "ব্যাটারি, তার, সুইচ ও বাল্ব", "শুধু ব্যাটারি ও সুইচ"], answer: "ব্যাটারি, তার, সুইচ ও বাল্ব", explanation: "পাঠ-৬ এর চিত্র ও বর্ণনা অনুযায়ী একটি সরল বর্তনীতে বিদ্যুৎ উৎস (ব্যাটারি), পরিবাহী তার, নিয়ন্ত্রক (সুইচ) এবং লোড (বাল্ব) থাকে।" },
+            { question: "অবিরাম বিদ্যুৎপ্রবাহ পাওয়ার জন্য কী প্রয়োজন?", options: ["একটি আহিত বস্তু", "একটি বিদ্যুৎ উৎস", "একটি চুম্বক", "শুধু পরিবাহী তার"], answer: "একটি বিদ্যুৎ উৎস", explanation: "পাঠ-৫ অনুযায়ী, বিদ্যুৎপ্রবাহ বজায় রাখার জন্য কোনো উৎস থেকে অবিরাম বিদ্যুৎ সরবরাহ থাকতে হয়।" },
+            { question: "গ্রাফাইট অধাতু হলেও এটি বিদ্যুতের কীরূপ?", options: ["অপরিবাহী", "অর্ধপরিবাহী", "সুপরিবাহী", "অন্তরক"], answer: "সুপরিবাহী", explanation: "পাঠ-৪ এ উল্লেখ করা হয়েছে যে, কার্বন অধাতু হলেও এর একটি রূপ গ্রাফাইট বিদ্যুৎ সুপরিবাহী।" },
+            // পাঠ ৭-৮: চলবিদ্যুতের ব্যবহার (16-25)
+            { question: "বৈদ্যুতিক বাল্বের ফিলামেন্ট কোন ধাতু দিয়ে তৈরি?", options: ["তামা", "লোহা", "অ্যালুমিনিয়াম", "টাংস্টেন"], answer: "টাংস্টেন", explanation: "পাঠ-৭ এ বলা হয়েছে, বাল্বের ভিতরে তারের দুই প্রান্তের সাথে সরু টাংস্টেনের তারের কুণ্ডলী সংযুক্ত থাকে, যাকে ফিলামেন্ট বলে।" },
+            { question: "বৈদ্যুতিক বাল্ব আলো দেয় কেন?", options: ["ফিলামেন্ট উত্তপ্ত হয়ে আলো বিকিরণ করে", "ভিতরের গ্যাস জ্বলে ওঠে", "কাচ গরম হয়ে যায়", "বিদ্যুৎ সরাসরি আলোতে রূপান্তরিত হয়"], answer: "ফিলামেন্ট উত্তপ্ত হয়ে আলো বিকিরণ করে", explanation: "পাঠ-৭ অনুযায়ী, বিদ্যুৎ উৎসের সাথে সংযোগ করলে ফিলামেন্টে প্রচুর তাপ উৎপন্ন হয় এবং উত্তপ্ত হয়ে আলো বিকিরণ করতে থাকে।" },
+            { question: "বৈদ্যুতিক পাখাতে বিদ্যুৎশক্তি কোন শক্তিতে রূপান্তরিত হয়?", options: ["তাপশক্তি", "আলোকশক্তি", "যান্ত্রিকশক্তি", "রাসায়নিক শক্তি"], answer: "যান্ত্রিকশক্তি", explanation: "পাঠ-৭ এ বলা হয়েছে, বৈদ্যুতিক পাখাতে বিদ্যুৎশক্তিকে যান্ত্রিকশক্তিতে রূপান্তর করে পাখাকে ঘুরানো হয়।" },
+            { question: "বৈদ্যুতিক হিটার বা ইস্ত্রিতে কোন তারের কুণ্ডলী ব্যবহার করা হয়?", options: ["টাংস্টেন", "তামা", "নাইক্রোম", "অ্যালুমিনিয়াম"], answer: "নাইক্রোম", explanation: "পাঠ-৮ এ হিটার এবং ইস্ত্রির বর্ণনায় নাইক্রোম তারের কুণ্ডলী ব্যবহারের কথা বলা হয়েছে।" },
+            { question: "বৈদ্যুতিক ইস্ত্রিতে তাপ উৎপাদন কিসের উপর নির্ভরশীল?", options: ["ইস্ত্রির আকার", "বিদ্যুৎ প্রবাহের পরিমাণ", "ইস্ত্রির রঙ", "বায়ুচাপ"], answer: "বিদ্যুৎ প্রবাহের পরিমাণ", explanation: "পাঠ-৮ অনুযায়ী, এক্ষেত্রে তাপ উৎপাদন বিদ্যুৎ প্রবাহের উপর নির্ভরশীল। প্রবাহ বেশি হলে ইস্ত্রি বেশি উত্তপ্ত হয়।" },
+            // পাঠ ৯-১১: চুম্বক ও এর ধর্ম (26-40)
+            { question: "ম্যাগনেট বা চুম্বক নামটি কোন স্থান থেকে এসেছে বলে প্রচলিত আছে?", options: ["গ্রিসের ম্যাগনেশিয়া", "রোমের কলোসিয়াম", "চীনের বেইজিং", "মিশরের কায়রো"], answer: "গ্রিসের ম্যাগনেশিয়া", explanation: "পাঠ-৯ এ প্রচলিত কাহিনী অনুসারে, প্রাচীন গ্রিসের ম্যাগনেশিয়া প্রদেশে ম্যাগনাস নামক রাখালের মাধ্যমে আবিষ্কৃত হওয়ায় এর নাম ম্যাগনেট হয়।" },
+            { question: "একটি দণ্ড চুম্বকের আকর্ষণ ক্ষমতা কোথায় সবচেয়ে বেশি?", options: ["শুধু উত্তর মেরুতে", "শুধু দক্ষিণ মেরুতে", "মাঝখানে", "দুই প্রান্তে বা মেরুতে"], answer: "দুই প্রান্তে বা মেরুতে", explanation: "পাঠ-১০ এর কাজ থেকে দেখা যায়, চুম্বকের দুই প্রান্তে লোহার গুঁড়া সবচেয়ে বেশি আটকে থাকে, অর্থাৎ আকর্ষণ ক্ষমতা দুই প্রান্তে সবচেয়ে বেশি।" },
+            { question: "একটি চুম্বককে মুক্তভাবে ঝুলিয়ে দিলে এটি কোন দিকে মুখ করে স্থির থাকে?", options: ["পূর্ব-পশ্চিম", "উত্তর-দক্ষিণ", "যেকোনো দিকে", "ভূমির সমান্তরালে"], answer: "উত্তর-দক্ষিণ", explanation: "পাঠ-১০ এর পরীক্ষা অনুযায়ী, মুক্তভাবে ঝুলন্ত চুম্বক সর্বদা উত্তর-দক্ষিণমুখী হয়ে স্থির থাকে।" },
+            { question: "চুম্বকের দুটি সমমেরু পরস্পরকে কী করে?", options: ["আকর্ষণ করে", "বিকর্ষণ করে", "আকর্ষণ বা বিকর্ষণ করে না", "প্রথমে আকর্ষণ ও পরে বিকর্ষণ করে"], answer: "বিকর্ষণ করে", explanation: "পাঠ-১০ এর কাজ থেকে প্রমাণিত হয় যে, দুটি সমমেরু (উত্তর-উত্তর বা দক্ষিণ-দক্ষিণ) পরস্পরকে বিকর্ষণ করে।" },
+            { question: "চুম্বকের দুটি বিপরীত মেরু পরস্পরকে কী করে?", options: ["আকর্ষণ করে", "বিকর্ষণ করে", "আকর্ষণ বা বিকর্ষণ করে না", "প্রথমে বিকর্ষণ ও পরে আকর্ষণ করে"], answer: "আকর্ষণ করে", explanation: "পাঠ-১০ এর কাজ থেকে প্রমাণিত হয় যে, দুটি বিপরীত মেরু (উত্তর-দক্ষিণ) পরস্পরকে আকর্ষণ করে।" },
+            { question: "নিচের কোনটি চৌম্বক পদার্থ?", options: ["তামা", "কাঠ", "লোহা", "প্লাস্টিক"], answer: "লোহা", explanation: "পাঠ-১১ অনুযায়ী, চুম্বক প্রধানত লোহা, নিকেল, কোবাল্ট ইত্যাদি পদার্থকে আকর্ষণ করে, এদের চৌম্বক পদার্থ বলে।" },
+            { question: "নিচের কোনটি অচৌম্বক পদার্থ?", options: ["লোহা", "নিকেল", "কোবাল্ট", "পিতল"], answer: "পিতল", explanation: "পাঠ-১১ অনুযায়ী, তামা, অ্যালুমিনিয়াম, পিতল, কাঠ ইত্যাদি পদার্থকে চুম্বক আকর্ষণ করে না, এগুলো অচৌম্বক পদার্থ।" },
+            // পাঠ ১২-১৩: চুম্বকে রূপান্তর ও বৈদ্যুতিক চুম্বক (31-40)
+            { question: "একটি লোহার দণ্ডকে চুম্বকে পরিণত করার প্রক্রিয়াকে কী বলে?", options: ["চৌম্বক আবেশ", "চৌম্বকায়ন", "চৌম্বক ক্ষেত্র", "চৌম্বক বিকর্ষণ"], answer: "চৌম্বকায়ন", explanation: "একটি চৌম্বক পদার্থকে কৃত্রিম উপায়ে চুম্বকে পরিণত করার পদ্ধতিকে চৌম্বকায়ন বলে। যেমন ঘর্ষণ বা বৈদ্যুতিক পদ্ধতি।" },
+            { question: "ঘর্ষণ পদ্ধতিতে একটি দণ্ড চুম্বকের উত্তর মেরু দিয়ে লোহার দণ্ডের যে প্রান্তে ঘষা শেষ হয়, সেখানে কোন মেরুর সৃষ্টি হয়?", options: ["উত্তর মেরু", "দক্ষিণ মেরু", "কোনো মেরু সৃষ্টি হয় না", "উভয় মেরু"], answer: "দক্ষিণ মেরু", explanation: "পাঠ-১২ এর ঘর্ষণ পদ্ধতির বর্ণনা অনুযায়ী, যে মেরু দিয়ে ঘষা হয়, তার বিপরীত মেরু ঘর্ষণের শেষ প্রান্তে সৃষ্টি হয়।" },
+            { question: "বৈদ্যুতিক চুম্বক কীভাবে তৈরি করা হয়?", options: ["লোহার দণ্ডকে ঘষে", "তামার তারে বিদ্যুৎ প্রবাহিত করে", "একটি লোহার পেরেকের চারপাশে তার জড়িয়ে বিদ্যুৎ প্রবাহিত করে", "চুম্বককে উত্তপ্ত করে"], answer: "একটি লোহার পেরেকের চারপাশে তার জড়িয়ে বিদ্যুৎ প্রবাহিত করে", explanation: "পাঠ-১২ এর বৈদ্যুতিক পদ্ধতির বর্ণনা অনুযায়ী, একটি লোহার পেরেকে তার পেঁচিয়ে কুণ্ডলী তৈরি করে ব্যাটারির সাথে যুক্ত করলেই তা অস্থায়ী চুম্বকে পরিণত হয়।" },
+            { question: "বৈদ্যুতিক চুম্বকের প্রধান বৈশিষ্ট্য কী?", options: ["এটি স্থায়ী চুম্বক", "এটি খুব দুর্বল", "বিদ্যুৎ প্রবাহ বন্ধ করলে এর চুম্বকত্ব লোপ পায়", "এটি শুধু লোহাকে আকর্ষণ করে"], answer: "বিদ্যুৎ প্রবাহ বন্ধ করলে এর চুম্বকত্ব লোপ পায়", explanation: "পাঠ-১২ অনুযায়ী, তড়িৎ প্রবাহ বন্ধ করলে পেরেকটি আর আলপিনকে আকর্ষণ করে না, অর্থাৎ এটি একটি অস্থায়ী চুম্বক।" },
+            { question: "পৃথিবী একটি বিরাট চুম্বকের মতো আচরণ করে কেন?", options: ["এর মাধ্যাকর্ষণ শক্তির জন্য", "এর কেন্দ্রে থাকা গলিত ধাতুর পরিচলন স্রোতের জন্য", "সূর্যের আকর্ষণের জন্য", "এর ঘূর্ণনের জন্য"], answer: "এর কেন্দ্রে থাকা গলিত ধাতুর পরিচলন স্রোতের জন্য", explanation: "পৃথিবীর কেন্দ্রে থাকা গলিত লোহা ও নিকেলের পরিচলন স্রোতের কারণে একটি চৌম্বক ক্ষেত্র তৈরি হয়, যা পৃথিবীকে একটি বিশাল চুম্বকের মতো আচরণ করায়।" },
+            { question: "একটি ঝুলন্ত দণ্ড চুম্বকের উত্তর মেরু পৃথিবীর ভৌগোলিক উত্তর দিককে নির্দেশ করে। এর কারণ কী?", options: ["পৃথিবীর ভৌগোলিক উত্তর মেরু একটি চুম্বকীয় উত্তর মেরু", "পৃথিবীর ভৌগোলিক উত্তর মেরুর কাছে এর চুম্বকীয় দক্ষিণ মেরু অবস্থিত", "পৃথিবীর চৌম্বকক্ষেত্র নেই", "দণ্ড চুম্বকের ভরের জন্য"], answer: "পৃথিবীর ভৌগোলিক উত্তর মেরুর কাছে এর চুম্বকীয় দক্ষিণ মেরু অবস্থিত", explanation: "পাঠ-১৩ অনুযায়ী, একটি উত্তর মেরু সর্বদা দক্ষিণ মেরুকে আকর্ষণ করে। তাই দণ্ড চুম্বকের উত্তর মেরু পৃথিবীর ভৌগোলিক উত্তর দিকে মুখ করে থাকে, কারণ সেখানে ভূ-চুম্বকের দক্ষিণ মেরু অবস্থিত।" },
+            { question: "বৈদ্যুতিক চুম্বক কোথায় ব্যবহৃত হয়?", options: ["কম্পাস", "দরজার কলিং বেল", "স্থায়ী চুম্বক তৈরিতে", "খেলনা গাড়িতে"], answer: "দরজার কলিং বেল", explanation: "বৈদ্যুতিক কলিং বেল, ভারী বস্তু তোলার ক্রেন, মোটরের মতো যন্ত্রে অস্থায়ী বা বৈদ্যুতিক চুম্বক ব্যাপকভাবে ব্যবহৃত হয়।" },
+            { question: "২য় প্রকারের চুম্বকটি (বৈদ্যুতিক) শক্তিশালী হলেও ক্ষণস্থায়ী - উক্তিটি কেন সঠিক?", options: ["কারণ এটি বেশিক্ষণ বিদ্যুৎ পায় না", "কারণ বিদ্যুৎ প্রবাহের উপর এর শক্তি নির্ভর করে এবং প্রবাহ বন্ধে তা শেষ হয়", "কারণ এটি প্লাস্টিক দিয়ে তৈরি", "কারণ এটি আকারে ছোট"], answer: "কারণ বিদ্যুৎ প্রবাহের উপর এর শক্তি নির্ভর করে এবং প্রবাহ বন্ধে তা শেষ হয়", explanation: "সৃজনশীল প্রশ্ন-১ এর 'ঘ' অংশের আলোকে, বৈদ্যুতিক চুম্বকের শক্তি বিদ্যুৎ প্রবাহের উপর নির্ভরশীল, তাই একে ইচ্ছামতো শক্তিশালী করা যায়। কিন্তু প্রবাহ বন্ধ করলেই চুম্বকত্ব থাকে না, তাই এটি ক্ষণস্থায়ী।" }
+        ];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const overviewScreen = document.getElementById('overview-screen');
+        const startBtn = document.getElementById('start-btn');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerText = document.getElementById('timer-text');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const overviewTitle = document.getElementById('overview-title');
+        const overviewSummary = document.getElementById('overview-summary');
+        const overviewList = document.getElementById('overview-list');
+        const continueBtn = document.getElementById('continue-btn');
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const TIME_LIMIT = 25; // Timer set to 25 seconds as requested
+        let timeLeft = TIME_LIMIT;
+        let userAnswers = [];
+
+        // --- Data Persistence Functions ---
+        function saveQuizState() {
+            const state = {
+                currentQuestionIndex,
+                score,
+                userAnswers
+            };
+            localStorage.setItem('quizProgressElecMag', JSON.stringify(state));
+        }
+
+        function loadQuizState() {
+            const savedState = localStorage.getItem('quizProgressElecMag');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                currentQuestionIndex = state.currentQuestionIndex;
+                score = state.score;
+                userAnswers = state.userAnswers;
+                
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+
+        function clearQuizState() {
+            localStorage.removeItem('quizProgressElecMag');
+        }
+
+        // Check for saved data on page load
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('quizProgressElecMag');
+            if (savedData) {
+                const startButtonsContainer = document.querySelector('.start-buttons-container');
+                if(!document.getElementById('continue-saved-btn')){
+                    const continueSavedBtn = document.createElement('button');
+                    continueSavedBtn.id = 'continue-saved-btn';
+                    continueSavedBtn.className = 'btn continue-btn';
+                    continueSavedBtn.textContent = 'আগেরটি চালিয়ে যান';
+                    startButtonsContainer.appendChild(continueSavedBtn);
+                    
+                    continueSavedBtn.addEventListener('click', loadQuizState);
+                }
+            }
+        });
+
+        // --- Core Quiz Functions ---
+
+        startBtn.addEventListener('click', startGame);
+        continueBtn.addEventListener('click', continueQuiz);
+
+        function startGame() {
+            clearQuizState();
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            scoreDisplay.textContent = 'স্কোর: 0';
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            resetState();
+            
+            progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+
+            if(currentQuestionIndex >= questions.length){
+                showOverview(true); 
+                return;
+            }
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionCounter.textContent = `প্রশ্ন ${currentQuestionIndex + 1}/${questions.length}`;
+            questionText.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(button, option));
+                optionsContainer.appendChild(button);
+            });
+            startTimer();
+        }
+        
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerText.textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    selectAnswer(null, null); 
+                }
+            }, 1000);
+        }
+
+        function resetState() {
+            clearInterval(timer);
+            optionsContainer.innerHTML = '';
+        }
+        
+        function selectAnswer(selectedButton, selectedOption) {
+            clearInterval(timer);
+            const correctOption = questions[currentQuestionIndex].answer;
+            const isCorrect = selectedOption === correctOption;
+            
+            userAnswers.push({
+                question: questions[currentQuestionIndex].question,
+                yourAnswer: selectedOption === null ? 'সময় শেষ' : selectedOption,
+                correctAnswer: correctOption,
+                explanation: questions[currentQuestionIndex].explanation,
+                isCorrect: isCorrect,
+            });
+
+            Array.from(optionsContainer.children).forEach(button => {
+                if(button.textContent === correctOption) button.classList.add('correct');
+                if(button === selectedButton && !isCorrect) button.classList.add('incorrect');
+                button.disabled = true;
+            });
+            
+            if (isCorrect) {
+                score++;
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+            }
+
+            saveQuizState(); // Save progress after each answer
+
+            setTimeout(handleNext, 1500);
+        }
+
+        function handleNext(){
+            currentQuestionIndex++;
+            if(currentQuestionIndex % 10 === 0 && currentQuestionIndex > 0) {
+                showOverview(currentQuestionIndex === questions.length);
+            } else {
+                 loadQuestion();
+            }
+        }
+
+        function showOverview(isFinal) {
+            showScreen('overview-screen');
+            if (isFinal) {
+                clearQuizState(); // Clear data when quiz is finished
+                 const continueSavedBtn = document.getElementById('continue-saved-btn');
+                if (continueSavedBtn) {
+                    continueSavedBtn.remove();
+                }
+            }
+
+            let start = Math.floor((currentQuestionIndex -1) / 10) * 10;
+            let end = currentQuestionIndex;
+
+            overviewTitle.textContent = isFinal ? 'চূড়ান্ত ফলাফল' : `পার্ট ${end/10} এর সারসংক্ষেপ`;
+            
+            overviewList.innerHTML = '';
+            // Display only the last 10 answers in the intermediate overview
+            const startIndex = isFinal ? 0 : start;
+            for(let i = startIndex; i < end; i++){
+                const answer = userAnswers[i];
+                const item = document.createElement('div');
+                item.classList.add('overview-item');
+                const statusIcon = answer.isCorrect ? '✔' : '✖';
+                const statusClass = answer.isCorrect ? 'status-correct' : 'status-incorrect';
+                
+                item.innerHTML = `
+                    <div class="overview-status ${statusClass}">${statusIcon}</div>
+                    <p class="question"><strong>প্রশ্ন ${i + 1}:</strong> ${answer.question}</p>
+                    <p><strong>তোমার উত্তর:</strong> ${answer.yourAnswer}</p>
+                    <p><strong>সঠিক উত্তর:</strong> ${answer.correctAnswer}</p>
+                    <p class="explanation"><strong>ব্যাখ্যা:</strong> ${answer.explanation}</p>
+                `;
+                overviewList.prepend(item);
+            }
+            
+            overviewSummary.innerHTML = `
+                <span class="summary-correct">✔ মোট সঠিক: ${score}</span>
+                <span class="summary-incorrect">✖ মোট ভুল: ${currentQuestionIndex - score}</span>
+            `;
+            
+            if(isFinal) {
+                continueBtn.textContent = 'পুনরায় খেলুন';
+            } else {
+                continueBtn.textContent = 'পরবর্তী ধাপে যান';
+            }
+        }
+
+        function continueQuiz() {
+            if (currentQuestionIndex >= questions.length) {
+                // Instead of reloading, just go back to the start screen for a smoother experience
+                clearQuizState();
+                const continueSavedBtn = document.getElementById('continue-saved-btn');
+                if (continueSavedBtn) {
+                    continueSavedBtn.remove();
+                }
+                showScreen('start-screen');
+            } else {
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>পারিপার্শ্বিক পরিবর্তন ও বিভিন্ন ঘটনা কুইজ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&family=Poppins:wght@600&display=swap');
+
+        :root {
+            --primary-bg: #16a085; /* Green theme for environment */
+            --secondary-bg: #1abc9c;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-color: #333;
+            --accent-color: #f39c12;
+            --correct-color: #2ecc71;
+            --incorrect-color: #e74c3c;
+            --light-gray: #f0f0f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --border-radius: 15px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary-bg);
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--primary-bg);
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .start-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), #f1c40f);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(243, 156, 18, 0.6);
+        }
+        
+        .btn.continue-btn {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+             box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+        .btn.continue-btn:hover {
+             box-shadow: 0 7px 20px rgba(52, 152, 219, 0.6);
+        }
+
+
+        #quiz-screen .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        #question-counter, #score-display {
+             background: var(--light-gray);
+             padding: 8px 15px;
+             border-radius: 20px;
+        }
+
+        #timer {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-bg);
+        }
+        
+        #progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--correct-color), var(--accent-color));
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+        }
+        
+        #question-text {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            min-height: 80px;
+        }
+        
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .option-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1em;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--light-gray);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-bg);
+            background-color: #f0fff8;
+            transform: scale(1.02);
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-color);
+            color: white;
+            border-color: var(--incorrect-color);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        #overview-screen h2 { margin-bottom: 10px; }
+        #overview-summary { font-size: 1.2em; font-weight: bold; margin-bottom: 25px; background: var(--light-gray); padding: 15px; border-radius: 10px; display: flex; justify-content: center; gap: 30px; }
+        .summary-correct { color: var(--correct-color); }
+        .summary-incorrect { color: var(--incorrect-color); }
+        #overview-list { max-height: 40vh; overflow-y: auto; text-align: left; margin-bottom: 25px; }
+        .overview-item { background: #fff; border: 1px solid var(--light-gray); border-radius: 10px; padding: 15px; margin-bottom: 10px; position: relative; padding-right: 40px; }
+        .overview-item p { margin-bottom: 8px; font-size: 1em; }
+        .overview-item .question { font-weight: bold; }
+        .overview-item .explanation { font-size: 0.9em; color: #555; background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 5px; }
+        .overview-status { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); font-size: 2em; }
+        .status-correct { color: var(--correct-color); }
+        .status-incorrect { color: var(--incorrect-color); }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
+            #question-text { font-size: 1.2em; min-height: 70px; }
+            #options-container { grid-template-columns: 1fr; }
+            .option-btn { padding: 15px; font-size: 1em; }
+            #quiz-screen .header { flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>পারিপার্শ্বিক পরিবর্তন ও বিভিন্ন ঘটনা কুইজ</h1>
+            <p>এই অধ্যায়ের উপর আপনার দক্ষতা যাচাই করুন। প্রতিটি প্রশ্নের জন্য সময় পাবেন ২৫ সেকেন্ড।</p>
+            <p><strong>মোট ৫০টি প্রশ্ন</strong></p>
+            <div class="start-buttons-container">
+                <button id="start-btn" class="btn">নতুন কুইজ শুরু করুন</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div id="question-counter"></div>
+                <div id="timer">
+                    <span id="timer-text">25</span>
+                </div>
+                <div id="score-display">স্কোর: 0</div>
+            </div>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="question-text"></div>
+            <div id="options-container"></div>
+        </div>
+        
+        <!-- Overview Screen -->
+        <div id="overview-screen" class="screen">
+            <h2 id="overview-title"></h2>
+            <div id="overview-summary"></div>
+            <div id="overview-list"></div>
+            <button id="continue-btn" class="btn continue-btn"></button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // পাঠ ১: ভৌত পরিবর্তন
+            { question: "বরফ গলে পানি হওয়া কী ধরনের পরিবর্তন?", options: ["রাসায়নিক পরিবর্তন", "ভৌত পরিবর্তন", "তাপীয় পরিবর্তন", "অবস্থার পরিবর্তন নয়"], answer: "ভৌত পরিবর্তন", explanation: "পাঠ-১ অনুযায়ী, বরফ গলে পানি হলে শুধু অবস্থার পরিবর্তন হয় কিন্তু পদার্থের উপাদানের কোনো পরিবর্তন হয় না, তাই এটি ভৌত পরিবর্তন।" },
+            { question: "নিচের কোনটি ভৌত পরিবর্তনের উদাহরণ?", options: ["লোহায় মরিচা পড়া", "কাগজ পুড়ানো", "কাগজ কেটে টুকরা করা", "দুধ থেকে দই হওয়া"], answer: "কাগজ কেটে টুকরা করা", explanation: "পাঠ-১ অনুসারে, কাগজ কেটে টুকরো করলে শুধু আকার ছোট হয়, কিন্তু পদার্থটি কাগজই থেকে যায়, তাই এটি ভৌত পরিবর্তন।" },
+            { question: "ভৌত পরিবর্তনে পদার্থের কোনটির পরিবর্তন ঘটে?", options: ["উপাদান", "ধর্ম", "অবস্থা বা আকার-আকৃতি", "পারমাণবিক গঠন"], answer: "অবস্থা বা আকার-আকৃতি", explanation: "পাঠ-১ এর সংজ্ঞা অনুযায়ী, ভৌত পরিবর্তনে সংশ্লিষ্ট পদার্থের অবস্থা বা আকার-আকৃতির পরিবর্তন ঘটে, কিন্তু উপাদানের কোনো পরিবর্তন হয় না।" },
+            { question: "পানির স্ফুটন বা বাষ্পীভবন একটি ভৌত পরিবর্তন কেন?", options: ["এতে নতুন পদার্থ তৈরি হয়", "পানি তরল থেকে গ্যাসীয় অবস্থায় রূপান্তরিত হয়", "পানির ধর্ম বদলে যায়", "এতে তাপের শোষণ হয়"], answer: "পানি তরল থেকে গ্যাসীয় অবস্থায় রূপান্তরিত হয়", explanation: "পাঠ-১ অনুযায়ী, পানি ফুটে বাষ্পে পরিণত হলে তা শুধু তরল থেকে গ্যাসীয় অবস্থায় যায়, কোনো নতুন পদার্থ তৈরি হয় না। তাই এটি ভৌত পরিবর্তন।" },
+            // পাঠ ২: রাসায়নিক পরিবর্তন (ধাতুর ক্ষয়)
+            { question: "লোহায় মরিচা পড়া কী ধরনের পরিবর্তন?", options: ["ভৌত পরিবর্তন", "রাসায়নিক পরিবর্তন", "উভমুখী পরিবর্তন", "কোনোটিই নয়"], answer: "রাসায়নিক পরিবর্তন", explanation: "পাঠ-২ অনুযায়ী, লোহা বাতাসের অক্সিজেন ও পানির সাথে বিক্রিয়া করে ভিন্ন ধর্মী নতুন পদার্থ (পানিযুক্ত ফেরিক অক্সাইড) তৈরি করে, তাই এটি রাসায়নিক পরিবর্তন।" },
+            { question: "রাসায়নিক পরিবর্তনে কী ঘটে?", options: ["শুধু অবস্থার পরিবর্তন হয়", "এক বা একাধিক পদার্থ ভিন্নধর্মী নতুন পদার্থে পরিণত হয়", "শুধু আকার পরিবর্তন হয়", "কোনো নতুন পদার্থ তৈরি হয় না"], answer: "এক বা একাধিক পদার্থ ভিন্নধর্মী নতুন পদার্থে পরিণত হয়", explanation: "পাঠ-২ এর সংজ্ঞা অনুযায়ী, যে পরিবর্তনে এক বা একাধিক পদার্থ পরিবর্তিত হয়ে ভিন্নধর্মী নতুন পদার্থে পরিণত হয়, তাকে রাসায়নিক পরিবর্তন বলে।" },
+            { question: "মরিচার রাসায়নিক পরিচয় কী?", options: ["ফেরাস অক্সাইড", "পানিযুক্ত ফেরিক অক্সাইড", "আয়রন কার্বনেট", "শুধু আয়রন"], answer: "পানিযুক্ত ফেরিক অক্সাইড", explanation: "পাঠ-২ এ বলা হয়েছে, লোহা বাতাসের অক্সিজেন ও পানির সাথে বিক্রিয়া করে পানিযুক্ত ফেরিক অক্সাইড তৈরি করে, যা মরিচা নামে পরিচিত।" },
+            { question: "কোন ধাতুটি খোলা বাতাসে রাখলেও ক্ষয় হয় না?", options: ["লোহা", "তামা", "সোনা", "অ্যালুমিনিয়াম"], answer: "সোনা", explanation: "পাঠ-২ অনুসারে, সোনা, প্লাটিনাম ইত্যাদি ধাতব পদার্থ খোলা বাতাসে রাখলেও ক্ষয় হয় না, তাই এগুলো গহনা তৈরিতে ব্যবহৃত হয়।" },
+            // পাঠ ৩: স্টেইনলেস স্টিল ও ধাতুর ক্ষয়রোধ
+            { question: "স্টেইনলেস স্টিল কী?", options: ["একটি বিশুদ্ধ লোহা", "একটি অধাতু", "লোহার একটি সংকর বা মিশ্রণ", "একটি রাসায়নিক যৌগ"], answer: "লোহার একটি সংকর বা মিশ্রণ", explanation: "পাঠ-৩ অনুযায়ী, স্টেইনলেস স্টিল হলো লোহার সাথে কার্বন, নিকেল ও ক্রোমিয়ামের মিশ্রণ, যা লোহার চেয়ে মজবুত এবং এতে মরিচা পড়ে না।" },
+            { question: "লোহার তৈরি বস্তুর উপর দস্তার পাতলা আস্তরণ দেওয়াকে কী বলে?", options: ["পেইন্টিং", "ইলেকট্রোপ্লেটিং", "গ্যালভানাইজিং", "সংকরকরণ"], answer: "গ্যালভানাইজিং", explanation: "পাঠ-৩ এ বলা হয়েছে, লোহার তৈরি দ্রব্যসামগ্রীর উপর দস্তার পাতলা আস্তরণ দেওয়াকে গ্যালভানাইজেশন বা গ্যালভানাইজিং বলে।" },
+            { question: "তড়িৎ বিশ্লেষণের সাহায্যে একটি ধাতুর উপর আরেকটি ধাতুর পাতলা আবরণ তৈরির প্রক্রিয়াকে কী বলে?", options: ["গ্যালভানাইজিং", "পেইন্টিং", "দহন", "ইলেকট্রোপ্লেটিং"], answer: "ইলেকট্রোপ্লেটিং", explanation: "পাঠ-৩ অনুযায়ী, ইলেকট্রোপ্লেটিং হলো তড়িৎ বিশ্লেষণের সাহায্যে একটি ধাতুর উপর আরেকটি ধাতুর (যেমন নিকেল, ক্রোমিয়াম) পাতলা আবরণ তৈরির প্রক্রিয়া।" },
+            { question: "গাড়ির বডিতে রং করা হয় কেন?", options: ["গাড়িকে ভারী করতে", "ধাতুর ক্ষয় রোধ করতে", "বিদ্যুৎ সুপরিবাহী করতে", "চুম্বকীয় ধর্ম দিতে"], answer: "ধাতুর ক্ষয় রোধ করতে", explanation: "পাঠ-৩ এ পেইন্টিং এর বর্ণনায় বলা হয়েছে, বাসার রেফ্রিজারেটর, গাড়ি, স্টিলের আসবাবপত্র ইত্যাদির ক্ষয় রোধ করার জন্য পেইন্ট দিয়ে রং করা হয়।" },
+            // পাঠ ৪: দহন
+            { question: "মোমবাতির দহনের সময় মোম গলে নিচে পড়া কী ধরনের পরিবর্তন?", options: ["রাসায়নিক পরিবর্তন", "ভৌত পরিবর্তন", "উভমুখী পরিবর্তন", "কোনো পরিবর্তন নয়"], answer: "ভৌত পরিবর্তন", explanation: "পাঠ-৪ অনুযায়ী, তাপে মোম গলে তরল হয় কিন্তু এর ধর্মের কোনো পরিবর্তন হয় না, শুধু অবস্থার পরিবর্তন হয়। তাই এটি একটি ভৌত পরিবর্তন।" },
+            { question: "মোমবাতির সলতেতে আগুন জ্বলার ঘটনাটি কী ধরনের পরিবর্তন?", options: ["শুধু ভৌত পরিবর্তন", "রাসায়নিক পরিবর্তন", "অবস্থার পরিবর্তন", "কোনো পরিবর্তন নয়"], answer: "রাসায়নিক পরিবর্তন", explanation: "পাঠ-৪ অনুযায়ী, মোম বাতাসের অক্সিজেনের সাথে বিক্রিয়া করে কার্বন ডাইঅক্সাইড, পানি, আলো ও তাপশক্তি উৎপন্ন করে। এটি একটি রাসায়নিক পরিবর্তন, যাকে দহন বলে।" },
+            { question: "দহন প্রক্রিয়ায় কোনো পদার্থ কিসের সাথে বিক্রিয়া করে?", options: ["পানি", "নাইট্রোজেন", "অক্সিজেন", "কার্বন ডাইঅক্সাইড"], answer: "অক্সিজেন", explanation: "পাঠ-৪ অনুসারে, দহন হলো এমন একটি রাসায়নিক পরিবর্তন যেখানে কোনো বস্তু বাতাসের অক্সিজেনের সাথে বিক্রিয়া করে তাপশক্তি উৎপন্ন করে।" },
+            { question: "দেহে খাদ্য ভেঙে শক্তি উৎপন্ন হওয়া কোন ধরনের প্রক্রিয়া?", options: ["গলন", "বাষ্পীভবন", "দহন", "ঘনীভবন"], answer: "দহন", explanation: "পাঠ-৪ এ বলা হয়েছে, আমরা যে খাবার খাই তা দেহকোষে ভেঙে প্রচুর তাপশক্তি উৎপন্ন করে। এই প্রক্রিয়াটিও এক ধরনের দহন।" },
+            // পাঠ ৫-৬: প্রাকৃতিক চক্র ও পরিবর্তন
+            { question: "সালোকসংশ্লেষণ প্রক্রিয়ায় কোন শক্তি কোন শক্তিতে রূপান্তরিত হয়?", options: ["তাপ শক্তি থেকে আলোক শক্তি", "আলোক শক্তি থেকে রাসায়নিক শক্তি", "রাসায়নিক শক্তি থেকে আলোক শক্তি", "বিদ্যুৎ শক্তি থেকে তাপ শক্তি"], answer: "আলোক শক্তি থেকে রাসায়নিক শক্তি", explanation: "সালোকসংশ্লেষণে উদ্ভিদ সূর্যের আলোক শক্তি ব্যবহার করে কার্বন ডাইঅক্সাইড ও পানিকে রাসায়নিক শক্তি সমৃদ্ধ গ্লুকোজে পরিণত করে।" },
+            { question: "সালোকসংশ্লেষণ কী ধরনের পরিবর্তন?", options: ["ভৌত পরিবর্তন", "রাসায়নিক পরিবর্তন", "উভমুখী পরিবর্তন", "পারমাণবিক পরিবর্তন"], answer: "রাসায়নিক পরিবর্তন", explanation: "পাঠ-৫ অনুযায়ী, সালোকসংশ্লেষণে উৎপন্ন পদার্থ (গ্লুকোজ ও অক্সিজেন) বিক্রিয়ক পদার্থ (কার্বন ডাইঅক্সাইড ও পানি) থেকে সম্পূর্ণ ভিন্নধর্মী, তাই এটি রাসায়নিক পরিবর্তন।" },
+            { question: "পানিচক্রে জলীয়বাষ্প ঠাণ্ডা হয়ে মেঘে পরিণত হওয়াকে কী বলে?", options: ["বাষ্পীভবন", "ঘনীভবন", "কঠিনীভবন", "গলন"], answer: "ঘনীভবন", explanation: "পাঠ-৬ অনুযায়ী, জলীয়বাষ্প ঘনীভূত হয়ে পানির ছোট ছোট কণা বা মেঘে পরিণত হওয়ার প্রক্রিয়াকে ঘনীভবন বলে এবং এটি একটি ভৌত পরিবর্তন।" },
+            { question: "পানিচক্রে জড়িত কোনটি রাসায়নিক পরিবর্তন নয়?", options: ["বাষ্পীভবন", "ঘনীভবন", "কঠিনীভবন", "সবগুলোই"], answer: "সবগুলোই", explanation: "পাঠ-৬ এ স্পষ্টভাবে বলা হয়েছে বাষ্পীভবন, ঘনীভবন ও কঠিনীভবন – এই তিনটিই ভৌত পরিবর্তন, কারণ এতে পানির শুধু অবস্থার পরিবর্তন হয়।" },
+            { question: "উদ্ভিদ বা প্রাণীদেহ থেকে জীবাশ্ম জ্বালানি তৈরি হওয়া কী ধরনের পরিবর্তন?", options: ["ভৌত পরিবর্তন", "রাসায়নিক পরিবর্তন", "চক্রীয় পরিবর্তন", "অবস্থার পরিবর্তন"], answer: "রাসায়নিক পরিবর্তন", explanation: "পাঠ-৬ এর কার্বনচক্র অংশে বলা হয়েছে, উদ্ভিদ বা প্রাণীদেহ থেকে জীবাশ্ম জ্বালানি তৈরি হওয়ার প্রক্রিয়াটি একটি রাসায়নিক পরিবর্তন।" },
+            { question: "অক্সিজেন চক্রে প্রাণীরা শ্বাস-প্রশ্বাসের মাধ্যমে কী গ্রহণ ও ত্যাগ করে?", options: ["O₂ গ্রহণ, CO₂ ত্যাগ", "CO₂ গ্রহণ, O₂ ত্যাগ", "N₂ গ্রহণ, O₂ ত্যাগ", "O₂ গ্রহণ, N₂ ত্যাগ"], answer: "O₂ গ্রহণ, CO₂ ত্যাগ", explanation: "পাঠ-৬ এর অক্সিজেন চক্রের চিত্র অনুযায়ী, মানুষসহ অন্য প্রাণীরা শ্বাসকার্যের জন্য অক্সিজেন (O₂) গ্রহণ করে এবং কার্বন ডাইঅক্সাইড (CO₂) ত্যাগ করে।" },
+            // পাঠ ৭-১০: রাসায়নিক বিক্রিয়া ও শিলা গঠন
+            { question: "ম্যাগনেসিয়াম রিবন বাতাসে পোড়ালে কী উৎপন্ন হয়?", options: ["ম্যাগনেসিয়াম কার্বনেট", "ম্যাগনেসিয়াম ক্লোরাইড", "ম্যাগনেসিয়াম অক্সাইড", "শুধু ছাই"], answer: "ম্যাগনেসিয়াম অক্সাইড", explanation: "পাঠ ৭-৮ এর পরীক্ষা অনুযায়ী, ম্যাগনেসিয়াম বাতাসের অক্সিজেনে পুড়ে ছাই-এর মতো ম্যাগনেসিয়াম অক্সাইড তৈরি করে।" },
+            { question: "চকের গুঁড়া বা ক্যালসিয়াম কার্বোনেটের সাথে হাইড্রোক্লোরিক এসিডের বিক্রিয়ায় কোন গ্যাস উৎপন্ন হয়?", options: ["অক্সিজেন", "হাইড্রোজেন", "নাইট্রোজেন", "কার্বন ডাইঅক্সাইড"], answer: "কার্বন ডাইঅক্সাইড", explanation: "পাঠ ৭-৮ এর পরীক্ষায় দেখানো হয়েছে, চকের গুঁড়া (ক্যালসিয়াম কার্বোনেট) ও এসিডের বিক্রিয়ায় বুদবুদ আকারে কার্বন ডাইঅক্সাইড গ্যাস উৎপন্ন হয়।" },
+            { question: "ধাতু ও এসিডের বিক্রিয়ায় উৎপন্ন হাইড্রোজেন গ্যাস কীভাবে শনাক্ত করা যায়?", options: ["গ্যাসটি চুনের পানি ঘোলা করে", "গ্যাসের ঝাঁঝালো গন্ধ থাকে", "এর কাছে জ্বলন্ত কাঠি ধরলে পপ শব্দ করে জ্বলে", "এটি রঙিন"], answer: "এর কাছে জ্বলন্ত কাঠি ধরলে পপ শব্দ করে জ্বলে", explanation: "পাঠ ৯-১০ এর পরীক্ষা অনুযায়ী, টেস্টটিউবের মুখে জ্বলন্ত দিয়াশলাই ধরলে হাইড্রোজেন গ্যাস 'পপ' শব্দ করে জ্বলে ওঠে।" },
+            { question: "উত্তপ্ত ও গলিত ম্যাগমা ঠাণ্ডা হয়ে কোন শিলা গঠিত হয়?", options: ["পাললিক শিলা", "রূপান্তরিত শিলা", "আগ্নেয় শিলা", "জীবাশ্ম শিলা"], answer: "আগ্নেয় শিলা", explanation: "পাঠ ৯-১০ অনুযায়ী, ভূ-গর্ভের উত্তপ্ত ও গলিত শিলা বা ম্যাগমা ঠাণ্ডা হয়ে কঠিন শিলায় পরিণত হয়, যাকে আগ্নেয় শিলা বলে।" },
+            { question: "আগ্নেয় শিলার গঠন প্রক্রিয়া কোন ধরনের পরিবর্তন?", options: ["রাসায়নিক পরিবর্তন", "ভৌত পরিবর্তন", "জৈব-রাসায়নিক পরিবর্তন", "রূপান্তরিত পরিবর্তন"], answer: "ভৌত পরিবর্তন", explanation: "পাঠ ৯-১০ এ উল্লেখ করা হয়েছে, উত্তপ্ত ম্যাগমা ঠান্ডা হয়ে কঠিন আগ্নেয় শিলায় পরিণত হয়, যা নতুন পদার্থ সৃষ্টি করে না। এটি জলীয়বাষ্প থেকে পানি তৈরির মতো একটি ভৌত পরিবর্তন।" },
+            { question: "পাললিক শিলার গঠন প্রক্রিয়া কী ধরনের পরিবর্তন?", options: ["শুধুমাত্র ভৌত পরিবর্তন", "রাসায়নিক পরিবর্তন", "কেন্দ্রীয় পরিবর্তন", "কোনো পরিবর্তন নয়"], answer: "রাসায়নিক পরিবর্তন", explanation: "পাঠ ৯-১০ অনুযায়ী, জমাকৃত পলির উপর চাপ ও তাপে নানা রকম রাসায়নিক বিক্রিয়ার ফলে পাললিক শিলা গঠিত হয়, তাই এর গঠন প্রক্রিয়া রাসায়নিক পরিবর্তন।" },
+            { question: "চুনাপাথর (পাললিক শিলা) রূপান্তরিত হয়ে কীসে পরিণত হয়?", options: ["বেলে পাথর", "কয়লা", "মার্বেল", "গ্রানাইট"], answer: "মার্বেল", explanation: "পাঠ ৯-১০ এ রূপান্তরিত শিলার উদাহরণ হিসেবে চুনাপাথর থেকে মার্বেল তৈরির কথা বলা হয়েছে।" },
+            { question: "রূপান্তরিত শিলার গঠন একটি রাসায়নিক পরিবর্তন কেন?", options: ["এটি দেখতে সুন্দর হয়", "এর ধর্ম মূল শিলা থেকে আলাদা হয়", "এটি মাটির অনেক গভীরে থাকে", "এটি খুব শক্ত হয়"], answer: "এর ধর্ম মূল শিলা থেকে আলাদা হয়", explanation: "পাঠ ৯-১০ অনুযায়ী, রূপান্তরিত শিলার ধর্ম মূল শিলা থেকে আলাদা হওয়ায় এবং রূপান্তরের সময় রাসায়নিক বিক্রিয়া জড়িত থাকায় এটি একটি রাসায়নিক পরিবর্তন।" }
+        ];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const overviewScreen = document.getElementById('overview-screen');
+        const startBtn = document.getElementById('start-btn');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerText = document.getElementById('timer-text');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const overviewTitle = document.getElementById('overview-title');
+        const overviewSummary = document.getElementById('overview-summary');
+        const overviewList = document.getElementById('overview-list');
+        const continueBtn = document.getElementById('continue-btn');
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const TIME_LIMIT = 25; // Timer set to 25 seconds as requested
+        let timeLeft = TIME_LIMIT;
+        let userAnswers = [];
+
+        // --- Data Persistence Functions ---
+        function saveQuizState() {
+            const state = {
+                currentQuestionIndex,
+                score,
+                userAnswers
+            };
+            localStorage.setItem('quizProgressChanges', JSON.stringify(state));
+        }
+
+        function loadQuizState() {
+            const savedState = localStorage.getItem('quizProgressChanges');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                currentQuestionIndex = state.currentQuestionIndex;
+                score = state.score;
+                userAnswers = state.userAnswers;
+                
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+
+        function clearQuizState() {
+            localStorage.removeItem('quizProgressChanges');
+        }
+
+        // Check for saved data on page load
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('quizProgressChanges');
+            if (savedData) {
+                const startButtonsContainer = document.querySelector('.start-buttons-container');
+                if(!document.getElementById('continue-saved-btn')){
+                    const continueSavedBtn = document.createElement('button');
+                    continueSavedBtn.id = 'continue-saved-btn';
+                    continueSavedBtn.className = 'btn continue-btn';
+                    continueSavedBtn.textContent = 'আগেরটি চালিয়ে যান';
+                    startButtonsContainer.appendChild(continueSavedBtn);
+                    
+                    continueSavedBtn.addEventListener('click', loadQuizState);
+                }
+            }
+        });
+
+        // --- Core Quiz Functions ---
+
+        startBtn.addEventListener('click', startGame);
+        continueBtn.addEventListener('click', continueQuiz);
+
+        function startGame() {
+            clearQuizState();
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            scoreDisplay.textContent = 'স্কোর: 0';
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            resetState();
+            
+            progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+
+            if(currentQuestionIndex >= questions.length){
+                showOverview(true); 
+                return;
+            }
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionCounter.textContent = `প্রশ্ন ${currentQuestionIndex + 1}/${questions.length}`;
+            questionText.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(button, option));
+                optionsContainer.appendChild(button);
+            });
+            startTimer();
+        }
+        
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerText.textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    selectAnswer(null, null); 
+                }
+            }, 1000);
+        }
+
+        function resetState() {
+            clearInterval(timer);
+            optionsContainer.innerHTML = '';
+        }
+        
+        function selectAnswer(selectedButton, selectedOption) {
+            clearInterval(timer);
+            const correctOption = questions[currentQuestionIndex].answer;
+            const isCorrect = selectedOption === correctOption;
+            
+            userAnswers.push({
+                question: questions[currentQuestionIndex].question,
+                yourAnswer: selectedOption === null ? 'সময় শেষ' : selectedOption,
+                correctAnswer: correctOption,
+                explanation: questions[currentQuestionIndex].explanation,
+                isCorrect: isCorrect,
+            });
+
+            Array.from(optionsContainer.children).forEach(button => {
+                if(button.textContent === correctOption) button.classList.add('correct');
+                if(button === selectedButton && !isCorrect) button.classList.add('incorrect');
+                button.disabled = true;
+            });
+            
+            if (isCorrect) {
+                score++;
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+            }
+
+            saveQuizState(); // Save progress after each answer
+
+            setTimeout(handleNext, 1500);
+        }
+
+        function handleNext(){
+            currentQuestionIndex++;
+            if(currentQuestionIndex % 10 === 0 && currentQuestionIndex > 0) {
+                showOverview(currentQuestionIndex === questions.length);
+            } else {
+                 loadQuestion();
+            }
+        }
+
+        function showOverview(isFinal) {
+            showScreen('overview-screen');
+            if (isFinal) {
+                clearQuizState(); // Clear data when quiz is finished
+                 const continueSavedBtn = document.getElementById('continue-saved-btn');
+                if (continueSavedBtn) {
+                    continueSavedBtn.remove();
+                }
+            }
+
+            let start = Math.floor((currentQuestionIndex -1) / 10) * 10;
+            let end = currentQuestionIndex;
+
+            overviewTitle.textContent = isFinal ? 'চূড়ান্ত ফলাফল' : `পার্ট ${end/10} এর সারসংক্ষেপ`;
+            
+            overviewList.innerHTML = '';
+            // Display only the last 10 answers in the intermediate overview
+            const startIndex = isFinal ? 0 : start;
+            for(let i = startIndex; i < end; i++){
+                const answer = userAnswers[i];
+                const item = document.createElement('div');
+                item.classList.add('overview-item');
+                const statusIcon = answer.isCorrect ? '✔' : '✖';
+                const statusClass = answer.isCorrect ? 'status-correct' : 'status-incorrect';
+                
+                item.innerHTML = `
+                    <div class="overview-status ${statusClass}">${statusIcon}</div>
+                    <p class="question"><strong>প্রশ্ন ${i + 1}:</strong> ${answer.question}</p>
+                    <p><strong>তোমার উত্তর:</strong> ${answer.yourAnswer}</p>
+                    <p><strong>সঠিক উত্তর:</strong> ${answer.correctAnswer}</p>
+                    <p class="explanation"><strong>ব্যাখ্যা:</strong> ${answer.explanation}</p>
+                `;
+                overviewList.prepend(item);
+            }
+            
+            overviewSummary.innerHTML = `
+                <span class="summary-correct">✔ মোট সঠিক: ${score}</span>
+                <span class="summary-incorrect">✖ মোট ভুল: ${currentQuestionIndex - score}</span>
+            `;
+            
+            if(isFinal) {
+                continueBtn.textContent = 'পুনরায় খেলুন';
+            } else {
+                continueBtn.textContent = 'পরবর্তী ধাপে যান';
+            }
+        }
+
+        function continueQuiz() {
+            if (currentQuestionIndex >= questions.length) {
+                // Instead of reloading, just go back to the start screen for a smoother experience
+                clearQuizState();
+                const continueSavedBtn = document.getElementById('continue-saved-btn');
+                if (continueSavedBtn) {
+                    continueSavedBtn.remove();
+                }
+                showScreen('start-screen');
+            } else {
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+    </script>
+</body>
+</html>

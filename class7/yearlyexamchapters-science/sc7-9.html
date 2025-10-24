@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>তাপ ও তাপমাত্রা কুইজ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&family=Poppins:wght@600&display=swap');
+
+        :root {
+            --primary-bg: #f39c12; /* Orange/Yellow theme for heat */
+            --secondary-bg: #f1c40f;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-color: #333;
+            --accent-color: #e67e22;
+            --correct-color: #2ecc71;
+            --incorrect-color: #e74c3c;
+            --light-gray: #f0f0f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --border-radius: 15px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary-bg);
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--primary-bg);
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .start-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), #d35400);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4);
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(230, 126, 34, 0.6);
+        }
+        
+        .btn.continue-btn {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+             box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+        .btn.continue-btn:hover {
+             box-shadow: 0 7px 20px rgba(52, 152, 219, 0.6);
+        }
+
+
+        #quiz-screen .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        #question-counter, #score-display {
+             background: var(--light-gray);
+             padding: 8px 15px;
+             border-radius: 20px;
+        }
+
+        #timer {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-bg);
+        }
+        
+        #progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--correct-color), var(--accent-color));
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+        }
+        
+        #question-text {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            min-height: 80px;
+        }
+        
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .option-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1em;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--light-gray);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-bg);
+            background-color: #fffaf0;
+            transform: scale(1.02);
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-color);
+            color: white;
+            border-color: var(--incorrect-color);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        #overview-screen h2 { margin-bottom: 10px; }
+        #overview-summary { font-size: 1.2em; font-weight: bold; margin-bottom: 25px; background: var(--light-gray); padding: 15px; border-radius: 10px; display: flex; justify-content: center; gap: 30px; }
+        .summary-correct { color: var(--correct-color); }
+        .summary-incorrect { color: var(--incorrect-color); }
+        #overview-list { max-height: 40vh; overflow-y: auto; text-align: left; margin-bottom: 25px; }
+        .overview-item { background: #fff; border: 1px solid var(--light-gray); border-radius: 10px; padding: 15px; margin-bottom: 10px; position: relative; padding-right: 40px; }
+        .overview-item p { margin-bottom: 8px; font-size: 1em; }
+        .overview-item .question { font-weight: bold; }
+        .overview-item .explanation { font-size: 0.9em; color: #555; background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 5px; }
+        .overview-status { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); font-size: 2em; }
+        .status-correct { color: var(--correct-color); }
+        .status-incorrect { color: var(--incorrect-color); }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
+            #question-text { font-size: 1.2em; min-height: 70px; }
+            #options-container { grid-template-columns: 1fr; }
+            .option-btn { padding: 15px; font-size: 1em; }
+            #quiz-screen .header { flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>তাপ ও তাপমাত্রা কুইজ</h1>
+            <p>এই অধ্যায়ের উপর আপনার দক্ষতা যাচাই করুন। প্রতিটি প্রশ্নের জন্য সময় পাবেন ২৫ সেকেন্ড।</p>
+            <p><strong>মোট ৫০টি প্রশ্ন</strong></p>
+            <div class="start-buttons-container">
+                <button id="start-btn" class="btn">নতুন কুইজ শুরু করুন</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div id="question-counter"></div>
+                <div id="timer">
+                    <span id="timer-text">25</span>
+                </div>
+                <div id="score-display">স্কোর: 0</div>
+            </div>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="question-text"></div>
+            <div id="options-container"></div>
+        </div>
+        
+        <!-- Overview Screen -->
+        <div id="overview-screen" class="screen">
+            <h2 id="overview-title"></h2>
+            <div id="overview-summary"></div>
+            <div id="overview-list"></div>
+            <button id="continue-btn" class="btn continue-btn"></button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // পাঠ ১-২: তাপ ও তাপমাত্রা (1-8)
+            { question: "তাপ কী?", options: ["একটি পদার্থ", "গরমের অনুভূতি", "এক প্রকার শক্তি", "বস্তুর অবস্থা"], answer: "এক প্রকার শক্তি", explanation: "পাঠ-১ অনুযায়ী, তাপ এমন এক ধরনের শক্তি যা আমাদের ঠাণ্ডা বা গরমের অনুভূতি জন্মায়।" },
+            { question: "কোনো বস্তুর তাপীয় অবস্থাকে কী বলে?", options: ["তাপ", "শক্তি", "তাপমাত্রা", "চাপ"], answer: "তাপমাত্রা", explanation: "পাঠ-২ অনুযায়ী, কোনো বস্তু কতটুকু গরম বা ঠাণ্ডা তা বোঝাতে তাপমাত্রা ব্যবহার করা হয়। এটি বস্তুর তাপীয় অবস্থাকে প্রকাশ করে।" },
+            { question: "কোনো বস্তু তাপ বর্জন করলে কী ঘটে?", options: ["বস্তুটি ঠাণ্ডা হয়", "বস্তুটি গরম হয়", "এর আকার বাড়ে", "এর ভর কমে যায়"], answer: "বস্তুটি ঠাণ্ডা হয়", explanation: "পাঠ-১ এ বলা হয়েছে, বস্তু যখন তাপ বর্জন করে তখন সেটি ঠাণ্ডা হয়।" },
+            { question: "তাপ ও তাপমাত্রার মধ্যে মূল পার্থক্য কী?", options: ["কোনো পার্থক্য নেই", "তাপ কারণ এবং তাপমাত্রা তার ফল", "তাপমাত্রা কারণ এবং তাপ তার ফল", "তাপ পরিমাপ করা যায়, তাপমাত্রা যায় না"], answer: "তাপ কারণ এবং তাপমাত্রা তার ফল", explanation: "তাপ হলো শক্তি যা গ্রহণ বা বর্জন করলে বস্তুর তাপীয় অবস্থার পরিবর্তন হয়, আর এই তাপীয় অবস্থাই হলো তাপমাত্রা। সুতরাং তাপ কারণ ও তাপমাত্রা ফল।" },
+            { question: "আমাদের পঞ্চ ইন্দ্রিয়ের মধ্যে কোনটি দ্বারা তাপ অনুভব করা যায়?", options: ["চোখ", "নাক", "জিহ্বা", "ত্বক"], answer: "ত্বক", explanation: "পাঠ-১ এ স্পষ্টভাবে বলা হয়েছে যে, পঞ্চ ইন্দ্রিয়ের মধ্যে তাপকে কেবল ত্বক দ্বারা অনুভব করা যায়।" },
+            { question: "বস্তু তাপ গ্রহণ করলে তার কণাগুলোর কী পরিবর্তন হয়?", options: ["কণার সংখ্যা কমে", "কণার গতিশক্তি বাড়ে", "কণার গতিশক্তি কমে", "কণার আকার ছোট হয়"], answer: "কণার গতিশক্তি বাড়ে", explanation: "তাপ প্রয়োগে বস্তুর অভ্যন্তরীণ শক্তি বাড়ে, যার ফলে কণাগুলোর কম্পন বা গতি বেড়ে যায়, যা তাপমাত্রার বৃদ্ধি হিসেবে প্রকাশ পায়।" },
+            { question: "গরম পানির গ্লাসে হাত দিলে গরম লাগে কেন?", options: ["হাত থেকে তাপ গ্লাসে যায়", "গ্লাস থেকে তাপ হাতে আসে", "বায়ু থেকে তাপ হাতে আসে", "তাপমাত্রা কমে যায়"], answer: "গ্লাস থেকে তাপ হাতে আসে", explanation: "তাপমাত্রা সর্বদা উচ্চ তাপমাত্রার স্থান থেকে নিম্ন তাপমাত্রার স্থানে যায়। গরম গ্লাসের তাপমাত্রা হাত থেকে বেশি হওয়ায় তাপ গ্লাস থেকে হাতে সঞ্চালিত হয়।" },
+            { question: "তাপমাত্রা কী প্রকাশ করে?", options: ["বস্তুতে মোট তাপের পরিমাণ", "বস্তুর ঠাণ্ডা বা গরম লাগার মাত্রা", "বস্তুর ওজন", "বস্তুর চাপ"], answer: "বস্তুর ঠাণ্ডা বা গরম লাগার মাত্রা", explanation: "পাঠ-২ অনুযায়ী, কতটুকু ঠাণ্ডা বা গরম লাগছে তা প্রকাশ করার মাত্রাকে তাপমাত্রা বলে।" },
+            // পাঠ ৩-৫: তাপমাত্রা পরিমাপ, স্কেল ও সম্পর্ক (9-20)
+            { question: "তাপমাত্রা পরিমাপক যন্ত্রের নাম কী?", options: ["ব্যারোমিটার", "থার্মোমিটার", "ম্যানোমিটার", "ক্যালরিমিটার"], answer: "থার্মোমিটার", explanation: "পাঠ-৩ অনুযায়ী, তাপমাত্রা পরিমাপের যন্ত্রের নাম হলো থার্মোমিটার।" },
+            { question: "সেলসিয়াস স্কেলে পানির হিমাঙ্ক কত?", options: ["100°C", "32°C", "0°C", "212°C"], answer: "0°C", explanation: "পাঠ-৪ অনুযায়ী, সেলসিয়াস স্কেলে নিম্ন স্থিরাঙ্ক বা হিমাঙ্ককে ০ ডিগ্রি ধরা হয়।" },
+            { question: "ফারেনহাইট স্কেলে পানির স্ফুটনাঙ্ক কত?", options: ["100°F", "32°F", "180°F", "212°F"], answer: "212°F", explanation: "পাঠ-৪ অনুযায়ী, ফারেনহাইট স্কেলে ঊর্ধ্ব স্থিরাঙ্ক বা স্ফুটনাঙ্ককে ২১২ ডিগ্রি ধরা হয়।" },
+            { question: "মানুষের শরীরের স্বাভাবিক তাপমাত্রা ফারেনহাইট স্কেলে কত?", options: ["37°F", "98.4°F", "100°F", "96.8°F"], answer: "98.4°F", explanation: "পাঠ-৩ এ উল্লেখ করা হয়েছে, মানুষের শরীরের স্বাভাবিক তাপমাত্রা ৯৮.৪ ডিগ্রি ফারেনহাইট।" },
+            { question: "সেলসিয়াস ও ফারেনহাইট স্কেলের সম্পর্ক কোনটি সঠিক?", options: ["C/5 = (F-32)/9", "F/5 = (C-32)/9", "C/9 = (F-32)/5", "C/5 = (F+32)/9"], answer: "C/5 = (F-32)/9", explanation: "পাঠ-৪ এ সেলসিয়াস ও ফারেনহাইট স্কেলের সম্পর্ক হিসেবে C/5 = (F-32)/9 সমীকরণটি দেওয়া হয়েছে।" },
+            { question: "থার্মোমিটারে সাধারণত কোন তরল ব্যবহার করা হয়?", options: ["পানি", "তেল", "পারদ", "গ্লিসারিন"], answer: "পারদ", explanation: "পাঠ-৩ এ পারদ থার্মোমিটারের বর্ণনা দেওয়া হয়েছে, যেখানে তাপমাত্রা মাপার জন্য পারদ ব্যবহার করা হয়।" },
+            { question: "সেলসিয়াস স্কেলের ঊর্ধ্ব ও নিম্ন স্থিরাঙ্কের মধ্যে ব্যবধানকে কত ভাগে ভাগ করা হয়?", options: ["32 ভাগে", "100 ভাগে", "180 ভাগে", "212 ভাগে"], answer: "100 ভাগে", explanation: "পাঠ-৪ অনুযায়ী, সেলসিয়াস স্কেলে ০° থেকে ১০০° এর মধ্যবর্তী ব্যবধানকে সমান একশত ভাগে ভাগ করা হয়।" },
+            { question: "ফারেনহাইট স্কেলের নিম্ন স্থিরাঙ্ক কত?", options: ["০° ফা.", "৩২° ফা.", "১০০° ফা.", "২১২২° ফা."], answer: "৩২° ফা.", explanation: "পাঠ-৪ অনুযায়ী, ফারেনহাইট স্কেলে নিম্ন স্থিরাঙ্ককে ৩২ ডিগ্রি ধরা হয়।" },
+            { question: "থার্মোমিটারের পারদ উপরে ওঠে কেন?", options: ["পারদের ভর বাড়ার কারণে", "পারদের ঘনত্ব কমার কারণে", "তাপ পেয়ে পারদের আয়তন প্রসারণের কারণে", "পারদ হালকা হয়ে যাওয়ার কারণে"], answer: "তাপ পেয়ে পারদের আয়তন প্রসারণের কারণে", explanation: "পাঠ-৩ অনুযায়ী, বাল্বের তাপমাত্রা একটু বাড়লেই সরু ছিদ্র দিয়ে পারদ প্রসারিত হয়ে অনেকখানি উপরে উঠে যায়।" },
+            { question: "৪০° সেলসিয়াস তাপমাত্রা ফারেনহাইট স্কেলে কত হবে?", options: ["100°F", "104°F", "72°F", "40°F"], answer: "104°F", explanation: "সূত্র C/5 = (F-32)/9 ব্যবহার করে, 40/5 = (F-32)/9 বা 8*9 = F-32, সুতরাং F = 72+32 = 104°F।" },
+            { question: "কোন স্কেলকে সেন্টিগ্রেড স্কেলও বলা হয়?", options: ["ফারেনহাইট", "কেলভিন", "রোমার", "সেলসিয়াস"], answer: "সেলসিয়াস", explanation: "পাঠ-৪ এ বলা হয়েছে, ০ থেকে ১০০ এর মধ্যবর্তী দূরত্বকে ১০০ ভাগে ভাগ করা হয় বলে সেলসিয়াস স্কেলকে সেন্টিগ্রেড স্কেলও বলা হয়।" },
+            { question: "৫০° ফারেনহাইট তাপমাত্রা সেলসিয়াস স্কেলে কত?", options: ["১০° সে.", "১৮° সে.", "৪২° সে.", "২২° সে."], answer: "১০° সে.", explanation: "সূত্র C/5 = (F-32)/9 ব্যবহার করে, C/5 = (50-32)/9 বা C/5 = 18/9 = 2, সুতরাং C = 10°C।" },
+            // পাঠ ৬-৭: তাপের প্রভাবে পদার্থের প্রসারণ (21-30)
+            { question: "তাপ প্রয়োগ করলে সাধারণত পদার্থের আয়তনের কী পরিবর্তন হয়?", options: ["আয়তন কমে", "আয়তন বাড়ে", "অপরিবর্তিত থাকে", "ঘনত্ব বাড়ে"], answer: "আয়তন বাড়ে", explanation: "পাঠ-৬ এ বলা হয়েছে, তাপ প্রয়োগ করলে অধিকাংশ পদার্থের আয়তন বাড়ে।" },
+            { question: "কোন অবস্থার পদার্থ তাপে সবচেয়ে বেশি প্রসারিত হয়?", options: ["কঠিন", "তরল", "বায়বীয়", "প্লাজমা"], answer: "বায়বীয়", explanation: "পাঠ-৬ অনুযায়ী, বায়বীয় পদার্থকে তাপ দিলে তা কঠিন বা তরলের চেয়ে অনেক বেশি প্রসারিত হয়।" },
+            { question: "রেল লাইনের দুটি পাতের সংযোগস্থলে ফাঁকা রাখা হয় কেন?", options: ["ট্রেন চলার সুবিধার জন্য", "তাপীয় প্রসারণের ফলে লাইন বেঁকে যাওয়া রোধ করতে", "শব্দ কমানোর জন্য", "পাত বসানোর সুবিধার জন্য"], answer: "তাপীয় প্রসারণের ফলে লাইন বেঁকে যাওয়া রোধ করতে", explanation: "পাঠ-৬ এর উদাহরণে বলা হয়েছে, ঘর্ষণে ও রোদের তাপে লোহার পাত প্রসারিত হয়ে যেন বেঁকে না যায়, সেজন্য ফাঁক রাখা হয়।" },
+            { question: "কাচের বোতলের আটকে যাওয়া ধাতব মুখ খোলার সহজ উপায় কী?", options: ["বোতল ঠাণ্ডা করা", "মুখটি ঠাণ্ডা করা", "মুখটি গরম করা", "পুরো বোতল গরম করা"], answer: "মুখটি গরম করা", explanation: "পাঠ-৬ এর উদাহরণ অনুযায়ী, ধাতব মুখটি গরম করলে তা প্রসারিত হয়ে আলগা হয়ে যায়, ফলে সহজে খোলা যায়।" },
+            { question: "গরম পানিতে ডোবালে বোতলের মুখে লাগানো বেলুন ফুলে ওঠে কেন?", options: ["বেলুন প্রসারিত হয় বলে", "বোতলের ভিতরের বায়ু প্রসারিত হয় বলে", "পানি বেলুনে প্রবেশ করে বলে", "বোতল সংকুচিত হয় বলে"], answer: "বোতলের ভিতরের বায়ু প্রসারিত হয় বলে", explanation: "পাঠ-৬ এর পরীক্ষায় দেখানো হয়েছে, বোতলের ভিতরের বায়ু তাপ পেয়ে প্রসারিত হয়ে বেলুনে প্রবেশ করে, তাই বেলুনটি ফুলে ওঠে।" },
+            { question: "বৈশ্বিক উষ্ণায়নের ফলে সমুদ্রপৃষ্ঠের উচ্চতা বাড়ছে কেন?", options: ["বৃষ্টিপাত বাড়ার কারণে", "সমুদ্রের পানির তাপীয় প্রসারণের কারণে", "বরফ গলার কারণে", "দ্বিতীয় ও তৃতীয় উভয়টির কারণে"], answer: "দ্বিতীয় ও তৃতীয় উভয়টির কারণে", explanation: "পাঠ-৬ তে বলা হয়েছে পৃথিবীর তাপমাত্রা বাড়ার ফলে সমুদ্রের পানির আয়তন বাড়ছে। এছাড়াও, জলবায়ু পরিবর্তন অধ্যায়ে বরফ গলার কথাও আছে। উভয়ই এর কারণ।" },
+            { question: "রুটি সেঁকার সময় ফুলে ওঠে কেন?", options: ["আটা প্রসারিত হয়", "রুটির ভিতরের পানি বাষ্পে পরিণত ও প্রসারিত হয়", "রুটির নিচের অংশ পুড়ে যায়", "ইস্টের কারণে"], answer: "রুটির ভিতরের পানি বাষ্পে পরিণত ও প্রসারিত হয়", explanation: "পাঠ-৭ এ বায়বীয় পদার্থের প্রসারণের প্রভাবে বলা হয়েছে, রুটির ভিতরের পানি গরম হয়ে জলীয় বাষ্পে পরিণত হয় এবং তা আরও তাপ পেয়ে প্রসারিত হওয়ায় রুটি ফুলে ওঠে।" },
+            { question: "তাপের ফলে গ্যাসের প্রসারণকে কাজে লাগিয়ে কোনটি চালানো হয়?", options: ["গাড়ি", "ইঞ্জিন", "জেনারেটর", "ফ্যান"], answer: "ইঞ্জিন", explanation: "পাঠ-৭ এ বলা হয়েছে, তাপের ফলে গ্যাসের প্রসারণকে কাজে লাগিয়ে ইঞ্জিন চালানো হয়।" },
+            { question: "কঠিন পদার্থের মধ্যে কোনগুলো তাপে বেশি প্রসারিত হয়?", options: ["অধাতু", "ধাতব পদার্থ", "কাচ", "কাঠ"], answer: "ধাতব পদার্থ", explanation: "পাঠ-৬ এ বলা হয়েছে, কঠিন পদার্থের মধ্যে সাধারণত ধাতব পদার্থ তাপ প্রয়োগে বেশি পরিমাণে প্রসারিত হয়।" },
+            { question: "ঠাণ্ডা পানিতে ডোবালে ফোলানো বেলুন চুপসে যায় কেন?", options: ["বেলুনের বাতাস বেরিয়ে যায়", "বোতলের ভিতরের বায়ু সংকুচিত হয়", "বেলুন ছিদ্র হয়ে যায়", "পানি বেলুনের ভিতর ঢোকে"], answer: "বোতলের ভিতরের বায়ু সংকুচিত হয়", explanation: "পাঠ-৬ এর পরীক্ষা থেকে প্রমাণিত, ঠাণ্ডা পানিতে বোতলের ভিতরের বায়ু সংকুচিত হওয়ায় বেলুন থেকে বাতাস বোতলে ফিরে আসে এবং বেলুন চুপসে যায়।" },
+            // পাঠ ৮: আর্দ্রতা, বায়ুচাপ ও তাপমাত্রার প্রভাব (31-37)
+            { question: "বায়ুমণ্ডলে তাপমাত্রা বাড়লে বায়ুচাপের কী পরিবর্তন হয়?", options: ["চাপ বাড়ে", "চাপ কমে", "চাপ একই থাকে", "চাপ শূন্য হয়ে যায়"], answer: "চাপ কমে", explanation: "পাঠ-৮ অনুযায়ী, বায়ুমণ্ডলে তাপমাত্রা বাড়লে বায়ু হালকা হয়ে উপরে উঠে যায়, ফলে বায়ুচাপ কমে যায় অর্থাৎ নিম্নচাপের সৃষ্টি হয়।" },
+            { question: "বায়ুতে জলীয়বাষ্পের পরিমাণকে কী বলে?", options: ["বায়ুচাপ", "আর্দ্রতা", "ঘনত্ব", "তাপমাত্রা"], answer: "আর্দ্রতা", explanation: "পাঠ-৮ এ বলা হয়েছে, বায়ুতে জলীয়বাষ্পের পরিমাণকে বায়ুর আর্দ্রতা দিয়ে প্রকাশ করা হয়।" },
+            { question: "কোনো স্থানে নিম্নচাপ সৃষ্টি হলে কী ঘটে?", options: ["বায়ু স্থির থাকে", "বায়ুপ্রবাহের সৃষ্টি হয়", "বৃষ্টিপাত বন্ধ হয়ে যায়", "তাপমাত্রা কমে যায়"], answer: "বায়ুপ্রবাহের সৃষ্টি হয়", explanation: "পাঠ-৮ অনুযায়ী, উচ্চচাপ ও নিম্নচাপের ফলে বায়ুপ্রবাহের সৃষ্টি হয়। বায়ু উচ্চচাপ অঞ্চল থেকে নিম্নচাপ অঞ্চলের দিকে প্রবাহিত হয়।" },
+            { question: "আর্দ্রতা বেশি থাকলে আমাদের ঘাম সহজে শুকায় না কেন?", options: ["বায়ু ঠাণ্ডা থাকে", "বায়ুর চাপ বেশি থাকে", "বায়ু ইতোমধ্যে জলীয়বাষ্প দ্বারা প্রায় সম্পৃক্ত থাকে", "সূর্যের তাপ কম থাকে"], answer: "বায়ু ইতোমধ্যে জলীয়বাষ্প দ্বারা প্রায় সম্পৃক্ত থাকে", explanation: "আর্দ্রতা বেশি মানে বায়ুতে জলীয়বাষ্পের পরিমাণ বেশি। ফলে শরীর থেকে ঘাম বাষ্পীভূত হয়ে বায়ুতে মিশতে পারে না, তাই ঘাম শুকায় না।" },
+            { question: "মেঘ ও বৃষ্টি কী কারণে হয়?", options: ["বায়ুর উচ্চচাপের কারণে", "বায়ুর আর্দ্রতা কমে যাওয়ার কারণে", "জলীয়বাষ্প ঘনীভূত হওয়ার কারণে", "বায়ুপ্রবাহের কারণে"], answer: "জলীয়বাষ্প ঘনীভূত হওয়ার কারণে", explanation: "পাঠ-৮ এর শেষে বলা হয়েছে, বায়ুতে জলীয়বাষ্প বেড়ে গেলে এক পর্যায়ে তা ঘনীভূত হয়ে মেঘে পরিণত হয় এবং শেষে বৃষ্টি হয়।" },
+            { question: "তাপমাত্রা বাড়লে বায়ুর জলীয়বাষ্প ধারণ ক্ষমতা কীরূপ পরিবর্তিত হয়?", options: ["কমে যায়", "বেড়ে যায়", "একই থাকে", "শূন্য হয়"], answer: "বেড়ে যায়", explanation: "পাঠ-৮ অনুযায়ী, তাপমাত্রা বাড়লে বায়ুও বেশি করে জলীয়বাষ্প ধারণ করতে পারে।" },
+            { question: "বায়ুপ্রবাহের মূল কারণ কী?", options: ["পৃথিবীর ঘূর্ণন", "তাপমাত্রার পার্থক্যের জন্য সৃষ্ট চাপের পার্থক্য", "চাঁদের আকর্ষণ", "সমুদ্রস্রোত"], answer: "তাপমাত্রার পার্থক্যের জন্য সৃষ্ট চাপের পার্থক্য", explanation: "পাঠ-৮ এ ব্যাখ্যা করা হয়েছে, তাপমাত্রার পার্থক্যের কারণে কোথাও উচ্চচাপ ও কোথাও নিম্নচাপ সৃষ্টি হয়, যা বায়ুপ্রবাহের মূল কারণ।" },
+            // পাঠ ৯-১০: তাপ সঞ্চালন (38-50)
+            { question: "তাপের স্থান পরিবর্তনকে কী বলে?", options: ["তাপমাত্রা", "তাপ সঞ্চালন", "তাপীয় প্রসারণ", "তাপীয় শোষণ"], answer: "তাপ সঞ্চালন", explanation: "পাঠ-৯ এর শুরুতে বলা হয়েছে, তাপের এই স্থান পরিবর্তনকে তাপ সঞ্চালন বলে।" },
+            { question: "কঠিন পদার্থে কোন পদ্ধতিতে তাপ সঞ্চালিত হয়?", options: ["পরিবহন", "পরিচলন", "বিকিরণ", "সবগুলো"], answer: "পরিবহন", explanation: "পাঠ-৯ অনুযায়ী, পরিবহন পদ্ধতিতে কঠিন পদার্থে তাপ সঞ্চালিত হয়, যেখানে কণাগুলো স্থান পরিবর্তন করে না।" },
+            { question: "তরল ও বায়বীয় পদার্থে কোন পদ্ধতিতে তাপ সঞ্চালিত হয়?", options: ["পরিবহন", "পরিচলন", "বিকিরণ", "ব্যাপন"], answer: "পরিচলন", explanation: "পাঠ-৯ এ বলা হয়েছে, পরিচলন প্রক্রিয়ায় তরল ও বায়বীয় পদার্থে তাপ সঞ্চালিত হয়, যেখানে উত্তপ্ত কণাগুলো স্থান পরিবর্তন করে।" },
+            { question: "কোন পদ্ধতিতে তাপ সঞ্চালনের জন্য জড় মাধ্যমের প্রয়োজন হয় না?", options: ["পরিবহন", "পরিচলন", "বিকিরণ", "প্রতিসরণ"], answer: "বিকিরণ", explanation: "পাঠ-৯ অনুযায়ী, যেখানে কোনো জড় মাধ্যম নেই, সেখানে তাপ বিকিরণের মাধ্যমে সঞ্চালিত হয়। যেমন সূর্য থেকে পৃথিবীতে তাপ আসা।" },
+            { question: "গরম স্যুপের বাটিতে রাখা ধাতব চামচ গরম হয় কোন প্রক্রিয়ায়?", options: ["পরিচলন", "পরিবহন", "বিকিরণ", "শোষণ"], answer: "পরিবহন", explanation: "পাঠ-৯ এ এটি পরিবহনের উদাহরণ হিসেবে দেওয়া হয়েছে। চামচ একটি কঠিন পদার্থ এবং এর মধ্য দিয়ে তাপ পরিবহন পদ্ধতিতে সঞ্চালিত হয়।" },
+            { question: "আগুন পোহানোর সময় আগুনের পাশে থেকে উপরে হাত রাখলে বেশি গরম লাগে কেন?", options: ["পরিবহন পদ্ধতির জন্য", "বিকিরণ পদ্ধতির জন্য", "পরিচলন পদ্ধতির জন্য", "হাতের অবস্থানের জন্য"], answer: "পরিচলন পদ্ধতির জন্য", explanation: "পাঠ-৯ অনুযায়ী, পরিচলন পদ্ধতিতে উত্তপ্ত বায়ু হালকা হয়ে উপরের দিকে উঠে যায়, তাই আগুনের উপরে বেশি গরম অনুভূত হয়।" },
+            { question: "রান্নার হাঁড়ি সাধারণত ধাতুর তৈরি হয় কেন?", options: ["ধাতু তাপের সুপরিবাহী", "ধাতু দেখতে সুন্দর", "ধাতু সস্তা", "ধাতু তাপের কুপরিবাহী"], answer: "ধাতু তাপের সুপরিবাহী", explanation: "পাঠ-৯ এ বলা হয়েছে, লোহা, তামা ইত্যাদি ধাতু দ্রুত তাপ পরিবহন করে বলে রান্নার জন্য ধাতুর তৈরি হাঁড়ি ব্যবহার করা হয়।" },
+            { question: "হাঁড়ির হাতল কাঠ বা প্লাস্টিকের তৈরি হয় কেন?", options: ["এগুলো তাপের সুপরিবাহী", "এগুলো তাপের কুপরিবাহী (অন্তরক)", "এগুলো হালকা হয়", "এগুলো দামে কম"], answer: "এগুলো তাপের কুপরিবাহী (অন্তরক)", explanation: "পাঠ-৯ এ বলা হয়েছে, কাঠ, কাপড় ইত্যাদি তাপ পরিবহন করে খুবই কম, তাই গরম হাঁড়ি ধরার জন্য অন্তরক পদার্থের হাতল ব্যবহার করা হয়।" },
+            { question: "সূর্য থেকে পৃথিবীতে তাপ আসে কোন প্রক্রিয়ায়?", options: ["পরিবহন", "পরিচলন", "বিকিরণ", "প্রতিফলন"], answer: "বিকিরণ", explanation: "পাঠ-৯ অনুযায়ী, সূর্য ও পৃথিবীর মাঝে বায়বীয় মাধ্যম না থাকায় তাপ বিকিরণ পদ্ধতিতে পৃথিবীতে আসে।" },
+            { question: "কোনো পদার্থ তাপ বিকিরণ করলে তাকে কী বলে?", options: ["শোষক", "পরিবাহক", "বিকিরক", "অন্তরক"], answer: "বিকিরক", explanation: "পাঠ-১০ এর শুরুতে বলা হয়েছে, কোনো পদার্থ তাপ বিকিরণ করলে তাকে বিকিরক বলে।" },
+            { question: "যে পদার্থ ভালো তাপ বিকিরক, সেটি তাপের কীরূপ শোষক?", options: ["খারাপ শোষক", "কোনো শোষণ করে না", "ভালো শোষক", "মাঝারি শোষক"], answer: "ভালো শোষক", explanation: "পাঠ-১০ এ বিজ্ঞানীরা দেখেছেন যে, কোনো পদার্থ ভালো তাপ বিকিরক হলে সেটি ভালো তাপ শোষকও হয়।" },
+            { question: "বায়ুমণ্ডলের গ্রিনহাউস গ্যাসগুলো (যেমন কার্বন-ডাই-অক্সাইড) কী করে?", options: ["সূর্যরশ্মি আসতে বাধা দেয়", "পৃথিবী থেকে বিকিরিত তাপকে মহাশূন্যে যেতে বাধা দেয়", "অক্সিজেন তৈরি করে", "মেঘ সৃষ্টিতে সাহায্য করে"], answer: "পৃথিবী থেকে বিকিরিত তাপকে মহাশূন্যে যেতে বাধা দেয়", explanation: "পাঠ-১০ এর শেষে বলা হয়েছে, কার্বন-ডাই-অক্সাইড, জলীয়বাষ্প ইত্যাদি গ্যাস তাপ বিকিরণে বাধা প্রদান করে পৃথিবীর বায়ুমণ্ডলকে উত্তপ্ত রাখছে, যা বৈশ্বিক উষ্ণায়ন ঘটায়।" },
+            { question: "তাপ সঞ্চালনের সময় কোন প্রক্রিয়ায় কণাগুলোর স্থান পরিবর্তন হয়?", options: ["শুধুমাত্র পরিবহন", "শুধুমাত্র বিকিরণ", "শুধুমাত্র পরিচলন", "পরিবহন ও পরিচলন উভয়ই"], answer: "শুধুমাত্র পরিচলন", explanation: "পরিচলন প্রক্রিয়ায় উত্তপ্ত কণাগুলো শক্তি অর্জন করে হালকা হয়ে উপরে উঠে যায় এবং ঠাণ্ডা কণা নিচে নেমে আসে, অর্থাৎ কণার স্থান পরিবর্তন ঘটে।" }
+        ];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const overviewScreen = document.getElementById('overview-screen');
+        const startBtn = document.getElementById('start-btn');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerText = document.getElementById('timer-text');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const overviewTitle = document.getElementById('overview-title');
+        const overviewSummary = document.getElementById('overview-summary');
+        const overviewList = document.getElementById('overview-list');
+        const continueBtn = document.getElementById('continue-btn');
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const TIME_LIMIT = 25; // Timer set to 25 seconds as requested
+        let timeLeft = TIME_LIMIT;
+        let userAnswers = [];
+
+        // --- Data Persistence Functions ---
+        function saveQuizState() {
+            const state = {
+                currentQuestionIndex,
+                score,
+                userAnswers
+            };
+            localStorage.setItem('quizProgressHeatTemp', JSON.stringify(state));
+        }
+
+        function loadQuizState() {
+            const savedState = localStorage.getItem('quizProgressHeatTemp');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                currentQuestionIndex = state.currentQuestionIndex;
+                score = state.score;
+                userAnswers = state.userAnswers;
+                
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+
+        function clearQuizState() {
+            localStorage.removeItem('quizProgressHeatTemp');
+        }
+
+        // Check for saved data on page load
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('quizProgressHeatTemp');
+            if (savedData) {
+                const startButtonsContainer = document.querySelector('.start-buttons-container');
+                if(!document.getElementById('continue-saved-btn')){
+                    const continueSavedBtn = document.createElement('button');
+                    continueSavedBtn.id = 'continue-saved-btn';
+                    continueSavedBtn.className = 'btn continue-btn';
+                    continueSavedBtn.textContent = 'আগেরটি চালিয়ে যান';
+                    startButtonsContainer.appendChild(continueSavedBtn);
+                    
+                    continueSavedBtn.addEventListener('click', loadQuizState);
+                }
+            }
+        });
+
+        // --- Core Quiz Functions ---
+
+        startBtn.addEventListener('click', startGame);
+        continueBtn.addEventListener('click', continueQuiz);
+
+        function startGame() {
+            clearQuizState();
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            scoreDisplay.textContent = 'স্কোর: 0';
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            resetState();
+            
+            progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+
+            if(currentQuestionIndex >= questions.length){
+                showOverview(true); 
+                return;
+            }
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionCounter.textContent = `প্রশ্ন ${currentQuestionIndex + 1}/${questions.length}`;
+            questionText.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(button, option));
+                optionsContainer.appendChild(button);
+            });
+            startTimer();
+        }
+        
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerText.textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    selectAnswer(null, null); 
+                }
+            }, 1000);
+        }
+
+        function resetState() {
+            clearInterval(timer);
+            optionsContainer.innerHTML = '';
+        }
+        
+        function selectAnswer(selectedButton, selectedOption) {
+            clearInterval(timer);
+            const correctOption = questions[currentQuestionIndex].answer;
+            const isCorrect = selectedOption === correctOption;
+            
+            userAnswers.push({
+                question: questions[currentQuestionIndex].question,
+                yourAnswer: selectedOption === null ? 'সময় শেষ' : selectedOption,
+                correctAnswer: correctOption,
+                explanation: questions[currentQuestionIndex].explanation,
+                isCorrect: isCorrect,
+            });
+
+            Array.from(optionsContainer.children).forEach(button => {
+                if(button.textContent === correctOption) button.classList.add('correct');
+                if(button === selectedButton && !isCorrect) button.classList.add('incorrect');
+                button.disabled = true;
+            });
+            
+            if (isCorrect) {
+                score++;
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+            }
+
+            saveQuizState(); // Save progress after each answer
+
+            setTimeout(handleNext, 1500);
+        }
+
+        function handleNext(){
+            currentQuestionIndex++;
+            if(currentQuestionIndex % 10 === 0 && currentQuestionIndex > 0) {
+                showOverview(currentQuestionIndex === questions.length);
+            } else {
+                 loadQuestion();
+            }
+        }
+
+        function showOverview(isFinal) {
+            showScreen('overview-screen');
+            if (isFinal) {
+                clearQuizState(); // Clear data when quiz is finished
+                 const continueSavedBtn = document.getElementById('continue-saved-btn');
+                if (continueSavedBtn) {
+                    continueSavedBtn.remove();
+                }
+            }
+
+            let start = Math.floor((currentQuestionIndex -1) / 10) * 10;
+            let end = currentQuestionIndex;
+
+            overviewTitle.textContent = isFinal ? 'চূড়ান্ত ফলাফল' : `পার্ট ${end/10} এর সারসংক্ষেপ`;
+            
+            overviewList.innerHTML = '';
+            // Display only the last 10 answers in the intermediate overview
+            const startIndex = isFinal ? 0 : start;
+            for(let i = startIndex; i < end; i++){
+                const answer = userAnswers[i];
+                const item = document.createElement('div');
+                item.classList.add('overview-item');
+                const statusIcon = answer.isCorrect ? '✔' : '✖';
+                const statusClass = answer.isCorrect ? 'status-correct' : 'status-incorrect';
+                
+                item.innerHTML = `
+                    <div class="overview-status ${statusClass}">${statusIcon}</div>
+                    <p class="question"><strong>প্রশ্ন ${i + 1}:</strong> ${answer.question}</p>
+                    <p><strong>তোমার উত্তর:</strong> ${answer.yourAnswer}</p>
+                    <p><strong>সঠিক উত্তর:</strong> ${answer.correctAnswer}</p>
+                    <p class="explanation"><strong>ব্যাখ্যা:</strong> ${answer.explanation}</p>
+                `;
+                overviewList.prepend(item);
+            }
+            
+            overviewSummary.innerHTML = `
+                <span class="summary-correct">✔ মোট সঠিক: ${score}</span>
+                <span class="summary-incorrect">✖ মোট ভুল: ${currentQuestionIndex - score}</span>
+            `;
+            
+            if(isFinal) {
+                continueBtn.textContent = 'পুনরায় খেলুন';
+            } else {
+                continueBtn.textContent = 'পরবর্তী ধাপে যান';
+            }
+        }
+
+        function continueQuiz() {
+            if (currentQuestionIndex >= questions.length) {
+                // Instead of reloading, just go back to the start screen for a smoother experience
+                clearQuizState();
+                const continueSavedBtn = document.getElementById('continue-saved-btn');
+                if (continueSavedBtn) {
+                    continueSavedBtn.remove();
+                }
+                showScreen('start-screen');
+            } else {
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+    </script>
+</body>
+</html>

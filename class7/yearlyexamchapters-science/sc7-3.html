@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>উদ্ভিদের বাহ্যিক বৈশিষ্ট্য কুইজ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&family=Poppins:wght@600&display=swap');
+
+        :root {
+            --primary-bg: #4CAF50; /* Green theme for biology */
+            --secondary-bg: #81C784;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-color: #333;
+            --accent-color: #FFC107;
+            --correct-color: #2ecc71;
+            --incorrect-color: #e74c3c;
+            --light-gray: #f0f0f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --border-radius: 15px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary-bg);
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--primary-bg);
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .start-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), #fdc830);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(247, 183, 51, 0.4);
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(247, 183, 51, 0.6);
+        }
+        
+        .btn.continue-btn {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+             box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+        .btn.continue-btn:hover {
+             box-shadow: 0 7px 20px rgba(52, 152, 219, 0.6);
+        }
+
+
+        #quiz-screen .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        #question-counter, #score-display {
+             background: var(--light-gray);
+             padding: 8px 15px;
+             border-radius: 20px;
+        }
+
+        #timer {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-bg);
+        }
+        
+        #progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--correct-color), var(--accent-color));
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+        }
+        
+        #question-text {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            min-height: 80px;
+        }
+        
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .option-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1em;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--light-gray);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-bg);
+            background-color: #f7fff7;
+            transform: scale(1.02);
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-color);
+            color: white;
+            border-color: var(--incorrect-color);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        #overview-screen h2 { margin-bottom: 10px; }
+        #overview-summary { font-size: 1.2em; font-weight: bold; margin-bottom: 25px; background: var(--light-gray); padding: 15px; border-radius: 10px; display: flex; justify-content: center; gap: 30px; }
+        .summary-correct { color: var(--correct-color); }
+        .summary-incorrect { color: var(--incorrect-color); }
+        #overview-list { max-height: 40vh; overflow-y: auto; text-align: left; margin-bottom: 25px; }
+        .overview-item { background: #fff; border: 1px solid var(--light-gray); border-radius: 10px; padding: 15px; margin-bottom: 10px; position: relative; padding-right: 40px; }
+        .overview-item p { margin-bottom: 8px; font-size: 1em; }
+        .overview-item .question { font-weight: bold; }
+        .overview-item .explanation { font-size: 0.9em; color: #555; background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 5px; }
+        .overview-status { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); font-size: 2em; }
+        .status-correct { color: var(--correct-color); }
+        .status-incorrect { color: var(--incorrect-color); }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
+            #question-text { font-size: 1.2em; min-height: 70px; }
+            #options-container { grid-template-columns: 1fr; }
+            .option-btn { padding: 15px; font-size: 1em; }
+            #quiz-screen .header { flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>উদ্ভিদের বাহ্যিক বৈশিষ্ট্য কুইজ</h1>
+            <p>এই অধ্যায়ের উপর আপনার দক্ষতা যাচাই করুন। প্রতিটি প্রশ্নের জন্য সময় পাবেন ২৫ সেকেন্ড।</p>
+            <p><strong>মোট ৫০টি প্রশ্ন</strong></p>
+            <div class="start-buttons-container">
+                <button id="start-btn" class="btn">নতুন কুইজ শুরু করুন</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div id="question-counter"></div>
+                <div id="timer">
+                    <span id="timer-text">25</span>
+                </div>
+                <div id="score-display">স্কোর: 0</div>
+            </div>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="question-text"></div>
+            <div id="options-container"></div>
+        </div>
+        
+        <!-- Overview Screen -->
+        <div id="overview-screen" class="screen">
+            <h2 id="overview-title"></h2>
+            <div id="overview-summary"></div>
+            <div id="overview-list"></div>
+            <button id="continue-btn" class="btn continue-btn"></button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // পাঠ-১: প্রধান মূলের রূপান্তর (1-5)
+            { question: "মুলা কোন ধরনের রূপান্তরিত প্রধান মূল?", options: ["গাজরাকৃতি", "মূলাকৃতি", "শালগমাকৃতি", "কন্দাকৃতি"], answer: "মূলাকৃতি", explanation: "পাঠ-১ অনুযায়ী, মুলা হলো মূলাকৃতি মূল, যার মধ্যভাগ মোটা কিন্তু দুই প্রান্ত ক্রমশ সরু হয়।" },
+            { question: "কোন রূপান্তরিত প্রধান মূলের উপরের দিক মোটা এবং নিচের দিকে ক্রমশ সরু হয়ে যায়?", options: ["মুলা", "শালগম", "গাজর", "সন্ধ্যামালতি"], answer: "গাজর", explanation: "পাঠ-১ অনুসারে, গাজরাকৃতি মূলের উপরের দিক মোটা এবং নিচের দিক ক্রমশ সরু হয়, যেমন- গাজর।" },
+            { question: "শালগমের প্রধান মূল খাদ্য সঞ্চয়ের ফলে কেমন আকৃতি ধারণ করে?", options: ["মাঝখানে মোটা দুই দিকে সরু", "সম্পূর্ণ গোলাকার", "অনিয়মিতভাবে মোটা", "উপরের অংশ গোলাকার ও নিচের অংশ হঠাৎ সরু"], answer: "উপরের অংশ গোলাকার ও নিচের অংশ হঠাৎ সরু", explanation: "পাঠ-১ এ বর্ণিত আছে, শালগমাকৃতি মূলের উপরের অংশ খাদ্য সঞ্চয়ের ফলে গোলাকার এবং নিচের অংশ হঠাৎ করে সরু হয়ে যায়।" },
+            { question: "কোন রূপান্তরিত প্রধান মূলের কোনো নির্দিষ্ট আকার বা আকৃতি থাকে না?", options: ["গাজরাকৃতি", "কন্দাকৃতি", "মূলাকৃতি", "শালগমাকৃতি"], answer: "কন্দাকৃতি", explanation: "পাঠ-১ অনুযায়ী, কন্দাকৃতি মূল খাদ্য সঞ্চয়ের ফলে অনিয়মিতভাবে মোটা হয় এবং এর কোনো নির্দিষ্ট আকার থাকে না, যেমন- সন্ধ্যামালতি।" },
+            { question: "সন্ধ্যামালতি উদ্ভিদের মূল কোন প্রকৃতির?", options: ["গুচ্ছিত কন্দমূল", "কন্দাল মূল", "কন্দাকৃতি মূল", "নডুলুজ মূল"], answer: "কন্দাকৃতি মূল", explanation: "পাঠ-১ এ সন্ধ্যামালতিকে কন্দাকৃতি প্রধান মূলের উদাহরণ হিসেবে উল্লেখ করা হয়েছে।" },
+            // পাঠ ২-৪ : রূপান্তরিত অস্থানিক মূল (6-20)
+            { question: "মিষ্টি আলুর রূপান্তরিত অস্থানিক মূলকে কী বলা হয়?", options: ["গুচ্ছিত কন্দমূল", "কন্দাল মূল", "নডুলুজ মূল", "মালাকৃতির মূল"], answer: "কন্দাল মূল", explanation: "পাঠ ২-৪ অনুযায়ী, মিষ্টি আলুর কন্দাল অস্থানিক মূল অনিয়মিতভাবে স্ফীত হয়।" },
+            { question: "শতমূলী ও ডালিয়া উদ্ভিদের মূল কোন ধরনের?", options: ["কন্দাল মূল", "স্তম্ভমূল", "গুচ্ছিত কন্দমূল", "ঠেস মূল"], answer: "গুচ্ছিত কন্দমূল", explanation: "পাঠ ২-৪ এ বলা হয়েছে, শতমূলী ও ডালিয়ার স্ফীত অস্থানিক মূলগুলো একটি গুচ্ছে অবস্থান করে, তাই এদের গুচ্ছিত কন্দমূল বলে।" },
+            { question: "গুচ্ছিত কন্দমূলের প্রধান বৈশিষ্ট্য কী?", options: ["মূলের অগ্রভাগ স্ফীত হয়", "মূল পর্যায়ক্রমে স্ফীত ও সংকুচিত হয়", "একটি মাত্র মূল অনিয়মিতভাবে স্ফীত হয়", "অনেকগুলো স্ফীত মূল একত্রে গুচ্ছাকারে থাকে"], answer: "অনেকগুলো স্ফীত মূল একত্রে গুচ্ছাকারে থাকে", explanation: "গুচ্ছিত কন্দমূলের সংজ্ঞা অনুযায়ী, যখন একগুচ্ছ অস্থানিক মূলের সবগুলোই কন্দের মতো স্ফীত হয়, তখন তাকে গুচ্ছিত কন্দমূল বলে।" },
+            { question: "আমআদা উদ্ভিদের মূলের কোন অংশটি খাদ্য সঞ্চয় করে স্ফীত হয়?", options: ["গোড়ার অংশ", "সম্পূর্ণ মূল", "অগ্রভাগ", "পর্বমধ্য"], answer: "অগ্রভাগ", explanation: "পাঠ ২-৪ এ নডুলুজ মূলের উদাহরণ হিসেবে আমআদা উল্লেখ করা হয়েছে, যার মূলের অগ্রভাগ খাদ্য সঞ্চয় করে স্ফীত হয়।" },
+            { question: "করলার মূল দেখতে মালার মতো হয় কেন?", options: ["এতে অনেকগুলো গুটি থাকে", "পর্যায়ক্রমে স্ফীত ও সংকুচিত হয়", "মূলটি সোজাসুজি বৃদ্ধি পায়", "মূলের অগ্রভাগ স্ফীত হয়"], answer: "পর্যায়ক্রমে স্ফীত ও সংকুচিত হয়", explanation: "পাঠ ২-৪ অনুযায়ী, মালাকৃতির মূল, যেমন করলার মূল, পর্যায়ক্রমে স্ফীত ও সংকুচিত হওয়ার কারণে মালার মতো দেখায়।" },
+            { question: "বট গাছের 'ঝুরি' কোন ধরনের রূপান্তরিত মূল?", options: ["ঠেস মূল", "আরোহী মূল", "স্তম্ভমূল", "চোষক মূল"], answer: "স্তম্ভমূল", explanation: "পাঠ ২-৪ অনুসারে, বট গাছের কাণ্ড বা শাখা হতে উৎপন্ন হয়ে যা খাড়াভাবে নিচে নেমে মাটির মধ্যে প্রবেশ করে, তাকে স্তম্ভমূল বলে।" },
+            { question: "কেয়া গাছের কাণ্ডের গোড়া থেকে বের হওয়া তীর্যক মূলগুলোকে কী বলে?", options: ["স্তম্ভমূল", "ঠেস মূল", "বায়বীয় মূল", "শ্বাসমূল"], answer: "ঠেস মূল", explanation: "পাঠ ২-৪ অনুযায়ী, কেয়া গাছের মতো দুর্বল কাণ্ডযুক্ত উদ্ভিদকে সোজাভাবে দাঁড়াতে সাহায্য করার জন্য কাণ্ডের গোড়া থেকে তীর্যকভাবে বের হওয়া মূলই হলো ঠেস মূল।" },
+            { question: "পান গাছ কোনো অবলম্বনকে আঁকড়ে ধরে উপরে ওঠে কিসের সাহায্যে?", options: ["শাখা কণ্টক", "আকর্ষী", "আরোহী মূল", "ঠেস মূল"], answer: "আরোহী মূল", explanation: "পাঠ ২-৪ এ বলা হয়েছে, পান গাছের মতো দুর্বল কাণ্ডের উদ্ভিদের পর্ব হতে উৎপন্ন আরোহী মূল অন্য কোনো অবলম্বনকে আঁকড়ে ধরে উপরে উঠতে সাহায্য করে।" },
+            { question: "রাস্না উদ্ভিদের বায়বীয় মূল কোথা থেকে জলীয় বাষ্প গ্রহণ করে?", options: ["মাটি থেকে", "পোষক উদ্ভিদ থেকে", "বৃষ্টির পানি থেকে", "বাতাস থেকে"], answer: "বাতাস থেকে", explanation: "পাঠ ২-৪ অনুযায়ী, পরাশ্রয়ী উদ্ভিদের (যেমন- রাস্না) বায়বীয় মূল বাতাস থেকে জলীয় বাষ্প গ্রহণ করে।" },
+            { question: "স্বর্ণলতার চোষক মূলের প্রধান কাজ কী?", options: ["বাতাস থেকে জলীয় বাষ্প নেওয়া", "শ্বসন চালানো", "গাছকে খাড়া রাখা", "পোষক উদ্ভিদ থেকে খাদ্যরস শোষণ করা"], answer: "পোষক উদ্ভিদ থেকে খাদ্যরস শোষণ করা", explanation: "পাঠ ২-৪ এ বর্ণিত আছে, স্বর্ণলতার মতো পরজীবী উদ্ভিদের চোষক মূল আশ্রয়দাতা বা পোষক উদ্ভিদের দেহে প্রবেশ করে খাদ্যরস শোষণ করে।" },
+            { question: "শ্বাসমূল বা নিউমাটোফোর সাধারণত কোন পরিবেশে দেখা যায়?", options: ["শুষ্ক মরুভূমিতে", "পাহাড়ি অঞ্চলে", "লবণাক্ত ও কর্দমাক্ত মাটিতে", "স্বাদু পানির জলাশয়ে"], answer: "লবণাক্ত ও কর্দমাক্ত মাটিতে", explanation: "পাঠ ২-৪ অনুযায়ী, সুন্দরী, গরান ইত্যাদি উদ্ভিদের শ্বাসমূল সমুদ্র উপকূলের লবণাক্ত ও কর্দমাক্ত মাটিতে জন্মায়।" },
+            { question: "শ্বাসমূলের অগ্রভাগের ছোট ছোট ছিদ্রগুলোর কাজ কী?", options: ["খাদ্য সঞ্চয় করা", "পানি শোষণ করা", "শ্বসনকার্যে সাহায্য করা", "গাছকে দৃঢ়তা দেওয়া"], answer: "শ্বসনকার্যে সাহায্য করা", explanation: "পাঠ ২-৪ এ উল্লেখ আছে যে, শ্বাসমূলের ছোট ছোট ছিদ্রগুলো উদ্ভিদের শ্বাসকার্যে সহযোগিতা করে।" },
+            { question: "জনন বা প্রজননে অংশগ্রহণ করে কোন রূপান্তরিত মূল?", options: ["বট, কেয়া", "মিষ্টি আলু, পটল", "আদা, হলুদ", "রাস্না, স্বর্ণলতা"], answer: "মিষ্টি আলু, পটল", explanation: "পাঠ ৫-৭ এর শুরুতে জনন মূলের উদাহরণ হিসেবে মিষ্টি আলু, পটল, কাঁকরোল ইত্যাদির কথা বলা হয়েছে।" },
+            { question: "আরোহী মূল উদ্ভিদের কোন অংশ থেকে উৎপন্ন হয়?", options: ["কাণ্ডের শীর্ষ থেকে", "প্রধান মূল থেকে", "পর্ব থেকে", "শাখার অগ্রভাগ থেকে"], answer: "পর্ব থেকে", explanation: "পাঠ ২-৪ এর চিত্র এবং বর্ণনা অনুযায়ী, আরোহী মূল দুর্বল কাণ্ডযুক্ত উদ্ভিদের পর্ব হতে উৎপন্ন হয়।" },
+            { question: "স্তম্ভমূল মাটির নিচে প্রবেশ করে কিসের আকার ধারণ করে?", options: ["গুচ্ছমূলের", "প্রধান মূলের", "স্তম্ভের", "কন্দের"], answer: "স্তম্ভের", explanation: "পাঠ ২-৪ অনুযায়ী, স্তম্ভমূল মোটা হয়ে স্তম্ভের আকার ধারণ করে এবং শাখাপ্রশাখার ভার বহন করে।" },
+            // পাঠ ৫-৭: রূপান্তরিত কাণ্ড (21-41)
+            { question: "গোল আলু উদ্ভিদের কোন রূপান্তরিত অংশ?", options: ["রূপান্তরিত প্রধান মূল", "স্ফীত কন্দ (টিউবার)", "কন্দাল মূল", "গুঁড়িকন্দ"], answer: "স্ফীত কন্দ (টিউবার)", explanation: "পাঠ ৫-৭ অনুযায়ী, গোল আলু হলো স্ফীত কন্দ বা টিউবার, যা একটি ভূ-নিম্নস্থ রূপান্তরিত কাণ্ড।" },
+            { question: "গোল আলুর 'চোখ' আসলে কী?", options: ["শল্কপত্র", "অস্থানিক মূল", "কাক্ষিক মুকুল", "পর্বমধ্য"], answer: "কাক্ষিক মুকুল", explanation: "পাঠ ৫-৭ এ বলা হয়েছে, স্ফীত কন্দের শল্কপত্রের কক্ষে গর্তের মতো অংশকে 'চোখ' বলে, যা আসলে কাক্ষিক মুকুল এবং যা থেকে নতুন উদ্ভিদ জন্মায়।" },
+            { question: "আদা ও হলুদ কোন জাতীয় রূপান্তরিত কাণ্ড?", options: ["টিউবার", "কন্দ", "রাইজোম", "গুঁড়িকন্দ"], answer: "রাইজোম", explanation: "পাঠ ৫-৭ অনুসারে, আদা, হলুদ প্রভৃতি উদ্ভিদের কাণ্ড রাইজোম জাতীয়, যা মাটির নিচে সমান্তরালে অবস্থান করে।" },
+            { question: "কোন ভূ-নিম্নস্থ রূপান্তরিত কাণ্ডে সুস্পষ্ট পর্ব ও পর্বমধ্য থাকে?", options: ["স্ফীত কন্দ", "রাইজোম", "কন্দ", "গুঁড়িকন্দ"], answer: "রাইজোম", explanation: "পাঠ ৫-৭ এ রাইজোমের বৈশিষ্ট্য হিসেবে সুস্পষ্ট পর্ব ও পর্বমধ্য থাকার কথা উল্লেখ করা হয়েছে।" },
+            { question: "পিঁয়াজ ও রসুনের কাণ্ড কোন প্রকারের?", options: ["কন্দ (Bulb)", "টিউবার", "রাইজোম", "অফসেট"], answer: "কন্দ (Bulb)", explanation: "পাঠ ৫-৭ অনুযায়ী, পিঁয়াজ, রসুন ইত্যাদি উদ্ভিদের কাণ্ড হলো কন্দ, যা খুবই ক্ষুদ্র, গোলাকার ও উত্তল হয়।" },
+            { question: "পিঁয়াজের যে রসালো অংশ আমরা খাই, তা আসলে কী?", options: ["রূপান্তরিত কাণ্ড", "রসাল শঙ্কপত্র", "গুচ্ছমূল", "বীজ"], answer: "রসাল শঙ্কপত্র", explanation: "পাঠ ৫-৭ এর চিত্র ও বর্ণনা অনুযায়ী, পিঁয়াজের কন্দটি পুরু ও রসালো শঙ্কপত্র দ্বারা এমনভাবে আবৃত থাকে যে কাণ্ডটি দেখা যায় না। আমরা এই শঙ্কপত্রই খাই।" },
+            { question: "ওলকচু কোন ধরনের রূপান্তরিত কাণ্ড?", options: ["রাইজোম", "টিউবার", "কন্দ", "গুঁড়িকন্দ (Corm)"], answer: "গুঁড়িকন্দ (Corm)", explanation: "পাঠ-৬ এ ওলকচুকে গুঁড়িকন্দের উদাহরণ হিসেবে দেখানো হয়েছে। এই কাণ্ড বেশ বড় এবং আকৃতিতে প্রায় গোলাকার হয়।" },
+            { question: "থানকুনি ও দূর্বাঘাসের মাটির উপরে অবস্থিত শায়িত শাখাকে কী বলা হয়?", options: ["স্টোলন", "রানার বা ধাবক", "সাকার", "অফসেট"], answer: "রানার বা ধাবক", explanation: "পাঠ-৬ অনুযায়ী, থানকুনি, দূর্বাঘাসের মতো উদ্ভিদের কাণ্ডের নিচের পর্বের কাক্ষিক মুকুল থেকে উৎপন্ন শায়িত শাখাকে ধাবক বা রানার বলে।" },
+            { question: "কচু উদ্ভিদের গোড়া থেকে যে লম্বা বক্র শাখা বের হয় এবং যার শুধুমাত্র পর্ব মাটি স্পর্শ করে, তাকে কী বলে?", options: ["ধাবক", "স্টোলন বা বক্র ধাবক", "অফসেট", "সাকার"], answer: "স্টোলন বা বক্র ধাবক", explanation: "পাঠ-৬ অনুসারে, কচু উদ্ভিদের গোড়া থেকে লম্বা শাখা বের হয় যা বক্রভাবে অবস্থান করে, একে স্টোলন বলে।" },
+            { question: "টোপাপানা ও কচুরিপানার খর্বাকৃতির কাণ্ডকে কী বলে?", options: ["স্টোলন", "অফসেট", "ধাবক", "গুঁড়িকন্দ"], answer: "অফসেট", explanation: "পাঠ-৬ এ বলা হয়েছে, টোপাপানা, কচুরিপানার মতো জলজ উদ্ভিদের পর্বমধ্যগুলো ছোট ও মোটা হওয়ায় কাণ্ডকে খর্বাকৃতি দেখায়, এদের অফসেট বলে।" },
+            { question: "চন্দ্রমল্লিকা ও বাঁশের শায়িত কাক্ষিক মুকুল থেকে উৎপন্ন শাখাকে কী বলে?", options: ["ধাবক", "স্টোলন", "সাকার বা উর্ধ্ব ধাবক", "অফসেট"], answer: "সাকার বা উর্ধ্ব ধাবক", explanation: "পাঠ-৬ অনুযায়ী, চন্দ্রমল্লিকা, বাঁশ প্রভৃতি উদ্ভিদের শায়িত কাক্ষিক মুকুল থেকে উৎপন্ন শাখাটির অগ্রভাগ মাটির উপরে চলে আসে, একে সাকার বলে।" },
+            { question: "ফণীমনসার পাতার মতো চ্যাপ্টা ও সবুজ অংশটি আসলে কী?", options: ["সাধারণ পাতা", "রূপান্তরিত মূল", "পর্ণকাণ্ড (ফাইলোক্ল্যাড)", "ফুল"], answer: "পর্ণকাণ্ড (ফাইলোক্ল্যাড)", explanation: "পাঠ-৬ এ ফণীমনসাকে পর্ণকাণ্ডের উদাহরণ হিসেবে উল্লেখ করা হয়েছে, যার কাণ্ড পাতার মতো চ্যাপ্টা ও সবুজ হয়ে খাদ্য তৈরির কাজ করে।" },
+            { question: "বেল ও ময়নাকাঁটার কাঁটাগুলো উদ্ভিদের কোন অঙ্গের রূপান্তর?", options: ["পাতা", "মূল", "শাখা কণ্টক (কাণ্ড)", "ফুল"], answer: "শাখা কণ্টক (কাণ্ড)", explanation: "পাঠ-৭ অনুযায়ী, বেল, ময়নাকাঁটা ইত্যাদি উদ্ভিদের কাক্ষিক মুকুল শাখায় পরিণত না হয়ে শক্ত ও সূঁচালো কাঁটায় রূপান্তরিত হয়, যাকে শাখা কণ্টক বলে।" },
+            { question: "ঝুমকোলতা, হাড়জোড়া ইত্যাদি উদ্ভিদের প্যাঁচানো সুতার মতো অংশকে কী বলে?", options: ["শাখা আকর্ষী", "শাখা কণ্টক", "বুলবিল", "পত্র আকর্ষী"], answer: "শাখা আকর্ষী", explanation: "পাঠ-৭ এ বলা হয়েছে, ঝুমকোলতার মতো দুর্বল আরোহী উদ্ভিদের পত্রকক্ষ থেকে সুতার মতো যে প্যাঁচানো অংশ বের হয়, তাকে শাখা আকর্ষী বা স্টেম টেনড্রিল বলে।" },
+            { question: "'গাছ আলু' উদ্ভিদে খাদ্য সঞ্চয় করে গোলাকার মাংসপিণ্ডের আকার ধারণ করা অঙ্গটির নাম কী?", options: ["টিউবার", "ফল", "বুলবিল", "কন্দ"], answer: "বুলবিল", explanation: "পাঠ-৭ অনুযায়ী, গাছ আলুর কাক্ষিক মুকুল শাখায় পরিণত না হয়ে প্রচুর খাদ্য সঞ্চয় করে গোলাকার মাংসপিণ্ডের আকার ধারণ করে, একে বুলবিল বলে।" },
+            // পাঠ ৮: রূপান্তরিত পাতা (42-50)
+            { question: "জংলি মটর গাছের পাতা আরোহণের জন্য কীসে রূপান্তরিত হয়?", options: ["কণ্টক পত্রে", "শঙ্কপত্রে", "আকর্ষীতে (টেনড্রিল)", "পতঙ্গ ফাঁদে"], answer: "আকর্ষীতে (টেনড্রিল)", explanation: "পাঠ-৮ অনুযায়ী, জংলি মটর গাছে সম্পূর্ণ পাতা বা পাতার শীর্ষভাগ প্যাঁচানো স্প্রিং-এর মতো আকর্ষীতে রূপান্তরিত হয়ে গাছকে কোনো কিছু আঁকড়ে ধরতে সাহায্য করে।" },
+            { question: "কলসি উদ্ভিদ এবং ঝাঁঝি নামক জলজ উদ্ভিদের পাতা রূপান্তরিত হয়ে কী তৈরি করে?", options: ["আকর্ষী", "কণ্টক", "শঙ্কপত্র", "পতঙ্গ ফাঁদ"], answer: "পতঙ্গ ফাঁদ", explanation: "পাঠ-৮ এ বলা হয়েছে, কলসি উদ্ভিদ ও ঝাঁঝির পাতা রূপান্তরিত হয়ে কলসি বা থলের মতো রূপ ধারণ করে, যা পোকামাকড় ধরার ফাঁদ হিসেবে কাজ করে।" },
+            { question: "পাথরকুচি উদ্ভিদ কিসের মাধ্যমে বংশবিস্তার করে?", options: ["বুলবিলের মাধ্যমে", "রূপান্তরিত পাতার মাধ্যমে", "অফসেটের মাধ্যমে", "ধাবকের মাধ্যমে"], answer: "রূপান্তরিত পাতার মাধ্যমে", explanation: "পাঠ-৮ অনুযায়ী, পাথরকুচি উদ্ভিদের পাতার কিনারা থেকে কুঁড়ি গজায় এবং তা থেকে গুচ্ছমূল গজিয়ে নতুন স্বাধীন উদ্ভিদের জন্ম হয়।" },
+            { question: "লেবু গাছের কাঁটা উদ্ভিদের কোন অঙ্গের রূপান্তর?", options: ["কাণ্ডের", "মূলের", "পত্রের", "ফুলের"], answer: "পত্রের", explanation: "পাঠ-৮ এ কণ্টক পত্রের উদাহরণ হিসেবে লেবুর কথা বলা হয়েছে, যেখানে পাতা কাঁটায় রূপান্তরিত হয়। এটি শাখা কণ্টক থেকে ভিন্ন।" },
+            { question: "ভূ-নিম্নস্থ কাণ্ডের পাতলা আঁশের মতো পাতাকে কী বলে?", options: ["সাধারণ পাতা", "পর্ণকাণ্ড", "শঙ্কপত্র", "বুলবিল"], answer: "শঙ্কপত্র", explanation: "পাঠ-৮ অনুযায়ী, আলু, আদা, হলুদ ইত্যাদি ভূ-নিম্নস্থ কাণ্ডের পাতা পাতলা আঁশের মতো আকার ধারণ করে, এদের শঙ্কপত্র বলে।" },
+            { question: "পিঁয়াজের রসাল শঙ্কপত্রের প্রধান কাজ কী?", options: ["আত্মরক্ষা করা", "শ্বসন চালানো", "খাদ্য সঞ্চয় করা", "প্রজনন করা"], answer: "খাদ্য সঞ্চয় করা", explanation: "পাঠ-৮ এ বলা হয়েছে, পিঁয়াজের রসাল শঙ্কপত্র খাদ্য সঞ্চয় করে এবং কাক্ষিক মুকুলকে রক্ষা করে।" },
+            { question: "মিষ্টি আলু মূল এবং গোল আলু কাণ্ড হওয়ার প্রধান কারণ কী?", options: ["দুটোই মাটির নিচে জন্মায়", "দুটোই খাদ্য সঞ্চয় করে", "গোল আলুতে পর্ব, পর্বমধ্য ও শল্কপত্র থাকে, মিষ্টি আলুতে থাকে না", "মিষ্টি আলু মিষ্টি এবং গোল আলু নয়"], answer: "গোল আলুতে পর্ব, পর্বমধ্য ও শল্কপত্র থাকে, মিষ্টি আলুতে থাকে না", explanation: "কাণ্ডের বৈশিষ্ট্য হলো এতে পর্ব, পর্বমধ্য, শল্কপত্র ও মুকুল থাকে। গোল আলুতে এ সবই (চোখ হলো মুকুল) আছে, কিন্তু মিষ্টি আলুতে নেই, তাই গোল আলু কাণ্ড এবং মিষ্টি আলু মূল।" },
+            { question: "আত্মরক্ষার জন্য কণ্টকে রূপান্তরিত হয় কোনটি?", options: ["শাখা আকর্ষী ও পত্র আকর্ষী", "শাখা কণ্টক ও পত্র কণ্টক", "বুলবিল ও টিউবার", "রাইজোম ও কন্দ"], answer: "শাখা কণ্টক ও পত্র কণ্টক", explanation: "পাঠ-৭ ও ৮ অনুযায়ী, বেল গাছের শাখা এবং লেবু গাছের পাতা উভয়ই কাঁটায় রূপান্তরিত হয়ে উদ্ভিদকে আত্মরক্ষায় সাহায্য করে।" },
+            { question: "কোনটি অর্ধবায়বীয় রূপান্তরিত কাণ্ড নয়?", options: ["ধাবক (রানার)", "স্টোলন", "অফসেট", "রাইজোম"], answer: "রাইজোম", explanation: "পাঠ-৬ অনুযায়ী ধাবক, স্টোলন, অফসেট ও সাকার হলো অর্ধবায়বীয় কাণ্ড। অন্যদিকে, রাইজোম (পাঠ-৫) হলো ভূ-নিম্নস্থ রূপান্তরিত কাণ্ড।" }
+        ];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const overviewScreen = document.getElementById('overview-screen');
+        const startBtn = document.getElementById('start-btn');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerText = document.getElementById('timer-text');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const overviewTitle = document.getElementById('overview-title');
+        const overviewSummary = document.getElementById('overview-summary');
+        const overviewList = document.getElementById('overview-list');
+        const continueBtn = document.getElementById('continue-btn');
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const TIME_LIMIT = 25; // Timer set to 25 seconds as requested
+        let timeLeft = TIME_LIMIT;
+        let userAnswers = [];
+
+        // --- Data Persistence Functions ---
+        function saveQuizState() {
+            const state = {
+                currentQuestionIndex,
+                score,
+                userAnswers
+            };
+            localStorage.setItem('quizProgressPlant', JSON.stringify(state));
+        }
+
+        function loadQuizState() {
+            const savedState = localStorage.getItem('quizProgressPlant');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                currentQuestionIndex = state.currentQuestionIndex;
+                score = state.score;
+                userAnswers = state.userAnswers;
+                
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+
+        function clearQuizState() {
+            localStorage.removeItem('quizProgressPlant');
+        }
+
+        // Check for saved data on page load
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('quizProgressPlant');
+            if (savedData) {
+                const startButtonsContainer = document.querySelector('.start-buttons-container');
+                if(!document.getElementById('continue-saved-btn')){
+                    const continueSavedBtn = document.createElement('button');
+                    continueSavedBtn.id = 'continue-saved-btn';
+                    continueSavedBtn.className = 'btn continue-btn';
+                    continueSavedBtn.textContent = 'আগেরটি চালিয়ে যান';
+                    startButtonsContainer.appendChild(continueSavedBtn);
+                    
+                    continueSavedBtn.addEventListener('click', loadQuizState);
+                }
+            }
+        });
+
+        // --- Core Quiz Functions ---
+
+        startBtn.addEventListener('click', startGame);
+        continueBtn.addEventListener('click', continueQuiz);
+
+        function startGame() {
+            clearQuizState();
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            scoreDisplay.textContent = 'স্কোর: 0';
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            resetState();
+            
+            progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+
+            if(currentQuestionIndex >= questions.length){
+                showOverview(true); 
+                return;
+            }
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionCounter.textContent = `প্রশ্ন ${currentQuestionIndex + 1}/${questions.length}`;
+            questionText.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(button, option));
+                optionsContainer.appendChild(button);
+            });
+            startTimer();
+        }
+        
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerText.textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    selectAnswer(null, null); 
+                }
+            }, 1000);
+        }
+
+        function resetState() {
+            clearInterval(timer);
+            optionsContainer.innerHTML = '';
+        }
+        
+        function selectAnswer(selectedButton, selectedOption) {
+            clearInterval(timer);
+            const correctOption = questions[currentQuestionIndex].answer;
+            const isCorrect = selectedOption === correctOption;
+            
+            userAnswers.push({
+                question: questions[currentQuestionIndex].question,
+                yourAnswer: selectedOption === null ? 'সময় শেষ' : selectedOption,
+                correctAnswer: correctOption,
+                explanation: questions[currentQuestionIndex].explanation,
+                isCorrect: isCorrect,
+            });
+
+            Array.from(optionsContainer.children).forEach(button => {
+                if(button.textContent === correctOption) button.classList.add('correct');
+                if(button === selectedButton && !isCorrect) button.classList.add('incorrect');
+                button.disabled = true;
+            });
+            
+            if (isCorrect) {
+                score++;
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+            }
+
+            saveQuizState(); // Save progress after each answer
+
+            setTimeout(handleNext, 1500);
+        }
+
+        function handleNext(){
+            currentQuestionIndex++;
+            if(currentQuestionIndex % 10 === 0 && currentQuestionIndex > 0) {
+                showOverview(currentQuestionIndex === questions.length);
+            } else {
+                 loadQuestion();
+            }
+        }
+
+        function showOverview(isFinal) {
+            showScreen('overview-screen');
+            if (isFinal) {
+                clearQuizState(); // Clear data when quiz is finished
+                 const continueSavedBtn = document.getElementById('continue-saved-btn');
+                if (continueSavedBtn) {
+                    continueSavedBtn.remove();
+                }
+            }
+
+            let start = Math.floor((currentQuestionIndex -1) / 10) * 10;
+            let end = currentQuestionIndex;
+
+            overviewTitle.textContent = isFinal ? 'চূড়ান্ত ফলাফল' : `পার্ট ${end/10} এর সারসংক্ষেপ`;
+            
+            overviewList.innerHTML = '';
+            // Display only the last 10 answers in the intermediate overview
+            const startIndex = isFinal ? 0 : start;
+            for(let i = startIndex; i < end; i++){
+                const answer = userAnswers[i];
+                const item = document.createElement('div');
+                item.classList.add('overview-item');
+                const statusIcon = answer.isCorrect ? '✔' : '✖';
+                const statusClass = answer.isCorrect ? 'status-correct' : 'status-incorrect';
+                
+                item.innerHTML = `
+                    <div class="overview-status ${statusClass}">${statusIcon}</div>
+                    <p class="question"><strong>প্রশ্ন ${i + 1}:</strong> ${answer.question}</p>
+                    <p><strong>তোমার উত্তর:</strong> ${answer.yourAnswer}</p>
+                    <p><strong>সঠিক উত্তর:</strong> ${answer.correctAnswer}</p>
+                    <p class="explanation"><strong>ব্যাখ্যা:</strong> ${answer.explanation}</p>
+                `;
+                overviewList.prepend(item);
+            }
+            
+            overviewSummary.innerHTML = `
+                <span class="summary-correct">✔ মোট সঠিক: ${score}</span>
+                <span class="summary-incorrect">✖ মোট ভুল: ${currentQuestionIndex - score}</span>
+            `;
+            
+            if(isFinal) {
+                continueBtn.textContent = 'পুনরায় খেলুন';
+            } else {
+                continueBtn.textContent = 'পরবর্তী ধাপে যান';
+            }
+        }
+
+        function continueQuiz() {
+            if (currentQuestionIndex >= questions.length) {
+                // Instead of reloading, just go back to the start screen for a smoother experience
+                clearQuizState();
+                const continueSavedBtn = document.getElementById('continue-saved-btn');
+                if (continueSavedBtn) {
+                    continueSavedBtn.remove();
+                }
+                showScreen('start-screen');
+            } else {
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+    </script>
+</body>
+</html>

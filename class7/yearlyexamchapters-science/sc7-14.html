@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>জলবায়ু পরিবর্তন কুইজ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&family=Poppins:wght@600&display=swap');
+
+        :root {
+            --primary-bg: #4e54c8;
+            --secondary-bg: #8f94fb;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #333;
+            --accent-color: #f7b733;
+            --correct-color: #2ecc71;
+            --incorrect-color: #e74c3c;
+            --light-gray: #f0f0f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --border-radius: 15px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary-bg);
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--primary-bg);
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .start-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), #fdc830);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(247, 183, 51, 0.4);
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(247, 183, 51, 0.6);
+        }
+        
+        .btn.continue-btn {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+             box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+        .btn.continue-btn:hover {
+             box-shadow: 0 7px 20px rgba(52, 152, 219, 0.6);
+        }
+
+
+        #quiz-screen .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        #question-counter, #score-display {
+             background: var(--light-gray);
+             padding: 8px 15px;
+             border-radius: 20px;
+        }
+
+        #timer {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-bg);
+        }
+        
+        #progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--correct-color), var(--accent-color));
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+        }
+        
+        #question-text {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            min-height: 80px;
+        }
+        
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .option-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1em;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--light-gray);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-bg);
+            background-color: #f7f7ff;
+            transform: scale(1.02);
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-color);
+            color: white;
+            border-color: var(--incorrect-color);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        #overview-screen h2 { margin-bottom: 10px; }
+        #overview-summary { font-size: 1.2em; font-weight: bold; margin-bottom: 25px; background: var(--light-gray); padding: 15px; border-radius: 10px; display: flex; justify-content: center; gap: 30px; }
+        .summary-correct { color: var(--correct-color); }
+        .summary-incorrect { color: var(--incorrect-color); }
+        #overview-list { max-height: 40vh; overflow-y: auto; text-align: left; margin-bottom: 25px; }
+        .overview-item { background: #fff; border: 1px solid var(--light-gray); border-radius: 10px; padding: 15px; margin-bottom: 10px; position: relative; padding-right: 40px; }
+        .overview-item p { margin-bottom: 8px; font-size: 1em; }
+        .overview-item .question { font-weight: bold; }
+        .overview-item .explanation { font-size: 0.9em; color: #555; background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 5px; }
+        .overview-status { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); font-size: 2em; }
+        .status-correct { color: var(--correct-color); }
+        .status-incorrect { color: var(--incorrect-color); }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
+            #question-text { font-size: 1.2em; min-height: 70px; }
+            #options-container { grid-template-columns: 1fr; }
+            .option-btn { padding: 15px; font-size: 1em; }
+            #quiz-screen .header { flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>জলবায়ু পরিবর্তন কুইজ</h1>
+            <p>এই অধ্যায়ের উপর আপনার দক্ষতা যাচাই করুন। প্রতিটি প্রশ্নের জন্য সময় পাবেন ২৫ সেকেন্ড।</p>
+            <p><strong>মোট ৫০টি প্রশ্ন</strong></p>
+            <div class="start-buttons-container">
+                <button id="start-btn" class="btn">নতুন কুইজ শুরু করুন</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div id="question-counter"></div>
+                <div id="timer">
+                    <span id="timer-text">25</span>
+                </div>
+                <div id="score-display">স্কোর: 0</div>
+            </div>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="question-text"></div>
+            <div id="options-container"></div>
+        </div>
+        
+        <!-- Overview Screen -->
+        <div id="overview-screen" class="screen">
+            <h2 id="overview-title"></h2>
+            <div id="overview-summary"></div>
+            <div id="overview-list"></div>
+            <button id="continue-btn" class="btn continue-btn"></button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // পাঠ ১-২: পৃথিবীর বায়ুমণ্ডল
+            { question: "বায়ুমণ্ডল মূলত কোন দুটি গ্যাস দিয়ে তৈরি?", options: ["অক্সিজেন ও কার্বন ডাইঅক্সাইড", "নাইট্রোজেন ও অক্সিজেন", "হাইড্রোজেন ও হিলিয়াম", "আর্গন ও জলীয়বাষ্প"], answer: "নাইট্রোজেন ও অক্সিজেন", explanation: "পাঠ ১-২ অনুযায়ী, বায়ুমণ্ডল মূলত নাইট্রোজেন ও অক্সিজেন দিয়ে তৈরি।" },
+            { question: "ভূপৃষ্ঠের কাছাকাছি বায়ুমণ্ডল ঘন থাকে কেন?", options: ["বেশি বাতাস থাকার কারণে", "তাপমাত্রা বেশি থাকার কারণে", "পৃথিবীর টানের (মহাকর্ষ) ফলে", "মেঘ থাকার কারণে"], answer: "পৃথিবীর টানের (মহাকর্ষ) ফলে", explanation: "পাঠ ১-২ এ বলা হয়েছে, পৃথিবী সকল কিছুকে তার নিজের দিকে টানে। সেই টানের ফলে বায়ুমণ্ডলের গ্যাসগুলো পৃথিবীর পৃষ্ঠের কাছাকাছি থাকে, তাই বায়ুমণ্ডল ঘন হয়।" },
+            { question: "ভূপৃষ্ঠ থেকে প্রায় ১২ কিলোমিটার পর্যন্ত বিস্তৃত বায়ুমণ্ডলের স্তরকে কী বলা হয়?", options: ["স্ট্রাটোমণ্ডল", "মেসোমণ্ডল", "তাপমণ্ডল", "ট্রপোমণ্ডল"], answer: "ট্রপোমণ্ডল", explanation: "পাঠ ১-২ এ উল্লেখ আছে, ভূপৃষ্ঠ থেকে বারো কিলোমিটার পর্যন্ত বায়ুমণ্ডলকে বলা হয় ট্রপোমণ্ডল।" },
+            { question: "মেঘ, বৃষ্টি, বায়ুপ্রবাহ, ঝড় ইত্যাদি কোন স্তরে ঘটে?", options: ["ট্রপোমণ্ডল", "স্ট্রাটোমণ্ডল", "মেসোমণ্ডল", "তাপমণ্ডল"], answer: "ট্রপোমণ্ডল", explanation: "ট্রপোমণ্ডল স্তরে মানুষ ও জীবের জীবনকে প্রভাবিত করে এমন সব ঘটনা, যেমন মেঘ, বৃষ্টি, ঝড় ইত্যাদি ঘটে। তাই এটি সবচেয়ে গুরুত্বপূর্ণ স্তর।" },
+            { question: "স্ট্রাটোমণ্ডলে অবস্থিত কোন গ্যাস সূর্যের ক্ষতিকারক রশ্মি থেকে আমাদের রক্ষা করে?", options: ["নাইট্রোজেন", "অক্সিজেন", "ওজোন", "কার্বন ডাইঅক্সাইড"], answer: "ওজোন", explanation: "পাঠ ১-২ অনুযায়ী, স্ট্রাটোমণ্ডলে রয়েছে ওজোন নামের একটি গ্যাস যা সূর্যের ক্ষতিকারক রশ্মি থেকে আমাদের রক্ষা করে।" },
+            { question: "বায়ুমণ্ডলের কোন স্তরটি প্রায় বায়ুশূন্য?", options: ["ট্রপোমণ্ডল", "স্ট্রাটোমণ্ডল", "মেসোমণ্ডল", "তাপমণ্ডল"], answer: "তাপমণ্ডল", explanation: "পাঠ ১-২ অনুসারে, তাপমণ্ডল স্তরটি প্রায় বায়ুশূন্য এবং এখানে বায়ুর তাপমাত্রা দ্রুত বাড়ে।" },
+            { question: "কোন স্তরে বেতার তরঙ্গ প্রতিফলিত হয়ে ফিরে আসে?", options: ["মেসোমণ্ডল", "স্ট্রাটোমণ্ডল", "তাপমণ্ডল", "ট্রপোমণ্ডল"], answer: "তাপমণ্ডল", explanation: "পাঠ্যবইয়ের পাঠ ১-২ এ বলা হয়েছে, তাপমণ্ডল স্তরে বেতার তরঙ্গ প্রতিফলিত হয়ে পৃথিবীতে ফিরে আসে।" },
+            { question: "মেসোমণ্ডলের উচ্চতা বাড়ার সাথে সাথে বায়ুর তাপমাত্রার কী পরিবর্তন হয়?", options: ["তাপমাত্রা বাড়ে", "তাপমাত্রা কমে", "তাপমাত্রা একই থাকে", "প্রথমে বাড়ে পরে কমে"], answer: "তাপমাত্রা কমে", explanation: "পাঠ ১-২ থেকে জানা যায়, মেসোমণ্ডল স্তরের উচ্চতা বাড়ার সাথে সাথে বায়ুর তাপমাত্রা কমতে থাকে।" },
+            { question: "বায়ুমণ্ডলের সবচেয়ে গুরুত্বপূর্ণ স্তর কোনটি?", options: ["স্ট্রাটোমণ্ডল", "ট্রপোমণ্ডল", "তাপমণ্ডল", "মেসোমণ্ডল"], answer: "ট্রপোমণ্ডল", explanation: "যেহেতু ট্রপোমণ্ডলে জীবের জন্য প্রয়োজনীয় উপাদান এবং আবহাওয়ার সকল ঘটনা ঘটে, তাই এটিই সবচেয়ে গুরুত্বপূর্ণ স্তর।" },
+            { question: "পর্বতের চূড়ায় শ্বাস নেওয়ার জন্য অক্সিজেন সাথে নিতে হয় কেন?", options: ["উপরে বাতাস দূষিত থাকে", "উপরে বাতাস হালকা বা পাতলা থাকে", "উপরে কার্বন ডাইঅক্সাইড বেশি থাকে", "উপরে ঠাণ্ডা বেশি থাকে"], answer: "উপরে বাতাস হালকা বা পাতলা থাকে", explanation: "ভূপৃষ্ঠ থেকে যত উপরে যাওয়া যায়, বায়ুমণ্ডল তত হালকা বা পাতলা হয়। তাই পর্বতের চূড়ায় অক্সিজেনের পরিমাণ কম থাকে।" },
+
+            // পাঠ ৩: পরিবেশে পানিচক্র
+            { question: "পরিবেশে পানিচক্রের জন্য কোনটি অত্যন্ত গুরুত্বপূর্ণ?", options: ["চাঁদের আলো", "বায়ুপ্রবাহ", "সূর্যতাপ", "গাছপালা"], answer: "সূর্যতাপ", explanation: "পাঠ ৩ এ বলা হয়েছে, পানিচক্রের উপর সূর্যতাপের একটি বড়ো প্রভাব রয়েছে।" },
+            { question: "পানিচক্রের মাধ্যমে পরিবেশে কিসের ভারসাম্য বজায় থাকে?", options: ["তাপমাত্রা ও চাপের", "পানির চাহিদা ও জোগানের", "অক্সিজেন ও কার্বনের", "দিন ও রাতের"], answer: "পানির চাহিদা ও জোগানের", explanation: "পাঠ ৩ অনুযায়ী, পানিচক্রের মাধ্যমে পরিবেশে পানির চাহিদা ও জোগানের মধ্যে একটা ভারসাম্য বজায় থাকে।" },
+            { question: "যদি ভূপৃষ্ঠের পানি বাষ্প না হতো, তাহলে কী ঘটত?", options: ["প্রচুর বন্যা হতো", "বৃষ্টি হতো না", "সমুদ্র শুকিয়ে যেত", "নদীতে পানি বেড়ে যেত"], answer: "বৃষ্টি হতো না", explanation: "পাঠ ৩ এর আলোচনা থেকে বোঝা যায়, পানি বাষ্প না হলে মেঘ তৈরি হতো না এবং এর ফলে বৃষ্টিও হতো না।" },
+            { question: "আমাদের দেশে প্রায় প্রতিবছর বন্যা দেখা যাওয়ার কারণ কী?", options: ["বেশি নদী থাকার কারণে", "বৃষ্টির পানি দ্রুত সরে যেতে না পারলে", "সমুদ্র কাছে থাকার কারণে", "পাহাড় না থাকার কারণে"], answer: "বৃষ্টির পানি দ্রুত সরে যেতে না পারলে", explanation: "পাঠ ৩ এ উল্লেখ করা হয়েছে, অতি বৃষ্টি হলে বৃষ্টির পানি দ্রুত সরে যেতে না পারলে বন্যা হয়।" },
+            { question: "পৃথিবীর তাপমাত্রা বেড়ে গেলে পানিচক্রে কী ধরনের ব্যাঘাত ঘটে?", options: ["পানিচক্র থেমে যায়", "বৃষ্টির পরিমাণ কমে যায়", "বন্যা ও খরার প্রবণতা বাড়ে", "পানিচক্র দ্রুততর হয়"], answer: "বন্যা ও খরার প্রবণতা বাড়ে", explanation: "পাঠ ৩ এবং পরবর্তী আলোচনা অনুযায়ী, তাপমাত্রা বাড়লে পানিচক্রে ব্যাঘাত ঘটে, যা বন্যা, খরা বা অতিবৃষ্টির মতো চরম পরিস্থিতি তৈরি করে।" },
+
+            // পাঠ ৪: পরিবেশে কার্বন ও অক্সিজেনের ভারসাম্য
+            { question: "উদ্ভিদ কোন প্রক্রিয়ায় অক্সিজেন তৈরি করে?", options: ["শ্বসন", "সালোকসংশ্লেষণ", "প্রস্বেদন", "খাদ্যগ্রহণ"], answer: "সালোকসংশ্লেষণ", explanation: "পাঠ ৪ অনুযায়ী, উদ্ভিদ সালোকসংশ্লেষণ প্রক্রিয়ায় বায়ুমণ্ডলের কার্বন ডাইঅক্সাইড ও পানি ব্যবহার করে অক্সিজেন ও গ্লুকোজ তৈরি করে।" },
+            { question: "প্রাণী কীভাবে কার্বন গ্রহণ করে?", options: ["শ্বাস গ্রহণের মাধ্যমে", "উদ্ভিদ থেকে খাদ্য গ্রহণের মাধ্যমে", "পানি পানের মাধ্যমে", "সূর্যের আলো থেকে"], answer: "উদ্ভিদ থেকে খাদ্য গ্রহণের মাধ্যমে", explanation: "পাঠ ৪ এ বলা হয়েছে, প্রাণী উদ্ভিদ থেকে খাদ্য গ্রহণ করার মাধ্যমে কার্বন গ্রহণ করে।" },
+            { question: "কোন প্রক্রিয়ায় জীবদেহ থেকে কার্বন ডাইঅক্সাইড বায়ুমণ্ডলে ফিরে আসে?", options: ["শুধুমাত্র শ্বসন প্রক্রিয়ায়", "শুধুমাত্র দেহ পচনের মাধ্যমে", "শুধুমাত্র দেহ পোড়ানোর মাধ্যমে", "শ্বসন, পচন ও পোড়ানোর মাধ্যমে"], answer: "শ্বসন, পচন ও পোড়ানোর মাধ্যমে", explanation: "পাঠ ৪ এ কার্বনচক্রের তিনটি পথের কথা বলা হয়েছে: শ্বসন, উদ্ভিদ ও প্রাণিদেহ পোড়ানো এবং মাটিতে পচন।" },
+            { question: "উদ্ভিদ ও প্রাণিদেহ মাটিতে পচবার সময় কোন অণুজীব কার্বন ডাইঅক্সাইড বায়ুতে ছাড়ে?", options: ["ভাইরাস ও শৈবাল", "অ্যামিবা", "ব্যাকটেরিয়া ও ছত্রাক", "ইস্ট"], answer: "ব্যাকটেরিয়া ও ছত্রাক", explanation: "পাঠ ৪ অনুসারে, উদ্ভিদ ও প্রাণিদেহ মাটিতে পচবার সময় ব্যাকটেরিয়া ও ছত্রাক কার্বন ডাইঅক্সাইড বায়ুতে ছেড়ে দেয়।" },
+            { question: "পরিবেশে কার্বন ডাইঅক্সাইডের ভারসাম্য নষ্ট হওয়ার ফলে কী হচ্ছে?", options: ["অক্সিজেন কমে যাচ্ছে", "গাছপালা বেড়ে যাচ্ছে", "জলবায়ু পরিবর্তন হচ্ছে", "পৃথিবী ঠাণ্ডা হয়ে যাচ্ছে"], answer: "জলবায়ু পরিবর্তন হচ্ছে", explanation: "পাঠ ৪ এর শেষে বলা হয়েছে, পরিবেশে কার্বনের ভারসাম্য নষ্ট হওয়ার ফলে জলবায়ু পরিবর্তন হচ্ছে।" },
+            
+            // পাঠ ৫: আবহাওয়া ও জলবায়ু
+            { question: "কোনো স্থানের স্বল্প সময়ের বায়ুমণ্ডলের অবস্থাকে কী বলে?", options: ["জলবায়ু", "ঋতু", "আবহাওয়া", "তাপমাত্রা"], answer: "আবহাওয়া", explanation: "পাঠ ৫ এ সংজ্ঞায়িত করা হয়েছে, আবহাওয়া বলতে স্বল্প সময়ের জন্য কোনো নির্দিষ্ট স্থানের বায়ুমণ্ডলের অবস্থাকে বোঝায়।" },
+            { question: "কোনো স্থানের অনেক বছরের আবহাওয়ার গড় ফলকে কী বলে?", options: ["দৈনিক আবহাওয়া", "তাপপ্রবাহ", "জলবায়ু", "বায়ুচাপ"], answer: "জলবায়ু", explanation: "পাঠ ৫ অনুযায়ী, জলবায়ু হলো কোনো স্থানের অনেক বছরের আবহাওয়ার একটি সামগ্রিক বা গড় ফল।" },
+            { question: "বাংলাদেশের জলবায়ু কীরূপ?", options: ["শীতল ও শুষ্ক", "উষ্ণ ও আর্দ্র", "নাতিশীতোষ্ণ", "চরমভাবাপন্ন"], answer: "উষ্ণ ও আর্দ্র", explanation: "পাঠ ৫ এ উদাহরণ হিসেবে বলা হয়েছে, বাংলাদেশের জলবায়ু উষ্ণ ও আর্দ্র, যার অর্থ এখানে বেশ গরম পড়ে এবং বায়ু ভেজা বা আর্দ্র থাকে।" },
+            { question: "নিচের কোনটি আবহাওয়ার উপাদান?", options: ["সমুদ্রস্রোত", "অক্ষাংশ", "বায়ুর তাপমাত্রা", "ভূমির উচ্চতা"], answer: "বায়ুর তাপমাত্রা", explanation: "পাঠ ৫ এ বায়ুর তাপমাত্রা, চাপ, আর্দ্রতা, মেঘ, বৃষ্টিপাত ইত্যাদিকে আবহাওয়ার উপাদান হিসেবে উল্লেখ করা হয়েছে।" },
+            { question: "কোনটির পরিবর্তন হতে অনেক বছর লেগে যায়?", options: ["আবহাওয়া", "দিনরাত", "জলবায়ু", "তাপমাত্রা"], answer: "জলবায়ু", explanation: "আবহাওয়া অল্প সময়ে পরিবর্তিত হতে পারে, কিন্তু কোনো স্থানের জলবায়ু সহসা পরিবর্তন হয় না, এতে অনেক বছর সময় লাগে।" },
+
+            // পাঠ ৬-৭: আবহাওয়ার পরিবর্তন
+            { question: "আবহাওয়া পরিবর্তনের মূল ভূমিকা পালন করে কোনটি?", options: ["চাঁদ", "সমুদ্র", "সূর্যতাপ", "মানুষ"], answer: "সূর্যতাপ", explanation: "পাঠ ৬-৭ এ বলা হয়েছে, আবহাওয়া পরিবর্তনের মূল ভূমিকা আসলে সূর্যতাপের।" },
+            { question: "বায়ু কোন দিক থেকে কোন দিকে প্রবাহিত হয়?", options: ["নিম্নচাপ থেকে উচ্চচাপের দিকে", "উচ্চচাপ থেকে নিম্নচাপের দিকে", "পূর্ব থেকে পশ্চিমে", "উত্তর থেকে দক্ষিণে"], answer: "উচ্চচাপ থেকে নিম্নচাপের দিকে", explanation: "পাঠ ৬-৭ অনুযায়ী, বায়ু উচ্চচাপের এলাকা থেকে নিম্নচাপের এলাকার দিকে প্রবাহিত হয়।" },
+            { question: "কোনো জায়গার তাপমাত্রা বেশি হলে সেখানকার বায়ুচাপ কেমন হয়?", options: ["বায়ুচাপ কমে যায়", "বায়ুচাপ বেড়ে যায়", "বায়ুচাপ একই থাকে", "বায়ুচাপ শূন্য হয়ে যায়"], answer: "বায়ুচাপ কমে যায়", explanation: "তাপমাত্রা বেশি হলে বায়ু উত্তপ্ত হয়ে উপরে উঠে যায়, ফলে ঐ স্থানে বায়ু পাতলা হয়ে যায় এবং বায়ুচাপ কমে যায়। একে নিম্নচাপ বলে।" },
+            { question: "শীতকালে বাংলাদেশে বায়ু উত্তর দিক থেকে আসে কেন?", options: ["উত্তরে সমুদ্র থাকার কারণে", "উত্তরে বায়ুচাপ বেশি থাকার কারণে", "দক্ষিণে পাহাড় থাকার কারণে", "দক্ষিণে বায়ুচাপ বেশি থাকার কারণে"], answer: "উত্তরে বায়ুচাপ বেশি থাকার কারণে", explanation: "পাঠ ৬-৭ অনুসারে, শীতকালে বাংলাদেশের উত্তরে বেশ শীত এবং বায়ুচাপ বেশি থাকে, তাই বায়ু উত্তর দিক থেকে দক্ষিণ দিকে প্রবাহিত হয়।" },
+            { question: "গ্রীষ্ম ও বর্ষাকালে বাংলাদেশে প্রচুর বৃষ্টি হয় কেন?", options: ["স্থলভাগ থেকে শুষ্ক বায়ু আসে", "বঙ্গোপসাগর থেকে জলীয়বাষ্পপূর্ণ বায়ু আসে", "তাপমাত্রা কম থাকে", "বায়ুচাপ বেশি থাকে"], answer: "বঙ্গোপসাগর থেকে জলীয়বাষ্পপূর্ণ বায়ু আসে", explanation: "গ্রীষ্ম ও বর্ষাকালে বাংলাদেশের দক্ষিণে বঙ্গোপসাগর এলাকায় বায়ুচাপ বেশি থাকে। সেই বায়ু বঙ্গোপসাগর থেকে প্রচুর জলীয়বাষ্প নিয়ে আসে যা ঠাণ্ডা হয়ে বৃষ্টি ঘটায়।" },
+            { question: "রাতের বেলায়ও পৃথিবী গরম থাকে কেন?", options: ["চাঁদের আলো তাপ দেয়", "বায়ুমণ্ডলের জলীয়বাষ্প ও CO2 তাপ ধরে রাখে", "মাটির নিচের তাপে", "দিনের তাপ বের হতে পারে না"], answer: "বায়ুমণ্ডলের জলীয়বাষ্প ও CO2 তাপ ধরে রাখে", explanation: "পাঠ ৬-৭ অনুযায়ী, পৃথিবীপৃষ্ঠ যে তাপ বিকিরণ করে তা বায়ুমণ্ডলের জলীয়বাষ্প, কার্বন ডাইঅক্সাইড ইত্যাদি শোষণ করে ধরে রাখে, তাই রাতের বেলাও গরম অনুভূত হয়।" },
+            { question: "শীতকালে সূর্য থেকে আমরা কম তাপ পাই কেন?", options: ["সূর্য দূরে থাকে", "সূর্য মেঘে ঢাকা থাকে", "সূর্য তির্যকভাবে এবং কম সময় ধরে কিরণ দেয়", "পৃথিবী দ্রুত ঘোরে"], answer: "সূর্য তির্যকভাবে এবং কম সময় ধরে কিরণ দেয়", explanation: "পাঠ ৬-৭ এ বলা আছে, শীতকালে সূর্য অনেকটা দূর থেকে তির্যকভাবে এবং কম সময় ধরে কিরণ দেয়, তাই আমরা কম গরম অনুভব করি।" },
+            { question: "বাংলাদেশের জলবায়ুর স্বাভাবিক রূপ কোনটি?", options: ["বর্ষাকাল দীর্ঘ ও শীতকাল সংক্ষিপ্ত", "সারা বছর বৃষ্টি", "প্রচণ্ড শীত ও হালকা গরম", "বর্ষা নেই, শুধু গ্রীষ্ম ও শীত"], answer: "বর্ষাকাল দীর্ঘ ও শীতকাল সংক্ষিপ্ত", explanation: "পাঠ ৮-১০ এর শুরুতে বাংলাদেশের জলবায়ুর স্বাভাবিক রূপ বর্ণনা করা হয়েছে, যেখানে পৌষ ও মাঘ মাসে শীত এবং এরপর গ্রীষ্ম ও বর্ষা আসে।" },
+            { question: "বৈশাখ মাসে বাংলাদেশে কী দেখা যায়?", options: ["তুষারপাত", "কালবৈশাখী ঝড়", "ঘূর্ণিঝড়", "শৈত্যপ্রবাহ"], answer: "কালবৈশাখী ঝড়", explanation: "পাঠ ৮-১০ এ বলা হয়েছে, বৈশাখ মাসে প্রতিবছরই কালবৈশাখী দেখা যায় যা বাংলাদেশের জলবায়ুর স্বাভাবিক রূপের অংশ।" },
+            { question: "শীতকালে বাংলাদেশের বায়ু শুষ্ক থাকে কেন?", options: ["বায়ু সমুদ্র থেকে আসে", "বায়ুতে জলীয়বাষ্প কম থাকে", "প্রচুর বৃষ্টি হয়", "তাপমাত্রা বেশি থাকে"], answer: "বায়ুতে জলীয়বাষ্প কম থাকে", explanation: "শীতকালে বায়ু স্থলভাগ থেকে আসে বলে এতে জলীয়বাষ্প কম থাকে। এজন্য শীতকালে বায়ু শুষ্ক থাকে এবং বৃষ্টি কম হয়।" },
+
+            // পাঠ ৮-১০: জলবায়ুর পরিবর্তন ও বৈশ্বিক উষ্ণায়ন
+            { question: "পৃথিবীর গড় তাপমাত্রা ধীরে ধীরে বেড়ে যাওয়াকে কী বলে?", options: ["গ্রিনহাউস প্রভাব", "বৈশ্বিক উষ্ণায়ন", "আবহাওয়া পরিবর্তন", "ওজোন ক্ষয়"], answer: "বৈশ্বিক উষ্ণায়ন", explanation: "পাঠ ৮-১০ এ পৃথিবীর গড় তাপমাত্রা ধীরে ধীরে বেড়ে যাওয়াকে বৈশ্বিক উষ্ণায়ন (Global warming) হিসেবে সংজ্ঞায়িত করা হয়েছে।" },
+            { question: "বৈশ্বিক উষ্ণায়নের মূল কারণ কী?", options: ["ওজোন স্তরের ক্ষয়", "অক্সিজেনের পরিমাণ বৃদ্ধি", "বায়ুমণ্ডলে কার্বন ডাইঅক্সাইডের পরিমাণ বৃদ্ধি", "সূর্যের তাপমাত্রা বৃদ্ধি"], answer: "বায়ুমণ্ডলে কার্বন ডাইঅক্সাইডের পরিমাণ বৃদ্ধি", explanation: "পাঠ ৮-১০ অনুসারে, বৈশ্বিক উষ্ণায়নের মূল কারণ বায়ুমণ্ডলে কার্বন ডাইঅক্সাইড গ্যাসের পরিমাণ বৃদ্ধি।" },
+            { question: "বৈশ্বিক উষ্ণায়নের ফলে কোনটি ঘটছে?", options: ["সমুদ্রপৃষ্ঠের উচ্চতা কমে যাচ্ছে", "পর্বতের চূড়ার বরফ গলে যাচ্ছে", "পৃথিবী ঠাণ্ডা হয়ে যাচ্ছে", "মরুভূমি কমে যাচ্ছে"], answer: "পর্বতের চূড়ার বরফ গলে যাচ্ছে", explanation: "পৃথিবীর তাপমাত্রা বৃদ্ধির ফলে পর্বতের চূড়ার ও মেরু অঞ্চলের বরফ গলে যাচ্ছে, যা সমুদ্রপৃষ্ঠের উচ্চতা বাড়িয়ে দিচ্ছে।" },
+            { question: "গ্রিনহাউস গ্যাস কোনগুলো?", options: ["অক্সিজেন ও নাইট্রোজেন", "কার্বন ডাইঅক্সাইড ও মিথেন", "হাইড্রোজেন ও হিলিয়াম", "শুধুমাত্র জলীয়বাষ্প"], answer: "কার্বন ডাইঅক্সাইড ও মিথেন", explanation: "পাঠ ৮-১০ এ কার্বন ডাইঅক্সাইড, মিথেন আর জলীয়বাষ্পকে গ্রিনহাউস গ্যাস হিসেবে উল্লেখ করা হয়েছে যা পৃথিবীর তাপ ধরে রাখে।" },
+            { question: "গ্রিনহাউস গ্যাস না থাকলে পৃথিবীর অবস্থা কী হতো?", options: ["আরও উষ্ণ হতো", "কোনো পরিবর্তন হতো না", "ভীষণ ঠাণ্ডা হয়ে পড়ত", "প্রাণীর বসবাসের অনুপযোগী হতো"], answer: "ভীষণ ঠাণ্ডা হয়ে পড়ত", explanation: "পাঠ ৮-১০ এ বলা হয়েছে, গ্রিনহাউস গ্যাস না থাকলে পৃথিবী থেকে তাপ বিকিরিত হয়ে মহাশূন্যে চলে যেত আর পৃথিবী ভীষণ ঠাণ্ডা হয়ে পড়ত।" },
+            { question: "শীতপ্রধান দেশে শাক-সবজি ফলানোর জন্য তৈরি কাঁচের ঘরকে কী বলে?", options: ["কাঁচের বাক্স", "শীতাতপ ঘর", "গ্রিনহাউস", "উদ্ভিদ ঘর"], answer: "গ্রিনহাউস", explanation: "পাঠ ৮-১০ এ শীতপ্রধান দেশে তীব্র শীতে শাক-সবজি ফলানোর জন্য ব্যবহৃত কাঁচের ঘরকে গ্রিনহাউস বলা হয়েছে।" },
+            { question: "গ্রিনহাউস কীভাবে কাজ করে?", options: ["তাপ বাইরে থেকে আসতে দেয় না", "আলো ভিতরে আসতে দেয় না", "তাপ ভিতরে আসতে দেয় কিন্তু পুরোপুরি বের হতে দেয় না", "আলো ও তাপ দুটোই আটকে দেয়"], answer: "তাপ ভিতরে আসতে দেয় কিন্তু পুরোপুরি বের হতে দেয় না", explanation: "গ্রিনহাউস প্রভাবের বর্ণনায় বলা হয়েছে, রোদের তাপ কাচ ভেদ করে ভিতরে প্রবেশ করে কিন্তু ভিতরের উত্তপ্ত বায়ু থেকে বিকিরিত তাপ পুরোপুরি বের হতে পারে না, ফলে ঘর গরম থাকে।" },
+            { question: "বায়ুমণ্ডলে কার্বন ডাইঅক্সাইড বেড়ে যাওয়ার প্রধান কারণ কী?", options: ["বেশি করে গাছ লাগানো", "আগ্নেয়গিরির অগ্ন্যুৎপাত", "কয়লা, পেট্রোলিয়াম ও প্রাকৃতিক গ্যাস পোড়ানো", "কৃষিকাজ"], answer: "কয়লা, পেট্রোলিয়াম ও প্রাকৃতিক গ্যাস পোড়ানো", explanation: "শিল্পবিপ্লবের পর কলকারখানা ও যানবাহনে কয়লা, পেট্রোলিয়াম ও প্রাকৃতিক গ্যাস (জীবাশ্ম জ্বালানি) পোড়ানোর ফলে বায়ুমণ্ডলে কার্বন ডাইঅক্সাইড বেড়ে যাচ্ছে।" },
+            { question: "বৈশ্বিক উষ্ণায়ন রোধের প্রধান উপায় কী?", options: ["বেশি করে এসি ব্যবহার করা", "কার্বন ডাইঅক্সাইড নিঃসরণ কমানো", "বরফ আমদানি করা", "ঘর ঠাণ্ডা রাখা"], answer: "কার্বন ডাইঅক্সাইড নিঃসরণ কমানো", explanation: "পাঠ ৮-১০ এর শেষে বলা হয়েছে, বৈশ্বিক উষ্ণায়ন মোকাবেলায় প্রধান সুপারিশ হলো কার্বন ডাইঅক্সাইড নিঃসরণ কমানো।" },
+            { question: "বেশি করে গাছ লাগালে বৈশ্বিক উষ্ণায়ন কমে কেন?", options: ["গাছ ছায়া দেয়", "গাছ অক্সিজেন ছাড়ে", "গাছ কার্বন ডাইঅক্সাইড গ্রহণ করে", "গাছ থেকে বৃষ্টি হয়"], answer: "গাছ কার্বন ডাইঅক্সাইড গ্রহণ করে", explanation: "গাছ খাদ্য তৈরির জন্য বায়ুমণ্ডল থেকে কার্বন ডাইঅক্সাইড গ্রহণ করে। তাই বেশি গাছ লাগালে বায়ুমণ্ডলে কার্বন ডাইঅক্সাইড কমে আসে।" },
+            { question: "নবায়নযোগ্য জ্বালানির উদাহরণ কোনটি?", options: ["কয়লা", "পেট্রোল", "সৌরশক্তি", "প্রাকৃতিক গ্যাস"], answer: "সৌরশক্তি", explanation: "পাঠ ৮-১০ এ কয়লা, পেট্রোলিয়ামের বদলে নবায়নযোগ্য জ্বালানি যেমন- সৌরশক্তি, বায়ুপ্রবাহ ইত্যাদি ব্যবহারের কথা বলা হয়েছে।" },
+            { question: "জলবায়ু পরিবর্তনের ফলে কোন ধরনের প্রাকৃতিক দুর্যোগ বাড়তে পারে?", options: ["ভূমিকম্প", "সুনামি", "খরা ও অতিবৃষ্টি", "আগ্নেয়গিরি"], answer: "খরা ও অতিবৃষ্টি", explanation: "পাঠ ৮-১০ এ বলা হয়েছে, তাপমাত্রা বেড়ে গেলে বিরূপ আবহাওয়া যেমন খরা, অতিবৃষ্টি এবং প্রাকৃতিক দুর্যোগ বেশি বেশি ঘটতে দেখা যাবে।" },
+            { question: "কোন বিপ্লবের পর থেকে বায়ুমণ্ডলে কার্বন ডাইঅক্সাইড উল্লেখযোগ্যভাবে বাড়ছে?", options: ["ফরাসি বিপ্লব", "শিল্প বিপ্লব", "সবুজ বিপ্লব", "সাংস্কৃতিক বিপ্লব"], answer: "শিল্প বিপ্লব", explanation: "পাঠ ৮-১০ এ উল্লেখ করা হয়েছে যে, ইউরোপে শিল্পবিপ্লবের পর থেকে পৃথিবীর বিভিন্ন দেশে জীবাশ্ম জ্বালানি পোড়ানো হচ্ছে, যা CO2 বৃদ্ধির অন্যতম কারণ।" },
+            { question: "বৈশ্বিক উষ্ণায়নের জন্য আশীর্বাদ কীভাবে সমস্যায় পরিণত হয়েছে?", options: ["অক্সিজেন বেড়ে গিয়ে", "তাপমাত্রা কমে গিয়ে", "গ্রিনহাউস গ্যাসের পরিমাণ অতিরিক্ত বেড়ে যাওয়ায়", "সূর্য কাছে আসায়"], answer: "গ্রিনহাউস গ্যাসের পরিমাণ অতিরিক্ত বেড়ে যাওয়ায়", explanation: "গ্রিনহাউস গ্যাস পৃথিবীকে উষ্ণ রেখে প্রাণের জন্য আশীর্বাদ ছিল। কিন্তু এর পরিমাণ অতিরিক্ত বেড়ে যাওয়ায় এখন এটি সমস্যায় পরিণত হয়েছে।" },
+            { question: "সমুদ্রের পানি প্রসারিত হওয়ার কারণ কী?", options: ["বেশি বৃষ্টিপাত", "নদীর পানি বৃদ্ধি", "তাপমাত্রা বৃদ্ধি", "বরফ জমা"], answer: "তাপমাত্রা বৃদ্ধি", explanation: "পাঠ ৮-১০ অনুযায়ী, পৃথিবীর তাপমাত্রা বৃদ্ধির ফলে শুধু বরফই গলছে না, সমুদ্রের পানিও প্রসারিত হচ্ছে, যা সমুদ্রপৃষ্ঠের উচ্চতা বাড়াচ্ছে।" }
+        ];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const overviewScreen = document.getElementById('overview-screen');
+        const startBtn = document.getElementById('start-btn');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerText = document.getElementById('timer-text');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const overviewTitle = document.getElementById('overview-title');
+        const overviewSummary = document.getElementById('overview-summary');
+        const overviewList = document.getElementById('overview-list');
+        const continueBtn = document.getElementById('continue-btn');
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const TIME_LIMIT = 25; // As requested
+        let timeLeft = TIME_LIMIT;
+        let userAnswers = [];
+
+        // --- Data Persistence Functions ---
+        function saveQuizState() {
+            const state = {
+                currentQuestionIndex,
+                score,
+                userAnswers
+            };
+            localStorage.setItem('quizProgress', JSON.stringify(state));
+        }
+
+        function loadQuizState() {
+            const savedState = localStorage.getItem('quizProgress');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                currentQuestionIndex = state.currentQuestionIndex;
+                score = state.score;
+                userAnswers = state.userAnswers;
+                
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+
+        function clearQuizState() {
+            localStorage.removeItem('quizProgress');
+        }
+
+        // Check for saved data on page load
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('quizProgress');
+            if (savedData) {
+                const startButtonsContainer = document.querySelector('.start-buttons-container');
+                const continueSavedBtn = document.createElement('button');
+                continueSavedBtn.id = 'continue-saved-btn';
+                continueSavedBtn.className = 'btn continue-btn';
+                continueSavedBtn.textContent = 'আগেরটি চালিয়ে যান';
+                startButtonsContainer.appendChild(continueSavedBtn);
+                
+                continueSavedBtn.addEventListener('click', loadQuizState);
+            }
+        });
+
+        // --- Core Quiz Functions ---
+
+        startBtn.addEventListener('click', startGame);
+        continueBtn.addEventListener('click', continueQuiz);
+
+        function startGame() {
+            clearQuizState();
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            scoreDisplay.textContent = 'স্কোর: 0';
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            resetState();
+            
+            progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+
+            if(currentQuestionIndex >= questions.length){
+                showOverview(true); 
+                return;
+            }
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionCounter.textContent = `প্রশ্ন ${currentQuestionIndex + 1}/${questions.length}`;
+            questionText.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(button, option));
+                optionsContainer.appendChild(button);
+            });
+            startTimer();
+        }
+        
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerText.textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    selectAnswer(null, null); 
+                }
+            }, 1000);
+        }
+
+        function resetState() {
+            clearInterval(timer);
+            optionsContainer.innerHTML = '';
+        }
+        
+        function selectAnswer(selectedButton, selectedOption) {
+            clearInterval(timer);
+            const correctOption = questions[currentQuestionIndex].answer;
+            const isCorrect = selectedOption === correctOption;
+            
+            userAnswers.push({
+                question: questions[currentQuestionIndex].question,
+                yourAnswer: selectedOption === null ? 'সময় শেষ' : selectedOption,
+                correctAnswer: correctOption,
+                explanation: questions[currentQuestionIndex].explanation,
+                isCorrect: isCorrect,
+            });
+
+            Array.from(optionsContainer.children).forEach(button => {
+                if(button.textContent === correctOption) button.classList.add('correct');
+                if(button === selectedButton && !isCorrect) button.classList.add('incorrect');
+                button.disabled = true;
+            });
+            
+            if (isCorrect) {
+                score++;
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+            }
+
+            saveQuizState(); // Save progress after each answer
+
+            setTimeout(handleNext, 1500);
+        }
+
+        function handleNext(){
+            currentQuestionIndex++;
+            if(currentQuestionIndex % 10 === 0 && currentQuestionIndex > 0) {
+                showOverview(currentQuestionIndex === questions.length);
+            } else {
+                 loadQuestion();
+            }
+        }
+
+        function showOverview(isFinal) {
+            showScreen('overview-screen');
+            if (isFinal) {
+                clearQuizState(); // Clear data when quiz is finished
+            }
+
+            let start = Math.floor((currentQuestionIndex -1) / 10) * 10;
+            let end = currentQuestionIndex;
+
+            overviewTitle.textContent = isFinal ? 'চূড়ান্ত ফলাফল' : `পার্ট ${end/10} এর সারসংক্ষেপ`;
+            
+            overviewList.innerHTML = '';
+            for(let i = 0; i < end; i++){
+                const answer = userAnswers[i];
+                const item = document.createElement('div');
+                item.classList.add('overview-item');
+                const statusIcon = answer.isCorrect ? '✔' : '✖';
+                const statusClass = answer.isCorrect ? 'status-correct' : 'status-incorrect';
+                
+                item.innerHTML = `
+                    <div class="overview-status ${statusClass}">${statusIcon}</div>
+                    <p class="question"><strong>প্রশ্ন ${i + 1}:</strong> ${answer.question}</p>
+                    <p><strong>তোমার উত্তর:</strong> ${answer.yourAnswer}</p>
+                    <p><strong>সঠিক উত্তর:</strong> ${answer.correctAnswer}</p>
+                    <p class="explanation"><strong>ব্যাখ্যা:</strong> ${answer.explanation}</p>
+                `;
+                overviewList.prepend(item);
+            }
+            
+            overviewSummary.innerHTML = `
+                <span class="summary-correct">✔ মোট সঠিক: ${score}</span>
+                <span class="summary-incorrect">✖ মোট ভুল: ${currentQuestionIndex - score}</span>
+            `;
+            
+            if(isFinal) {
+                continueBtn.textContent = 'পুনরায় খেলুন';
+            } else {
+                continueBtn.textContent = 'পরবর্তী ধাপে যান';
+            }
+        }
+
+        function continueQuiz() {
+            if (currentQuestionIndex >= questions.length) {
+                window.location.reload(); // Reload the page to reset everything cleanly
+            } else {
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+    </script>
+</body>
+</html>
