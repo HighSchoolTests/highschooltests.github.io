@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বাংলাদেশের অর্থনীতি কুইজ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&family=Poppins:wght@600&display=swap');
+
+        :root {
+            --primary-bg: #4e54c8;
+            --secondary-bg: #8f94fb;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #333;
+            --accent-color: #f7b733;
+            --correct-color: #2ecc71;
+            --incorrect-color: #e74c3c;
+            --light-gray: #f0f0f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --border-radius: 15px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary-bg);
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--primary-bg);
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .start-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), #fdc830);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(247, 183, 51, 0.4);
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(247, 183, 51, 0.6);
+        }
+        
+        .btn.continue-btn {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+             box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+        .btn.continue-btn:hover {
+             box-shadow: 0 7px 20px rgba(52, 152, 219, 0.6);
+        }
+
+
+        #quiz-screen .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        #question-counter, #score-display {
+             background: var(--light-gray);
+             padding: 8px 15px;
+             border-radius: 20px;
+        }
+
+        #timer {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-bg);
+        }
+        
+        #progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--correct-color), var(--accent-color));
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+        }
+        
+        #question-text {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            min-height: 80px;
+        }
+        
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .option-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1em;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--light-gray);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-bg);
+            background-color: #f7f7ff;
+            transform: scale(1.02);
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-color);
+            color: white;
+            border-color: var(--incorrect-color);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        #overview-screen h2 { margin-bottom: 10px; }
+        #overview-summary { font-size: 1.2em; font-weight: bold; margin-bottom: 25px; background: var(--light-gray); padding: 15px; border-radius: 10px; display: flex; justify-content: center; gap: 30px; }
+        .summary-correct { color: var(--correct-color); }
+        .summary-incorrect { color: var(--incorrect-color); }
+        #overview-list { max-height: 40vh; overflow-y: auto; text-align: left; margin-bottom: 25px; }
+        .overview-item { background: #fff; border: 1px solid var(--light-gray); border-radius: 10px; padding: 15px; margin-bottom: 10px; position: relative; padding-right: 40px; }
+        .overview-item p { margin-bottom: 8px; font-size: 1em; }
+        .overview-item .question { font-weight: bold; }
+        .overview-item .explanation { font-size: 0.9em; color: #555; background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 5px; }
+        .overview-status { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); font-size: 2em; }
+        .status-correct { color: var(--correct-color); }
+        .status-incorrect { color: var(--incorrect-color); }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
+            #question-text { font-size: 1.2em; min-height: 70px; }
+            #options-container { grid-template-columns: 1fr; }
+            .option-btn { padding: 15px; font-size: 1em; }
+            #quiz-screen .header { flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>বাংলাদেশের অর্থনীতি কুইজ</h1>
+            <p>এই অধ্যায়ের উপর আপনার দক্ষতা যাচাই করুন। প্রতিটি প্রশ্নের জন্য সময় পাবেন ২৫ সেকেন্ড।</p>
+            <p><strong>মোট ৫০টি প্রশ্ন</strong></p>
+            <div class="start-buttons-container">
+                <button id="start-btn" class="btn">নতুন কুইজ শুরু করুন</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div id="question-counter"></div>
+                <div id="timer">
+                    <span id="timer-text">25</span>
+                </div>
+                <div id="score-display">স্কোর: 0</div>
+            </div>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="question-text"></div>
+            <div id="options-container"></div>
+        </div>
+        
+        <!-- Overview Screen -->
+        <div id="overview-screen" class="screen">
+            <h2 id="overview-title"></h2>
+            <div id="overview-summary"></div>
+            <div id="overview-list"></div>
+            <button id="continue-btn" class="btn continue-btn"></button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // পাঠ-১: অনানুষ্ঠানিক অর্থনৈতিক কার্যাবলি (1-10)
+            { question: "যেসব কাজের জন্য পূর্ব মজুরি নির্ধারিত নয় এবং করের আওতায় আনাও কঠিন, সেগুলোকে কী বলে?", options: ["আনুষ্ঠানিক কাজ", "অনানুষ্ঠানিক কাজ", "সরকারি কাজ", "বেসরকারি কাজ"], answer: "অনানুষ্ঠানিক কাজ", explanation: "পাঠ-১ অনুযায়ী, যেসব কাজের জন্য পূর্ব মজুরি নির্ধারিত নয়, করের আওতায় আনা কঠিন এবং যা সরকার কর্তৃক নিয়ন্ত্রিত নয়, তাকে অনানুষ্ঠানিক অর্থনৈতিক কার্যক্রম বলে।" },
+            { question: "গ্রামের একজন কৃষক যখন তার নিজের জমিতে কাজ করে, তখন তা কোন খাতের অন্তর্ভুক্ত হয়?", options: ["আনুষ্ঠানিক খাত", "কৃষি খাত", "অনানুষ্ঠানিক খাত", "সেবা খাত"], answer: "অনানুষ্ঠানিক খাত", explanation: "গ্রামের চাষি ও তার পরিবারের সদস্যরা নিজেদের জমিতে কাজ করার জন্য মজুরি পান না, তাই এটি অনানুষ্ঠানিক অর্থনৈতিক কাজের অন্তর্ভুক্ত।" },
+            { question: "শহর অঞ্চলের অনানুষ্ঠানিক অর্থনৈতিক কাজের একটি উদাহরণ কী?", options: ["ব্যাংকে চাকরি", "ফুটপাতে হকারি", "সরকারি অফিসে কাজ", "শিক্ষকতা"], answer: "ফুটপাতে হকারি", explanation: "পাঠ-১ অনুসারে, শহর অঞ্চলে নিম্নবিত্ত ও বিত্তহীনদের করা ছোটখাটো দোকান, ফুটপাতে হকারি, ফেরিওয়ালা ইত্যাদি অনানুষ্ঠানিক অর্থনৈতিক কাজ।" },
+            { question: "দেশের মোট খাদ্য চাহিদার বড় অংশ কারা উৎপাদন করে?", options: ["শহরের ব্যবসায়ীরা", "শিল্প কারখানার শ্রমিকরা", "গ্রামের কৃষকরা", "সরকারি কর্মকর্তারা"], answer: "গ্রামের কৃষকরা", explanation: "গ্রামের কৃষকরা তাদের অনানুষ্ঠানিক কাজের মাধ্যমে দেশের মোট খাদ্য চাহিদার বড়ো অংশটা উৎপাদন করে জাতীয় অর্থনীতিতে গুরুত্বপূর্ণ অবদান রাখছে।" },
+            { question: "অর্থনীতির 'প্রথাগত খাত' বলতে কোনটিকে বোঝানো হয়?", options: ["শিল্প খাত", "আনুষ্ঠানিক খাত", "বাণিজ্য খাত", "অনানুষ্ঠানিক খাত"], answer: "অনানুষ্ঠানিক খাত", explanation: "অনানুষ্ঠানিক খাতের কাজগুলো অতীতকাল থেকে চলে আসছে বলে অনেকে এসব কাজকে অর্থনীতির প্রথাগত খাতও বলে থাকেন।" },
+            { question: "শহরের ভাসমান বা অস্থায়ী বিত্তহীন মানুষেরা কোথায় বাস করে?", options: ["নিজস্ব বাড়িতে", "অ্যাপার্টমেন্টে", "বস্তি, ফুটপাত, রেলস্টেশন", "সরকারি কোয়ার্টারে"], answer: "বস্তি, ফুটপাত, রেলস্টেশন", explanation: "পাঠ-১ এ বলা হয়েছে, শহরের বিত্তহীনদের মধ্যে অনেকে ভাসমান বা অস্থায়ী, যাদের নিজস্ব বা স্থায়ী বাসাবাড়ি নেই। তারা বস্তি, ফুটপাত, পার্ক, রেলস্টেশন ইত্যাদি স্থানে বাস করে।" },
+            { question: "গ্রামাঞ্চলের কোন কাজটি অনানুষ্ঠানিক অর্থনৈতিক কাজের অন্তর্ভুক্ত?", options: ["স্কুল শিক্ষকতা", "উপজেলা অফিসে চাকরি", "কামার-কুমোরের কাজ", "ব্যাংক ম্যানেজারের দায়িত্ব"], answer: "কামার-কুমোরের কাজ", explanation: "কামার-কুমোরের কাজ, গ্রামের কুটির শিল্প, দোকান ইত্যাদি গ্রামীণ অনানুষ্ঠানিক অর্থনৈতিক কাজের অন্তর্ভুক্ত।" },
+            { question: "জাতীয় অর্থনীতিকে সচল রাখতে কোন খাতটি গুরুত্বপূর্ণ সহায়ক ভূমিকা পালন করে?", options: ["শুধুমাত্র আনুষ্ঠানিক খাত", "শুধুমাত্র শিল্প খাত", "অনানুষ্ঠানিক খাত", "শুধুমাত্র বৈদেশিক বাণিজ্য"], answer: "অনানুষ্ঠানিক খাত", explanation: "কৃষিসহ গ্রামীণ অর্থনীতিতে প্রথাগত বা অনানুষ্ঠানিক খাতটি এখনও প্রধান ভূমিকায় রয়েছে এবং জাতীয় অর্থনীতিতে এটি গুরুত্বপূর্ণ সহায়ক ভূমিকা পালন করছে।" },
+            { question: "অর্থনৈতিক মূল্য রয়েছে এমন যেকোনো কাজ, সেবা বা বিনিময়কে কী বলা হয়?", options: ["সামাজিক কার্যক্রম", "সাংস্কৃতিক কার্যক্রম", "অর্থনৈতিক কার্যক্রম", "রাজনৈতিক কার্যক্রম"], answer: "অর্থনৈতিক কার্যক্রম", explanation: "পাঠ-১ এর শুরুতে বলা হয়েছে, অর্থনৈতিক মূল্য রয়েছে এমন যে-কোনো কাজ, সেবা বা বিনিময়কে অর্থনৈতিক কার্যক্রম বলা হয়।" },
+            { question: "দিনমজুরি কোন ধরনের অর্থনৈতিক কাজের উদাহরণ?", options: ["আনুষ্ঠানিক", "অনানুষ্ঠানিক", "সরকারি", "স্থায়ী"], answer: "অনানুষ্ঠানিক", explanation: "নিজের জমি বা ব্যবসা প্রতিষ্ঠানে কাজ, গৃহস্থালি কর্ম, হকারি, দিনমজুরি প্রভৃতি অনানুষ্ঠানিক অর্থনৈতিক কার্যক্রমের উদাহরণ।" },
+            
+            // পাঠ-২: বাংলাদেশের শিল্প (11-25)
+            { question: "ব্রিটিশ আমল থেকে বাংলাদেশে কোন ধরনের শিল্প প্রতিষ্ঠান গড়ে উঠতে থাকে?", options: ["ঔষধ ও সিমেন্ট", "পাট, সুতা ও কাপড়ের কল", "গাড়ি ও ইলেক্ট্রনিক্স", "সার ও চামড়া"], answer: "পাট, সুতা ও কাপড়ের কল", explanation: "পাঠ-২ অনুযায়ী, ব্রিটিশ আমল থেকেই এখানে কিছু কিছু শিল্প বা কলকারখানা গড়ে উঠতে থাকে, যার মধ্যে পাট, সুতা ও কাপড়ের কলই ছিল প্রধান।" },
+            { question: "পাকিস্তান সৃষ্টির পর নারায়ণগঞ্জে প্রতিষ্ঠিত পৃথিবীর সর্ববৃহৎ পাটকলটির নাম কী ছিল?", options: ["করিম জুট মিলস", "আদমজি জুট মিলস্", "বাংলাদেশ জুট মিলস", "لطیف বাওয়ানী জুট মিলস"], answer: "আদমজি জুট মিলস্", explanation: "পাকিস্তান সৃষ্টির পর পূর্ববাংলার নারায়ণগঞ্জে পৃথিবীর সর্ববৃহৎ পাটকল আদমজি জুট মিলস্ প্রতিষ্ঠিত হয়।" },
+            { question: "মূলধন, শ্রমিকের সংখ্যা ইত্যাদি বিচারে শিল্প প্রতিষ্ঠানকে কয়টি ভাগে ভাগ করা যায়?", options: ["দুই ভাগে", "তিন ভাগে", "কয়েকটি ভাগে", "পাঁচ ভাগে"], answer: "কয়েকটি ভাগে", explanation: "মূলধন, উৎপাদনের পরিমাণ, কর্মী বা শ্রমিকের সংখ্যা ইত্যাদি বিচারে শিল্প প্রতিষ্ঠানকে বৃহৎ, মাঝারি, ক্ষুদ্র ও কুটিরশিল্প - এই কয়েকটি ভাগে ভাগ করা যায়।" },
+            { question: "পাট, বস্ত্র, চিনি, সিমেন্ট কোন ধরনের শিল্পের উদাহরণ?", options: ["ক্ষুদ্র শিল্প", "মাঝারি শিল্প", "কুটিরশিল্প", "বৃহৎ শিল্প"], answer: "বৃহৎ শিল্প", explanation: "পাঠ-২ অনুসারে পাট, বস্ত্র, চিনি, সিমেন্ট, সার, রেল, ইঞ্জিনিয়ারিং, বিদ্যুৎ প্রভৃতি বৃহৎ শিল্প।" },
+            { question: "যেসব শিল্প প্রতিষ্ঠানে দেড় কোটি টাকার অধিক মূলধন খাটে, সেগুলোকে কী বলে?", options: ["ক্ষুদ্র শিল্প", "মাঝারি শিল্প", "বৃহৎ শিল্প", "কুটিরশিল্প"], answer: "মাঝারি শিল্প", explanation: "যেসব শিল্প প্রতিষ্ঠানে দেড় কোটি টাকার অধিক মূলধন খাটে সেগুলোকে সাধারণত মাঝারি শিল্প বলে গণ্য করা হয়।" },
+            { question: "চাল কল এবং ছোট ছোট জুতা বা প্লাস্টিক কারখানা কোন শিল্পের অন্তর্ভুক্ত?", options: ["কুটিরশিল্প", "মাঝারি শিল্প", "ক্ষুদ্র শিল্প", "বৃহৎ শিল্প"], answer: "ক্ষুদ্র শিল্প", explanation: "দেড় কোটি টাকার কম মূলধন খাটে এমন কারখানা যেমন চাল কল, ছোট জুতা বা প্লাস্টিক কারখানা ক্ষুদ্র শিল্পের উদাহরণ।" },
+            { question: "যে শিল্পে মালিক ও তার পরিবারের সদস্যরাই প্রধানত কাজ করে, তাকে কী বলে?", options: ["ক্ষুদ্র শিল্প", "মাঝারি শিল্প", "কুটিরশিল্প", "বৃহৎ শিল্প"], answer: "কুটিরশিল্প", explanation: "কুটিরশিল্পে উৎপাদন ও বিপণনের কাজটি প্রধানত মালিক নিজে বা তার পরিবারের সদস্যরাই করে থাকেন।" },
+            { question: "তাঁতবস্ত্র, মাটির তৈরি জিনিসপত্র, বাঁশ ও বেতের কাজ কোন শিল্পের উদাহরণ?", options: ["ক্ষুদ্র শিল্প", "মাঝারি শিল্প", "বৃহৎ শিল্প", "কুটিরশিল্প"], answer: "কুটিরশিল্প", explanation: "আমাদের দেশে তাঁতবস্ত্র, মাটির তৈরি জিনিসপত্র, বাঁশ, বেত ও কাঠের কাজ ইত্যাদি কুটিরশিল্পের কয়েকটি উদাহরণ।" },
+            { question: "কোন শিল্প খাত দেশের অর্থনৈতিক মেরুদণ্ড হিসেবে কাজ করে?", options: ["ক্ষুদ্র শিল্প", "কুটিরশিল্প", "বৃহৎ শিল্প", "মাঝারি শিল্প"], answer: "বৃহৎ শিল্প", explanation: "বৃহৎ শিল্পগুলো দেশের অর্থনৈতিক মেরুদণ্ড হিসেবে কাজ করে জাতীয় অর্থনীতিতে অপরিসীম গুরুত্ব বহন করে।" },
+            { question: "বাংলাদেশের কোন শিল্প খাত নারী কর্মসংস্থানের ক্ষেত্রে বিশাল সুযোগ সৃষ্টি করেছে?", options: ["চিনি শিল্প", "গার্মেন্টস শিল্প", "সার শিল্প", "চামড়া শিল্প"], answer: "গার্মেন্টস শিল্প", explanation: "সাম্প্রতিককালে বাংলাদেশে গার্মেন্টস শিল্পের প্রসার লক্ষ লক্ষ মানুষ, বিশেষ করে নারীদের জন্য কর্মসংস্থানের সুযোগ করে দিয়েছে।" },
+            { question: "বিদেশি বিনিয়োগকারীদের আকৃষ্ট করতে সরকার দেশে কী প্রতিষ্ঠা করেছে?", options: ["রপ্তানি প্রক্রিয়াকরণ এলাকা (EPZ)", "বিশেষ অর্থনৈতিক অঞ্চল", "শিল্প পার্ক", "উপরের সবগুলো"], answer: "রপ্তানি প্রক্রিয়াকরণ এলাকা (EPZ)", explanation: "পাঠ্যবই অনুযায়ী, বিদেশি বিনিয়োগকারীদের আকৃষ্ট করতে সরকার দেশে কয়েকটি রপ্তানি প্রক্রিয়াকরণ এলাকা (EPZ) প্রতিষ্ঠা করেছে।" },
+            { question: "হাল্কা ইঞ্জিনিয়ারিং এবং সিরামিক শিল্প কোন শ্রেণির অন্তর্ভুক্ত?", options: ["বৃহৎ শিল্প", "মাঝারি শিল্প", "ক্ষুদ্র শিল্প", "কুটিরশিল্প"], answer: "মাঝারি শিল্প", explanation: "হাল্কা ইঞ্জিনিয়ারিং, সিল্ক, সিরামিক, কোল্ডস্টোরেজ বা হিমাগার প্রভৃতি মাঝারি শিল্পের উদাহরণ।" },
+            { question: "শিল্পায়নের ফলে কোন সমস্যাটি দেখা দিতে পারে?", options: ["কর্মসংস্থান হ্রাস", "দারিদ্র্য বৃদ্ধি", "পরিবেশ দূষণ", "শিক্ষার হার হ্রাস"], answer: "পরিবেশ দূষণ", explanation: "শিল্পের প্রভাবে পরিবেশ দূষিত হওয়া একটি বড় সমস্যা, যা বন্ধ করতে সরকারের নজরদারী জরুরি।" },
+            { question: "শিল্প খাতের উন্নয়ন মানুষকে কিসের প্রতি আগ্রহী করে তুলছে?", options: ["কৃষিকাজ", "গ্রাম্য জীবন", "শিক্ষা ও প্রযুক্তি", "বিদেশ গমন"], answer: "শিক্ষা ও প্রযুক্তি", explanation: "শিল্পখাতে কর্মসংস্থানের সুযোগ মানুষকে শিক্ষা ও প্রযুক্তির প্রতি আগ্রহী করে তুলছে।" },
+            { question: "গার্মেন্টস শিল্প ছাড়াও কোন শিল্পে বাংলাদেশ বিরাট সাফল্য অর্জন করেছে?", options: ["গাড়ি নির্মাণ", "বিমান শিল্প", "ঔষধ শিল্প", "লৌহ ও ইস্পাত"], answer: "ঔষধ শিল্প", explanation: "বর্তমানে গার্মেন্টস ও ঔষধ শিল্পেও বাংলাদেশ বিরাট সাফল্য অর্জন করেছে।" },
+
+            // পাঠ-৩: বাংলাদেশের আমদানি ও রপ্তানি (26-37)
+            { question: "কোনো দেশ থেকে অন্য দেশে পণ্য ক্রয় করাকে কী বলে?", options: ["রপ্তানি", "বাণিজ্য", "আমদানি", "বিনিময়"], answer: "আমদানি", explanation: "সাধারণত অন্য দেশ থেকে কোনো পণ্য কিনে আনাকে আমদানি বলে।" },
+            { question: "দেশের চাহিদা মিটিয়ে উৎপাদিত পণ্য বিদেশে বিক্রি করাকে কী বলে?", options: ["আমদানি", "রপ্তানি", "বাণিজ্য ঘাটতি", "বিনিয়োগ"], answer: "রপ্তানি", explanation: "দেশের চাহিদা মিটিয়ে উৎপাদিত পণ্যের একটা অংশ বিদেশে বিক্রি করাকে রপ্তানি বলা হয়।" },
+            { question: "অতীতে বাংলাদেশের প্রধান রপ্তানি পণ্য কী ছিল?", options: ["তৈরি পোশাক", "চা", "পাট ও পাটজাত দ্রব্য", "চামড়া"], answer: "পাট ও পাটজাত দ্রব্য", explanation: "এক সময় পাট ও পাটজাত দ্রব্যই ছিল আমাদের প্রধান রপ্তানি পণ্য।" },
+            { question: "বর্তমানে বাংলাদেশের প্রধান রপ্তানি পণ্য কোনটি?", options: ["পাট", "চা", "হিমায়িত চিংড়ি", "তৈরি পোশাক"], answer: "তৈরি পোশাক", explanation: "বর্তমানে তৈরি পোশাক খাত বাংলাদেশের রপ্তানি আয়ের শীর্ষে রয়েছে।" },
+            { question: "বাংলাদেশ কোন দেশ থেকে সবচেয়ে বেশি পণ্য আমদানি করে?", options: ["ভারত", "যুক্তরাষ্ট্র", "জাপান", "চীন"], answer: "চীন", explanation: "পাঠ-৩ অনুযায়ী, বাংলাদেশের আমদানিকৃত পণ্যের উৎস দেশগুলোর মধ্যে চীন অন্যতম এবং সবচেয়ে বেশি আমদানি চীন থেকেই করা হয়।" },
+            { question: "বাংলাদেশের পণ্যের সবচেয়ে বড় ক্রেতা কোন দেশ?", options: ["জার্মানি", "চীন", "যুক্তরাষ্ট্র", "যুক্তরাজ্য"], answer: "যুক্তরাষ্ট্র", explanation: "বাংলাদেশ থেকে যেসব দেশে পণ্য রপ্তানি করা হয় তার মধ্যে অন্যতম হলো যুক্তরাষ্ট্র এবং এটিই বাংলাদেশের পণ্যের বড়ো ক্রেতা।" },
+            { question: "বিদেশ থেকে পণ্য আমদানি এবং বিদেশে পণ্য রপ্তানি করাকে একত্রে কী বলে?", options: ["অভ্যন্তরীণ বাণিজ্য", "আঞ্চলিক বাণিজ্য", "বৈদেশিক বাণিজ্য", "সীমান্ত বাণিজ্য"], answer: "বৈদেশিক বাণিজ্য", explanation: "বিদেশ থেকে পণ্য আমদানি এবং বিদেশে পণ্য রপ্তানি করার নামই বৈদেশিক বাণিজ্য।" },
+            { question: "নিচের কোনটি বাংলাদেশের একটি আমদানি পণ্য?", options: ["চা", "তৈরি পোশাক", "অশোধিত পেট্রোল", "হিমায়িত চিংড়ি"], answer: "অশোধিত পেট্রোল", explanation: "বাংলাদেশ যেসব পণ্য আমদানি করে তার মধ্যে অপরিশোধিত পেট্রোল ও পেট্রোলিয়ামজাত দ্রব্য অন্যতম।" },
+            { question: "নিচের কোনটি বাংলাদেশের একটি রপ্তানি পণ্য?", options: ["গম", "ভোজ্যতেল", "হিমায়িত চিংড়ি", "সার"], answer: "হিমায়িত চিংড়ি", explanation: "তৈরি পোশাকের পাশাপাশি হিমায়িত চিংড়ি বাংলাদেশের একটি গুরুত্বপূর্ণ রপ্তানি পণ্য।" },
+            { question: "বৈদেশিক বাণিজ্যের মাধ্যমে অর্জিত বৈদেশিক মুদ্রা দেশের কোন কাজে লাগে?", options: ["শুধুমাত্র আমদানি ব্যয় মেটাতে", "শুধুমাত্র ঋণ পরিশোধে", "দেশের উন্নয়নে", "উপরের সবগুলো"], answer: "দেশের উন্নয়নে", explanation: "বিদেশে পণ্য রপ্তানি করে অর্জিত বৈদেশিক মুদ্রা যেমন আমদানি ব্যয় মেটাতে কাজে লাগে, তেমনি দেশের উন্নয়নেও কাজে লাগে।" },
+            { question: "বিশ্ব বাণিজ্য সংস্থা (WTO) কী ধরনের সংগঠন?", options: ["আঞ্চলিক", "আন্তর্জাতিক", "সামরিক", "সাংস্কৃতিক"], answer: "আন্তর্জাতিক", explanation: "বিশ্ব বাণিজ্য সংস্থা বা WTO একটি আন্তর্জাতিক সংগঠন যা বিভিন্ন দেশের মধ্যে বাণিজ্যিক কার্যক্রম তদারকি ও নিয়ন্ত্রণ করে।" },
+            { question: "আমদানির চেয়ে রপ্তানির পরিমাণ বেশি হলে সেই দেশকে কী ধরনের দেশ বলা হয়?", options: ["অনুন্নত দেশ", "উন্নয়নশীল দেশ", "উন্নত দেশ", "স্বল্পোন্নত দেশ"], answer: "উन्नत দেশ", explanation: "যে দেশের আমদানির চেয়ে রপ্তানির পরিমাণ বেশি, তাকে উন্নত দেশ ধরা হয়।" },
+            
+            // পাঠ-৪: কৃষিপণ্য প্রক্রিয়াজাতকরণ শিল্প (38-50)
+            { question: "বিজ্ঞান ও প্রযুক্তি ব্যবহার করে কোনো পণ্যকে অন্য পণ্যে রূপান্তর ও সংরক্ষণ করাকে কী বলে?", options: ["কৃষিকাজ", "শিল্পায়ন", "প্রক্রিয়াজাতকরণ", "বিপণন"], answer: "প্রক্রিয়াজাতকরণ", explanation: "বিজ্ঞান ও প্রযুক্তি ব্যবহারের মাধ্যমে যে কোনো পণ্যকে অন্য পণ্যে রূপান্তর এবং সংরক্ষণের ব্যবস্থা করার প্রক্রিয়াকে প্রক্রিয়াজাতকরণ বলা হয়।" },
+            { question: "মুড়ি, চিড়া, শুঁটকি কোন পদ্ধতির প্রক্রিয়াজাতকরণের উদাহরণ?", options: ["আধুনিক পদ্ধতি", "বৈজ্ঞানিক পদ্ধতি", "সনাতন পদ্ধতি", "শিল্প পদ্ধতি"], answer: "সনাতন পদ্ধতি", explanation: "আমাদের দেশের মানুষ পূর্বে সনাতন পদ্ধতিতে কিছু কিছু খাদ্য দ্রব্য যেমন মুড়ি, চিড়া, শুঁটকি ইত্যাদি প্রক্রিয়াজাতকরণ করত।" },
+            { question: "সনাতন পদ্ধতির প্রক্রিয়াজাতকরণের একটি প্রধান সমস্যা কী?", options: ["উৎপাদন খরচ বেশি", "সময় বেশি লাগে", "স্বাস্থ্যসম্মত কিনা তা পরীক্ষা করা হয় না", "স্বাদে ভালো হয় না"], answer: "স্বাস্থ্যসম্মত কিনা তা পরীক্ষা করা হয় না", explanation: "সনাতন পদ্ধতির প্রক্রিয়াজাতকরণের একটি সমস্যা হলো উৎপাদিত পণ্য স্বাস্থ্যসম্মত কিনা তা পরীক্ষা-নিরীক্ষা করা হয় না।" },
+            { question: "পাটখড়ি থেকে কোন প্রক্রিয়াজাত পণ্য তৈরি হয় যা দেশ লাভবান হতে পারে?", options: ["কাগজ", "পারটেক্স", "জ্বালানি", "সার"], answer: "পারটেক্স", explanation: "পাটখড়ি থেকে পারটেক্স প্রক্রিয়াজাতকরণ শিল্প গড়েও দেশ লাভবান হতে পারছে।" },
+            { question: "সারা বছর টমেটো সংরক্ষণের জন্য কী তৈরি করা হচ্ছে?", options: ["হিমাগার", "টমেটো সস", "কোল্ড স্টোরেজ", "টিনজাতকরণ"], answer: "কোল্ড স্টোরেজ", explanation: "টমেটো সংরক্ষণ করার জন্যে কোল্ড স্টোরেজ তৈরি হচ্ছে, যার ফলে ক্রেতাগণ সারা বছর টমেটো ক্রয় করতে পারছে।" },
+            { question: "দুধের প্রক্রিয়াজাত শিল্প থেকে কী তৈরি হয়?", options: ["শুধুমাত্র মিষ্টি ও দই", "মিষ্টি, দই, মাখন, পনির", "শুধুমাত্র ঘি", "শুধুমাত্র ছানা"], answer: "মিষ্টি, দই, মাখন, পনির", explanation: "দুধের প্রক্রিয়াজাত শিল্প থেকে মিষ্টি, দই, মাখন, পনিরসহ শিশু খাদ্যের বিভিন্ন জোগান দেওয়া সম্ভব হচ্ছে।" },
+            { question: "প্রক্রিয়াজাতকরণ শিল্পের একটি প্রধান সমস্যা কোনটি?", options: ["শ্রমিকের অভাব", "কাঁচামালের অভাব", "পুঁজির সমস্যা", "বিদ্যুৎ সংকট"], answer: "পুঁজির সমস্যা", explanation: "প্রক্রিয়াজাতকরণ শিল্পের সমস্যাগুলোর মধ্যে পুঁজির সমস্যা, প্রযুক্তিজ্ঞান ও গবেষণার সমস্যা, দক্ষ উদ্যোক্তার অভাব ইত্যাদি প্রধান।" },
+            { question: "প্রক্রিয়াজাতকরণ শিল্পের উন্নয়নের জন্য কী প্রয়োজন?", options: ["বিদেশ থেকে পণ্য আমদানি", "নীতিমালা ও পরিকল্পনা প্রণয়ন", "সনাতন পদ্ধতির ব্যবহার", "শুধুমাত্র সরকারি উদ্যোগ"], answer: "নীতিমালা ও পরিকল্পনা প্রণয়ন", explanation: "সমাধানের উপায় হিসেবে কৃষিজ পণ্য প্রক্রিয়াজাতকরণ নীতিমালা ও পরিকল্পনা প্রণয়ন করা, উচ্চশিক্ষা ও গবেষণার সুযোগ সৃষ্টি করা ইত্যাদি জরুরি।" },
+            { question: "আধুনিক প্রক্রিয়াজাতকরণ শিল্পের সুবিধা কী?", options: ["পণ্যের সর্বোচ্চ ব্যবহার নিশ্চিত হয়", "কর্মসংস্থান সৃষ্টি হয়", "রপ্তানির সুযোগ বাড়ে", "উপরের সবগুলো"], answer: "উপরের সবগুলো", explanation: "আধুনিক পদ্ধতির ফলে উৎপাদিত কৃষিজ পণ্যের সর্বোচ্চ ব্যবহার, কর্মসংস্থান সৃষ্টি এবং অর্থনৈতিক সমৃদ্ধি লাভ করা সম্ভব।" },
+            { question: "টেকসই উন্নয়নের জন্য প্রক্রিয়াজাতকরণ শিল্পে কী বিষয়ে সতর্ক থাকতে হবে?", options: ["অতিরিক্ত মুনাফা অর্জন", "প্রাকৃতিক পরিবেশের সুরক্ষা", "শ্রমিকদের বেতন বৃদ্ধি", "পণ্যের দাম কমানো"], answer: "প্রাকৃতিক পরিবেশের সুরক্ষা", explanation: "যেকোনো উন্নয়নকে টেকসই হতে হবে, তাই অতিরিক্ত সার, কীটনাশক ও বিদ্যুৎ ব্যবহার করে প্রাকৃতিক পরিবেশের ক্ষতি করা যাবে না।" },
+            { question: "ফলের রস কোন ধরনের খাদ্য?", options: ["রপ্তানিযোগ্য খাদ্য", "শিশু খাদ্য", "দুধ জাতীয় খাদ্য", "প্রক্রিয়াজাতকরণ খাদ্য"], answer: "প্রক্রিয়াজাতকরণ খাদ্য", explanation: "বিভিন্ন ঋতুভিত্তিক ফল সংরক্ষণ করে এবং ফলের নানা ধরনের রসালো খাবার (যেমন জুস) উদ্ভাবন করা হচ্ছে, যা প্রক্রিয়াজাতকরণ খাদ্যের উদাহরণ।" },
+            { question: "পাটের বহুমুখী ব্যবহার উদ্ভাবনের ফলে কী সুবিধা হয়েছে?", options: ["কৃষকরা লাভবান হচ্ছে", "নতুন উদ্যোক্তা তৈরি হচ্ছে", "কর্মসংস্থান বাড়ছে", "উপরের সবগুলো সঠিক"], answer: "উপরের সবগুলো সঠিক", explanation: "পাটের বহুমুখী ব্যবহার উদ্ভাবনের ফলে একদিকে কৃষকরা লাভবান হচ্ছে, অন্যদিকে প্রক্রিয়াজাতকরণ শিল্পের উদ্যোক্তা ও কর্মীগণও কর্মসংস্থান সৃষ্টি করতে পারছে।" },
+            { question: "প্রক্রিয়াজাতকরণ শিল্পের জন্য একটি বড় চ্যালেঞ্জ কোনটি?", options: ["পরিবহণ ও যোগাযোগ ব্যবস্থার ত্রুটি", "আন্তর্জাতিক বাজারের অভাব", "শ্রমিকের অভাব", "কাঁচামালের অভাব"], answer: "পরিবহণ ও যোগাযোগ ব্যবস্থার ত্রুটি", explanation: "পাঠ্যবইয়ে উল্লিখিত সমস্যাগুলোর মধ্যে 'পরিবহণ ও যোগাযোগ ব্যবস্থায় ত্রুটি' একটি গুরুত্বপূর্ণ সমস্যা।" }
+        ];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const overviewScreen = document.getElementById('overview-screen');
+        const startBtn = document.getElementById('start-btn');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerText = document.getElementById('timer-text');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const overviewTitle = document.getElementById('overview-title');
+        const overviewSummary = document.getElementById('overview-summary');
+        const overviewList = document.getElementById('overview-list');
+        const continueBtn = document.getElementById('continue-btn');
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const TIME_LIMIT = 25; // Timer set to 25 seconds as requested
+        let timeLeft = TIME_LIMIT;
+        let userAnswers = [];
+
+        // --- Data Persistence Functions ---
+        function saveQuizState() {
+            const state = {
+                currentQuestionIndex,
+                score,
+                userAnswers
+            };
+            localStorage.setItem('quizProgress', JSON.stringify(state));
+        }
+
+        function loadQuizState() {
+            const savedState = localStorage.getItem('quizProgress');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                currentQuestionIndex = state.currentQuestionIndex;
+                score = state.score;
+                userAnswers = state.userAnswers;
+                
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+
+        function clearQuizState() {
+            localStorage.removeItem('quizProgress');
+        }
+
+        // Check for saved data on page load
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('quizProgress');
+            if (savedData) {
+                const startButtonsContainer = document.querySelector('.start-buttons-container');
+                const continueSavedBtn = document.createElement('button');
+                continueSavedBtn.id = 'continue-saved-btn';
+                continueSavedBtn.className = 'btn continue-btn';
+                continueSavedBtn.textContent = 'আগেরটি চালিয়ে যান';
+                startButtonsContainer.appendChild(continueSavedBtn);
+                
+                continueSavedBtn.addEventListener('click', loadQuizState);
+            }
+        });
+
+        // --- Core Quiz Functions ---
+
+        startBtn.addEventListener('click', startGame);
+        continueBtn.addEventListener('click', continueQuiz);
+
+        function startGame() {
+            clearQuizState();
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            scoreDisplay.textContent = 'স্কোর: 0';
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            resetState();
+            
+            progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+
+            if(currentQuestionIndex >= questions.length){
+                showOverview(true); 
+                return;
+            }
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionCounter.textContent = `প্রশ্ন ${currentQuestionIndex + 1}/${questions.length}`;
+            questionText.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(button, option));
+                optionsContainer.appendChild(button);
+            });
+            startTimer();
+        }
+        
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerText.textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    selectAnswer(null, null); 
+                }
+            }, 1000);
+        }
+
+        function resetState() {
+            clearInterval(timer);
+            optionsContainer.innerHTML = '';
+        }
+        
+        function selectAnswer(selectedButton, selectedOption) {
+            clearInterval(timer);
+            const correctOption = questions[currentQuestionIndex].answer;
+            const isCorrect = selectedOption === correctOption;
+            
+            userAnswers.push({
+                question: questions[currentQuestionIndex].question,
+                yourAnswer: selectedOption === null ? 'সময় শেষ' : selectedOption,
+                correctAnswer: correctOption,
+                explanation: questions[currentQuestionIndex].explanation,
+                isCorrect: isCorrect,
+            });
+
+            Array.from(optionsContainer.children).forEach(button => {
+                if(button.textContent === correctOption) button.classList.add('correct');
+                if(button === selectedButton && !isCorrect) button.classList.add('incorrect');
+                button.disabled = true;
+            });
+            
+            if (isCorrect) {
+                score++;
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+            }
+
+            saveQuizState(); // Save progress after each answer
+
+            setTimeout(handleNext, 1500);
+        }
+
+        function handleNext(){
+            currentQuestionIndex++;
+            if(currentQuestionIndex % 10 === 0 && currentQuestionIndex > 0) {
+                showOverview(currentQuestionIndex === questions.length);
+            } else {
+                 loadQuestion();
+            }
+        }
+
+        function showOverview(isFinal) {
+            showScreen('overview-screen');
+            if (isFinal) {
+                clearQuizState(); // Clear data when quiz is finished
+            }
+
+            let start = Math.floor((currentQuestionIndex -1) / 10) * 10;
+            let end = currentQuestionIndex;
+
+            overviewTitle.textContent = isFinal ? 'চূড়ান্ত ফলাফল' : `পার্ট ${end/10} এর সারসংক্ষেপ`;
+            
+            overviewList.innerHTML = '';
+            // Display all answers up to the current point, most recent first
+            const answersToShow = userAnswers.slice(0, end);
+            answersToShow.reverse().forEach((answer, index) => {
+                const originalIndex = end - 1 - index;
+                const item = document.createElement('div');
+                item.classList.add('overview-item');
+                const statusIcon = answer.isCorrect ? '✔' : '✖';
+                const statusClass = answer.isCorrect ? 'status-correct' : 'status-incorrect';
+                
+                item.innerHTML = `
+                    <div class="overview-status ${statusClass}">${statusIcon}</div>
+                    <p class="question"><strong>প্রশ্ন ${originalIndex + 1}:</strong> ${answer.question}</p>
+                    <p><strong>তোমার উত্তর:</strong> ${answer.yourAnswer}</p>
+                    <p><strong>সঠিক উত্তর:</strong> ${answer.correctAnswer}</p>
+                    <p class="explanation"><strong>ব্যাখ্যা:</strong> ${answer.explanation}</p>
+                `;
+                overviewList.appendChild(item); // Append instead of prepend to maintain the reversed order
+            });
+            
+            overviewSummary.innerHTML = `
+                <span class="summary-correct">✔ মোট সঠিক: ${score}</span>
+                <span class="summary-incorrect">✖ মোট ভুল: ${currentQuestionIndex - score}</span>
+            `;
+            
+            if(isFinal) {
+                continueBtn.textContent = 'পুনরায় খেলুন';
+            } else {
+                continueBtn.textContent = 'পরবর্তী ধাপে যান';
+            }
+        }
+
+
+        function continueQuiz() {
+            if (currentQuestionIndex >= questions.length) {
+                window.location.reload(); // Reload the page to reset everything cleanly
+            } else {
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+    </script>
+</body>
+</html>

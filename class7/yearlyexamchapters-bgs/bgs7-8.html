@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বাংলাদেশের সামাজিক সমস্যা কুইজ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&family=Poppins:wght@600&display=swap');
+
+        :root {
+            --primary-bg: #4e54c8;
+            --secondary-bg: #8f94fb;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #333;
+            --accent-color: #f7b733;
+            --correct-color: #2ecc71;
+            --incorrect-color: #e74c3c;
+            --light-gray: #f0f0f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --border-radius: 15px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary-bg);
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--primary-bg);
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .start-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), #fdc830);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(247, 183, 51, 0.4);
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(247, 183, 51, 0.6);
+        }
+        
+        .btn.continue-btn {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+             box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+        .btn.continue-btn:hover {
+             box-shadow: 0 7px 20px rgba(52, 152, 219, 0.6);
+        }
+
+
+        #quiz-screen .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        #question-counter, #score-display {
+             background: var(--light-gray);
+             padding: 8px 15px;
+             border-radius: 20px;
+        }
+
+        #timer {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-bg);
+        }
+        
+        #progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--correct-color), var(--accent-color));
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+        }
+        
+        #question-text {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            min-height: 80px;
+        }
+        
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .option-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1em;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--light-gray);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-bg);
+            background-color: #f7f7ff;
+            transform: scale(1.02);
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-color);
+            color: white;
+            border-color: var(--incorrect-color);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        #overview-screen h2 { margin-bottom: 10px; }
+        #overview-summary { font-size: 1.2em; font-weight: bold; margin-bottom: 25px; background: var(--light-gray); padding: 15px; border-radius: 10px; display: flex; justify-content: center; gap: 30px; }
+        .summary-correct { color: var(--correct-color); }
+        .summary-incorrect { color: var(--incorrect-color); }
+        #overview-list { max-height: 40vh; overflow-y: auto; text-align: left; margin-bottom: 25px; }
+        .overview-item { background: #fff; border: 1px solid var(--light-gray); border-radius: 10px; padding: 15px; margin-bottom: 10px; position: relative; padding-right: 40px; }
+        .overview-item p { margin-bottom: 8px; font-size: 1em; }
+        .overview-item .question { font-weight: bold; }
+        .overview-item .explanation { font-size: 0.9em; color: #555; background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 5px; }
+        .overview-status { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); font-size: 2em; }
+        .status-correct { color: var(--correct-color); }
+        .status-incorrect { color: var(--incorrect-color); }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
+            #question-text { font-size: 1.2em; min-height: 70px; }
+            #options-container { grid-template-columns: 1fr; }
+            .option-btn { padding: 15px; font-size: 1em; }
+            #quiz-screen .header { flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>বাংলাদেশের সামাজিক সমস্যা কুইজ</h1>
+            <p>এই অধ্যায়ের উপর আপনার দক্ষতা যাচাই করুন। প্রতিটি প্রশ্নের জন্য সময় পাবেন ২৫ সেকেন্ড।</p>
+            <p><strong>মোট ৫০টি প্রশ্ন</strong></p>
+            <div class="start-buttons-container">
+                <button id="start-btn" class="btn">নতুন কুইজ শুরু করুন</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div id="question-counter"></div>
+                <div id="timer">
+                    <span id="timer-text">25</span>
+                </div>
+                <div id="score-display">স্কোর: 0</div>
+            </div>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="question-text"></div>
+            <div id="options-container"></div>
+        </div>
+        
+        <!-- Overview Screen -->
+        <div id="overview-screen" class="screen">
+            <h2 id="overview-title"></h2>
+            <div id="overview-summary"></div>
+            <div id="overview-list"></div>
+            <button id="continue-btn" class="btn continue-btn"></button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // যৌতুক (প্রশ্ন ১-২৫)
+            { question: "বিয়ের সময় বর বা কনে বিপরীত পক্ষের কাছ থেকে যে অর্থ বা সম্পত্তি দাবি করে, তাকে কী বলা হয়?", options: ["উপহার", "দেনমোহর", "যৌতুক", "উত্তরাধিকার"], answer: "যৌতুক", explanation: "পাঠ-১ অনুযায়ী, বিয়ের সময় বর বা কনে বিপরীত পক্ষের কাছ থেকে যে অর্থ বা সম্পত্তি দাবি করে ও গ্রহণ করে তাকেই বলা হয় যৌতুক।" },
+            { question: "বাংলাদেশের বিবাহসংক্রান্ত আইন অনুযায়ী যৌতুক আদান-প্রদান কী?", options: ["ঐচ্ছিক", "নিষিদ্ধ", "সামাজিকভাবে স্বীকৃত", "শর্তসাপেক্ষে বৈধ"], answer: "নিষিদ্ধ", explanation: "পাঠ-১ এ বলা হয়েছে, এদেশের বিবাহসংক্রান্ত আইনে যৌতুক আদান প্রদান নিষিদ্ধ।" },
+            { question: "বর্তমানে বাংলাদেশে সাধারণত কোন পক্ষ কনেপক্ষের কাছ থেকে যৌতুক দাবি করে?", options: ["কনেপক্ষ", "বরপক্ষ", "উভয় পক্ষ", "ঘটক"], answer: "বরপক্ষ", explanation: "পাঠ-১ অনুসারে, বর্তমানে বাংলাদেশে প্রায় সব ক্ষেত্রেই বরপক্ষ কনেপক্ষের কাছ থেকে যৌতুক দাবি করে।" },
+            { question: "প্রাচীন এথেন্সে বিয়ের পর কনে স্বামীর ঘরে কী নিয়ে যেত?", options: ["শিক্ষা", "ধর্মীয় গ্রন্থ", "পারিবারিক চিহ্ন", "অর্থসম্পদ"], answer: "অর্থসম্পদ", explanation: "পাঠ-১ এ উল্লেখ আছে, প্রাচীন এথেন্সেও বিয়ের পর কনে স্বামীর ঘরে নিয়ে যেত অর্থসম্পদ।" },
+            { question: "পাঠ্যবই অনুযায়ী, যৌতুক সমস্যার সৃষ্টির প্রধান কারণ হিসেবে কী মনে করা হয়?", options: ["অশিক্ষা", "দারিদ্র্য", "সামাজিক মর্যাদা", "কুসংস্কার"], answer: "দারিদ্র্য", explanation: "পাঠ-১ অনুযায়ী, দারিদ্র্যের কারণেই এ সমস্যার সৃষ্টি হয়েছে বলে মনে করা হয়।" },
+            { question: "দারিদ্র্য ছাড়াও যৌতুক প্রথার অন্যতম সামাজিক কারণ কোনটি?", options: ["ধর্মীয় গোঁড়ামি", "অধিক জনসংখ্যা", "নারী হিসেবে জন্মানোকে কম সম্মানের মনে করা", "রাজনৈতিক অস্থিরতা"], answer: "নারী হিসেবে জন্মানোকে কম সম্মানের মনে করা", explanation: "পাঠ-১ এ বলা হয়েছে, নারী হিসেবে জন্মানো মানে কম সম্মানের বলে গণ্য হওয়াও যৌতুক প্রথার অন্যতম কারণ।" },
+            { question: "যৌতুকের কারণে বিবাহিত নারীর প্রতি প্রধানত কী ঘটে?", options: ["সম্মান বৃদ্ধি পায়", "সম্পর্কের উন্নতি হয়", "অত্যাচার ও সহিংসতা", "আর্থিক সচ্ছলতা আসে"], answer: "অত্যাচার ও সহিংসতা", explanation: "পাঠ-১ অনুসারে, বিবাহিত নারীর প্রতি অত্যাচার ও সহিংসতার মূল কারণ যৌতুক।" },
+            { question: "যৌতুকের দাবি পূরণ করতে না পারলে অনেক সময় কী পরিণতি ঘটে?", options: ["স্ত্রীর প্রতি ভালোবাসা বেড়ে যায়", "বিবাহবিচ্ছেদ বা স্ত্রীর প্রাণহানি", "বরপক্ষ ক্ষমা করে দেয়", "কনের পরিবারকে সাহায্য করা হয়"], answer: "বিবাহবিচ্ছেদ বা স্ত্রীর প্রাণহানি", explanation: "পাঠ-১ অনুযায়ী, যৌতুকের কারণেই বিবাহবিচ্ছেদ ও কখনো কখনো স্ত্রীর প্রাণহানির ঘটনাও ঘটে।" },
+            { question: "আইনের দৃষ্টিতে যৌতুক দেওয়া এবং নেওয়া উভয়ই কী?", options: ["একটি সামাজিক রীতি", "একটি ব্যক্তিগত বিষয়", "একটি সাধারণ ঘটনা", "সমান অপরাধ"], answer: "সমান অপরাধ", explanation: "পাঠ-১ এর শেষে বলা হয়েছে, আমাদের মনে রাখা প্রয়োজন যে যৌতুক দেওয়া ও নেওয়া দুই-ই সমান অপরাধ।" },
+            { question: "বাংলাদেশে যৌতুক নিরোধ আইন প্রথম কত সালে প্রণয়ন করা হয়?", options: ["১৯৭২ সালে", "১৯৮০ সালে", "১৯৮৬ সালে", "২০০২ সালে"], answer: "১৯৮০ সালে", explanation: "পাঠ-২ অনুযায়ী, যৌতুক বন্ধ করার জন্য বাংলাদেশে ১৯৮০ সালে যৌতুক নিরোধ আইন প্রণয়ন করা হয়েছে।" },
+            { question: "১৯৮০ সালের আইন অনুযায়ী যৌতুক প্রদানের শাস্তি কী ছিল?", options: ["শুধুমাত্র জরিমানা", "শুধুমাত্র কারাদণ্ড", "সর্বোচ্চ ১ বছরের কারাদণ্ড বা ৫ হাজার টাকা জরিমানা", "যাবজ্জীবন কারাদণ্ড"], answer: "সর্বোচ্চ ১ বছরের কারাদণ্ড বা ৫ হাজার টাকা জরিমানা", explanation: "পাঠ-২ এ উল্লেখ আছে, ১৯৮০ সালের আইন অনুযায়ী যৌতুক প্রদান বা গ্রহণ করলে সর্বোচ্চ এক বছরের কারাদণ্ড বা পাঁচ হাজার টাকা অর্থদণ্ড হতে পারে।" },
+            { question: "যৌতুক আদান-প্রদানে সহায়তাকারীর শাস্তি কী?", options: ["কোনো শাস্তি নেই", "মূল অপরাধীর অর্ধেক শাস্তি", "মূল অপরাধীর সমান শাস্তি", "শুধুমাত্র তিরস্কার"], answer: "মূল অপরাধীর সমান শাস্তি", explanation: "পাঠ-২ অনুযায়ী, যৌতুক আদান-প্রদানে সহায়তাকারীও একই শাস্তি পাবে।" },
+            { question: "যৌতুক নিরোধ আইনটি কত সালে সংশোধন করা হয়?", options: ["১৯৮৩ সালে", "১৯৮৬ সালে", "১৯৯০ সালে", "২০০০ সালে"], answer: "১৯৮৬ সালে", explanation: "পাঠ-২ অনুসারে, ১৯৮৬ সালে যৌতুক নিরোধ আইন সংশোধন করা হয়েছে।" },
+            { question: "১৯৮৬ সালের সংশোধিত আইন অনুযায়ী যৌতুক গ্রহণ করলে সর্বনিম্ন শাস্তি কী?", options: ["ছয় মাসের কারাদণ্ড", "এক বছরের কারাদণ্ড", "দুই বছরের কারাদণ্ড", "কোনো কারাদণ্ড নেই"], answer: "এক বছরের কারাদণ্ড", explanation: "সংশোধিত আইন অনুযায়ী অপরাধী সর্বনিম্ন একবছর এবং সর্বোচ্চ পাঁচ বছরের কারাদণ্ডে দণ্ডিত হবে।" },
+            { question: "যৌতুকের কারণে নির্যাতন করে নারীর মৃত্যু ঘটালে সর্বোচ্চ শাস্তি কী হতে পারে?", options: ["১০ বছরের কারাদণ্ড", "যাবজ্জীবন কারাদণ্ড", "মৃত্যুদণ্ড", "অর্থদণ্ড"], answer: "মৃত্যুদণ্ড", explanation: "নারী ও শিশু নির্যাতন দমন আইনের বিধান অনুযায়ী, যৌতুকের কারণে নারীর মৃত্যু ঘটালে অপরাধীকে মৃত্যুদণ্ড বা যাবজ্জীবন কারাদণ্ড দেওয়া যাবে।" },
+            { question: "যৌতুকের অভিশাপ থেকে রক্ষা পেতে কন্যা সন্তানদের জন্য কোনটি জরুরি?", options: ["দ্রুত বিয়ে দেওয়া", "উচ্চতর শিক্ষা গ্রহণ", "কম বয়সে কাজে লাগানো", "ঘরে আটকে রাখা"], answer: "উচ্চতর শিক্ষা গ্রহণ", explanation: "পাঠ-২ এ বলা হয়েছে, পরিবারের কন্যা সন্তানসহ সবাইকে উচ্চতর শিক্ষা গ্রহণে উদ্বুদ্ধ করা দরকার, কারণ তারা আত্মনির্ভরশীল হলে যৌতুকের অভিশাপ তাদের স্পর্শ করতে পারবে না।" },
+            { question: "যৌতুক প্রতিরোধে পরিবার ও সমাজের সবাইকে নিয়ে কী গড়ে তোলা দরকার?", options: ["একটি তহবিল", "একটি কমিটি", "সামাজিক আন্দোলন", "একটি আইন"], answer: "সামাজিক আন্দোলন", explanation: "পাঠ-৩ অনুযায়ী, যৌতুকের হাত থেকে মুক্তি পেতে চাইলে পরিবারের সঙ্গে সমাজের সবাইকে সচেতন করে তুলতে হবে এবং যৌতুকবিরোধী সামাজিক আন্দোলন গড়ে তোলা দরকার।" },
+            { question: "সংগঠিত সামাজিক প্রতিরোধকে কী বলা হয়?", options: ["সভা", "বিপ্লব", "সামাজিক আন্দোলন", "সমাবেশ"], answer: "সামাজিক আন্দোলন", explanation: "পাঠ-৩ এ বলা হয়েছে, সামাজিক আন্দোলন হচ্ছে সংগঠিত সামাজিক প্রতিরোধ।" },
+            { question: "পাঠ্যবইয়ের ছবিতে প্রদর্শিত যৌতুকবিরোধী স্লোগানটি কী ছিল?", options: ["যৌতুক একটি অভিশাপ", "যৌতুক দেওয়া পাপ", "যৌতুক দেব না, যৌতুক নেব না", "যৌতুককে না বলুন"], answer: "যৌতুক দেব না, যৌতুক নেব না", explanation: "পাঠ-৩ এর ছবিতে যৌতুকবিরোধী র‍্যালিতে এই স্লোগানটি দেখা যায়।" },
+            { question: "যৌতুক প্রথা নারীর মর্যাদাকে কী করে?", options: ["বৃদ্ধি করে", "অপরিবর্তিত রাখে", "অবনমিত করে", "গুরুত্বহীন করে"], answer: "অবনমিত করে", explanation: "পাঠ-১ এ উল্লেখ করা হয়েছে যে, যৌতুক প্রথা নারীর মর্যাদাকে অবনমিত করে।" },
+            { question: "কোন প্রাচীন দেশে বিয়ের পর কনে স্বামীর ঘরে যৌতুক নিয়ে যেত?", options: ["মিশর", "ভারত", "চীন", "রোম"], answer: "চীন", explanation: "পাঠ-১ এ বলা হয়েছে, প্রাচীন চীনে বিয়ের পর কনে স্বামীর ঘরে যৌতুক সঙ্গে নিয়ে যেত।" },
+            { question: "বরপক্ষ কেন কনেপক্ষের পিতার অর্থসম্পদ ব্যবহার করতে চায়?", options: ["ঐতিহ্য রক্ষা করতে", "নিজে প্রতিষ্ঠা লাভ করার জন্য", "কনের সম্মান বাড়াতে", "সামাজিক চাপে"], answer: "নিজে প্রতিষ্ঠা লাভ করার জন্য", explanation: "পাঠ-১ অনুযায়ী, কনের পিতার অর্থসম্পদ ব্যবহার করেই বর প্রতিষ্ঠা লাভ করতে চায়।" },
+            { question: "জনাব করিম তার মেয়ের বিয়েতে বরের দাবি অনুযায়ী ৫ লক্ষ টাকা দিলেন। আইন অনুযায়ী জনাব করিম কী করেছেন?", options: ["একটি ভালো কাজ করেছেন", "সামাজিক দায়িত্ব পালন করেছেন", "একটি দণ্ডনীয় অপরাধ করেছেন", "মেয়ের ভবিষ্যৎ নিশ্চিত করেছেন"], answer: "একটি দণ্ডনীয় অপরাধ করেছেন", explanation: "আইন অনুযায়ী যৌতুক দেওয়া ও নেওয়া দুটোই সমান এবং দণ্ডনীয় অপরাধ।" },
+            { question: "কোনো গ্রামে যৌতুকের বিরুদ্ধে সচেতনতা তৈরির জন্য র‍্যালি বের করা হলো। এটি কোন ধরনের পদক্ষেপ?", options: ["সরকারি কার্যক্রম", "ব্যক্তিগত উদ্যোগ", "সামাজিক আন্দোলন", "আইনি প্রক্রিয়া"], answer: "সামাজিক আন্দোলন", explanation: "সংগঠিতভাবে কোনো সামাজিক কুপ্রথার বিরুদ্ধে প্রতিরোধ গড়ে তোলাকে সামাজিক আন্দোলন বলে।" },
+            { question: "সমাজে দারিদ্র্য, দুর্নীতি, বাল্যবিবাহ ও বহুবিবাহের মতো সমস্যার মূলে কোন প্রথাটি রয়েছে?", options: ["শিক্ষার অভাব", "যৌতুক", "জনসংখ্যা বৃদ্ধি", "রাজনৈতিক সমস্যা"], answer: "যৌতুক", explanation: "পাঠ-১ এ বলা হয়েছে, সমাজে দারিদ্র্য, দুর্নীতি, অপরাধ প্রবণতা, বাল্যবিবাহ ও বহুবিবাহের মূলে রয়েছে এই যৌতুক সমস্যা।" },
+            
+            // বাল্যবিবাহ (প্রশ্ন ২৬-৫০)
+            { question: "যে বিয়েতে বর ও কনের মধ্যে অন্তত একজন শিশু থাকে, তাকে কী বলে?", options: ["বহুবুিবাহ", "বিধবা বিবাহ", "অarranged marriage", "বাল্যবিবাহ"], answer: "বাল্যবিবাহ", explanation: "পাঠ-৪ অনুযায়ী, বাল্যবিবাহ বলতে বোঝায় যে বিয়েতে বর ও কনে উভয়ই শিশু বা বর ও কনের মধ্যে যে কোনো একজন শিশু।" },
+            { question: "বাল্যবিবাহ নিরোধ আইন অনুযায়ী, বিয়ের জন্য মেয়ের আইনসম্মত সর্বনিম্ন বয়স কত?", options: ["১৬ বছর", "১৮ বছর", "২০ বছর", "২১ বছর"], answer: "১৮ বছর", explanation: "পাঠ-৪ এর আইন অনুযায়ী, শিশু বলতে ১৮ বছরের কম বয়সী মেয়েকে বোঝায়, সুতরাং বিয়ের জন্য মেয়ের বয়স কমপক্ষে ১৮ বছর হতে হবে।" },
+            { question: "বাল্যবিবাহ নিরোধ আইন অনুযায়ী, বিয়ের জন্য ছেলের আইনসম্মত সর্বনিম্ন বয়স কত?", options: ["১৮ বছর", "২০ বছর", "২১ বছর", "২৩ বছর"], answer: "২১ বছর", explanation: "পাঠ-৪ এর আইন অনুযায়ী, শিশু বলতে ২১ বছরের কম বয়সের ছেলেকে বোঝায়, তাই বিয়ের জন্য ছেলের বয়স কমপক্ষে ২১ বছর হতে হবে।" },
+            { question: "বাংলাদেশে বাল্যবিবাহের প্রধান কারণ কোনটি?", options: ["অশিক্ষা", "কুসংস্কার", "দারিদ্র্য", "ধর্মীয় প্রভাব"], answer: "দারিদ্র্য", explanation: "পাঠ-৪ এ স্পষ্টভাবে বলা হয়েছে, বাংলাদেশে বাল্যবিবাহের প্রধান কারণ হচ্ছে দারিদ্র্য।" },
+            { question: "দারিদ্র্য ছাড়াও কোন কারণে বাল্যবিবাহের প্রবণতা দেখা যায়?", options: ["পারিবারিক ঐতিহ্য", "সামাজিক নিরাপত্তার অভাব", "উচ্চাকাঙ্ক্ষা", "বিদেশ যাওয়ার প্রবণতা"], answer: "সামাজিক নিরাপত্তার অভাব", explanation: "পাঠ-৪ অনুযায়ী, অনেক সময় সামাজিক নিরাপত্তার অভাবে বাল্যবিবাহের প্রবণতা দেখা যায়।" },
+            { question: "অভিভাবকদের কোন মনোভাব বাল্যবিবাহের একটি কারণ হতে পারে?", options: ["সন্তানের প্রতি উদাসীনতা", "নিজেদের শখ পূরণ করা", "সম্পত্তি রক্ষার চেষ্টা", "আধুনিকতার প্রতি বিরাগ"], answer: "নিজেদের শখ পূরণ করা", explanation: "পাঠ-৫ এ উল্লেখ আছে, বাল্যবিবাহের পিছনে বাবা-মা কিংবা দাদি-নানির শখও অন্যতম কারণ।" },
+            { question: "কোন সামাজিক কুপ্রথার কারণে অনেক সময় কিশোরী কন্যাকে ঘরের বউ হিসেবে গ্রহণ করা হয়?", options: ["বর্ণপ্রথা", "গোত্রপ্রথা", "যৌতুক", "পর্দা প্রথা"], answer: "যৌতুক", explanation: "পাঠ-৫ অনুযায়ী, যৌতুকের ক্ষেত্রেও অনেক ছেলের বাবা কিশোরী কন্যাকে ঘরের বউ হিসেবে গ্রহণ করে।" },
+            { question: "বাল্যবিবাহের ফলে কিশোরী মায়েরা প্রায়ই কিসের শিকার হয়?", options: ["সামাজিক সম্মান", "আর্থিক সচ্ছলতা", "শারীরিক পুষ্টিহীনতা", "মানসিক পরিপক্কতা"], answer: "শারীরিক পুষ্টিহীনতা", explanation: "পাঠ-৫ এ বলা হয়েছে, এতে কিশোরী মেয়েটি শারীরিক পুষ্টিহীনতার স্বীকার হয়ে দুর্বল ও পুষ্টিহীন শিশুর জন্ম দেয়।" },
+            { question: "বাল্যবিবাহ সমাজে কোন দুটি মৃত্যুর হার বৃদ্ধি করে?", options: ["পুরুষ ও নারীমৃত্যু", "যুবক ও বৃদ্ধমৃত্যু", "মাতৃমৃত্যু ও শিশুমৃত্যু", "দুর্ঘটনাজনিত মৃত্যু"], answer: "মাতৃমৃত্যু ও শিশুমৃত্যু", explanation: "পাঠ-৫ অনুসারে, বাল্যবিবাহের ফলে মাতৃমৃত্যু ও শিশুমৃত্যুর হার বৃদ্ধি পায়।" },
+            { question: "বাল্যবিবাহ প্রতিরোধে শিশু-কিশোরদের জন্য সবচেয়ে বেশি প্রয়োজন কোনটি?", options: ["ভালো পোশাক", "দ্রুত কর্মসংস্থান", "উপযুক্ত শিক্ষা", "খেলাধুলার সুযোগ"], answer: "উপযুক্ত শিক্ষা", explanation: "পাঠ-৫ এ বলা হয়েছে, শিশু কিশোরদের উপযুক্ত শিক্ষায় শিক্ষিত করে গড়ে তুলতে হবে। শিক্ষিত হলে তারা সচেতন হবে।" },
+            { question: "বাল্যবিবাহ নিরোধ আইন, ২০১৭ অনুযায়ী বাল্যবিবাহ কী?", options: ["একটি সামাজিক রীতি", "একটি পারিবারিক বিষয়", "একটি শাস্তিযোগ্য অপরাধ", "একটি সাধারণ ভুল"], answer: "একটি শাস্তিযোগ্য অপরাধ", explanation: "পাঠ-৫ এ স্পষ্টভাবে বলা আছে, বাল্যবিবাহ নিরোধ আইন- ২০১৭ অনুযায়ী, বাল্যবিবাহ একটি অপরাধ।" },
+            { question: "কোনো প্রাপ্তবয়স্ক পুরুষ বাল্যবিবাহ করলে তার সর্বোচ্চ শাস্তি কী হতে পারে?", options: ["শুধুমাত্র জরিমানা", "৬ মাসের কারাদণ্ড", "২ বৎসর কারাদণ্ড বা ১ লক্ষ টাকা জরিমানা", "যাবজ্জীবন কারাদণ্ড"], answer: "২ বৎসর কারাদণ্ড বা ১ লক্ষ টাকা জরিমানা", explanation: "পাঠ-৫ এর আইন অনুযায়ী, কোনো প্রাপ্তবয়স্ক ব্যক্তি এ অপরাধ করলে ০২ বৎসর কারাদণ্ড বা ০১ লক্ষ টাকা অর্থদণ্ড বা উভয় দণ্ডে দণ্ডিত হবেন।" },
+            { question: "কোনো অপ্রাপ্তবয়স্ক ব্যক্তি বাল্যবিবাহ করলে তার শাস্তি কী হতে পারে?", options: ["কোনো শাস্তি নেই", "তিরস্কার", "একমাস কারাদণ্ড বা পঞ্চাশ হাজার টাকা জরিমানা", "এক বছরের কারাদণ্ড"], answer: "একমাস কারাদণ্ড বা পঞ্চাশ হাজার টাকা জরিমানা", explanation: "পাঠ-৫ এর আইন অনুযায়ী, কোনো অপ্রাপ্তবয়স্ক নারী বা পুরুষ বাল্যবিবাহ করলে একমাস কারাদণ্ড বা পঞ্চাশ হাজার টাকা জরিমানা বা উভয় দণ্ডে দণ্ডিত হবে।" },
+            { question: "বাল্যবিবাহের আয়োজন করলে পিতা-মাতার সর্বোচ্চ শাস্তি কী?", options: ["শুধুমাত্র জরিমানা", "৬ মাসের কারাদণ্ড", "২ বৎসর কারাদণ্ড বা পঞ্চাশ হাজার টাকা জরিমানা", "৫ বছরের কারাদণ্ড"], answer: "২ বৎসর কারাদণ্ড বা পঞ্চাশ হাজার টাকা জরিমানা", explanation: "আইন অনুযায়ী, পিতা-মাতা বা অভিভাবক বাল্যবিবাহের অনুষ্ঠান সম্পাদন করলে সর্বোচ্চ ০২ বৎসর কারাদণ্ড বা পঞ্চাশ হাজার টাকা জরিমানা বা উভয় দণ্ডে দণ্ডিত হবে।" },
+            { question: "১৬ বছর বয়সী রহিমার বাবা তাকে গ্রামের এক ছেলের সাথে বিয়ে দিচ্ছেন। এই বিয়েটি আইনত কী হিসেবে গণ্য হবে?", options: ["বৈধ বিবাহ", "বাল্যবিবাহ", "সামাজিক বিবাহ", "বিশেষ বিবাহ"], answer: "বাল্যবিবাহ", explanation: "মেয়ের বিয়ের বয়স ১৮ বছরের কম হওয়ায় এটি একটি বাল্যবিবাহ এবং আইনত অপরাধ।" },
+            { question: "দারিদ্র্যের কারণে রফিক তার ১৫ বছর বয়সী মেয়েকে বিয়ে দিতে বাধ্য হন। এখানে বাল্যবিবাহের কোন কারণটি প্রতিফলিত হয়েছে?", options: ["কুসংস্কার", "নিরাপত্তাহীনতা", "দারিদ্র্য", "পারিবারিক চাপ"], answer: "দারিদ্র্য", explanation: "পাঠ্যবইয়ে বাল্যবিবাহের প্রধান কারণ হিসেবে দারিদ্র্যকে চিহ্নিত করা হয়েছে।" },
+            { question: "বাল্যবিবাহের ফলে ছেলেমেয়েদের উপর কোন ধরনের অপরিপক্কতা দেখা যায়?", options: ["শুধুমাত্র মানসিক", "শুধুমাত্র শারীরিক", "মানসিক ও শারীরিক উভয়ই", "আর্থিক"], answer: "মানসিক ও শারীরিক উভয়ই", explanation: "পাঠ-৫ অনুযায়ী, ছেলেমেয়েদের মানসিক ও শারীরিক পরিপক্কতা আসার পূর্বেই তারা বাবা-মা হয়ে যায়।" },
+            { question: "বাল্যবিবাহ প্রতিরোধে মা-বাবা ও অভিভাবকদের কী করা উচিত?", options: ["বিষয়টি এড়িয়ে যাওয়া", "সন্তানদের সাথে খোলামেলা আলোচনা করা", "দ্রুত বিয়ের ব্যবস্থা করা", "আইন প্রয়োগকারী সংস্থাকে জানানো"], answer: "সন্তানদের সাথে খোলামেলা আলোচনা করা", explanation: "পাঠ-৫ এ বলা হয়েছে, বাল্যবিবাহ প্রতিরোধে মা-বাবাসহ অভিভাবকের সাথে খোলামেলা আলোচনা করতে হবে।" },
+            { question: "যদি একটি বিয়েতে ছেলের বয়স ২০ ও মেয়ের বয়স ১৭ হয়, তবে বিয়েটি কী হবে?", options: ["বৈধ", "বাল্যবিবাহ", "শর্তসাপেক্ষে বৈধ", "অসিদ্ধ"], answer: "বাল্যবিবাহ", explanation: "ছেলে (২১ বছরের কম) এবং মেয়ে (১৮ বছরের কম) উভয়েই আইন অনুযায়ী শিশু হওয়ায় এটি বাল্যবিবাহ।" },
+            { question: "কোন ক্ষেত্রে একটি বিয়েকে বাল্যবিবাহ বলা যাবে না?", options: ["ছেলের বয়স ২২ ও মেয়ের বয়স ১৭", "ছেলের বয়স ২০ ও মেয়ের বয়স ১৯", "ছেলের বয়স ২১ ও মেয়ের বয়স ১৮", "ছেলের বয়স ২৬ ও মেয়ের বয়স ১৬"], answer: "ছেলের বয়স ২১ ও মেয়ের বয়স ১৮", explanation: "এই ক্ষেত্রে ছেলে এবং মেয়ে উভয়েই আইন অনুযায়ী প্রাপ্তবয়স্ক, তাই এটি বাল্যবিবাহ নয়।" },
+            { question: "বাল্যবিবাহ প্রতিরোধে সবচেয়ে গুরুত্বপূর্ণ কোনটি?", options: ["আইন কঠোর করা", "অর্থনৈতিক সাহায্য দেওয়া", "জনগণকে সচেতন করা", "বিয়ে নিবন্ধন বাধ্যতামূলক করা"], answer: "জনগণকে সচেতন করা", explanation: "পাঠ্যবইয়ের মূলভাব অনুযায়ী, বাল্যবিবাহের কুফল সম্পর্কে সচেতনতা তৈরি করা প্রতিরোধের অন্যতম প্রধান উপায়।" },
+            { question: "১৯২৯ সালের বাল্যবিবাহ নিরোধ আইনের ইংরেজি নাম কী ছিল?", options: ["Child Protection Act", "Early Marriage Ban Act", "The Child Marriage Restraint Act", "Youth Marriage Act"], answer: "The Child Marriage Restraint Act", explanation: "পাঠ-৪ এ আইনটির ইংরেজি নাম (The Child Marriage Restraint Act, 1929) উল্লেখ করা হয়েছে।" },
+            { question: "আইন অনুযায়ী, ২১ বছরের কম বয়সী ছেলেকে কী হিসেবে গণ্য করা হয়?", options: ["কিশোর", "যুবক", "শিশু", "প্রাপ্তবয়স্ক"], answer: "শিশু", explanation: "পাঠ-৪ এ বাল্যবিবাহ আইনের ব্যাখ্যায় বলা হয়েছে, শিশু বলতে ২১ বছরের কম বয়সের ছেলেকে বোঝায়।" },
+            { question: "আত্মনির্ভরশীলতা কীভাবে বাল্যবিবাহ প্রতিরোধে সাহায্য করে?", options: ["বিয়েতে খরচ কমায়", "ব্যক্তিকে নিজের সিদ্ধান্ত নিতে সক্ষম করে", "পরিবারের আয় বাড়ায়", "সামাজিক মর্যাদা বৃদ্ধি করে"], answer: "ব্যক্তিকে নিজের সিদ্ধান্ত নিতে সক্ষম করে", explanation: "পাঠ-৫ অনুযায়ী, একটি আত্মনির্ভরশীল জাতি (এবং ব্যক্তি) বাল্যবিবাহ প্রতিরোধে গুরুত্বপূর্ণ ভূমিকা পালন করবে।" },
+            { question: "বাল্যবিবাহের ফলে ছেলেমেয়েদের শিক্ষাজীবনে কী প্রভাব পড়ে?", options: ["শিক্ষাগ্রহণের সুযোগ বাড়ে", "লেখাপড়ায় মনোযোগ বাড়ে", "শিক্ষাগ্রহণের পথ বন্ধ হয়ে যায়", "কোনো প্রভাব পড়ে না"], answer: "শিক্ষাগ্রহণের পথ বন্ধ হয়ে যায়", explanation: "পাঠ্যবইয়ের অন্তর্নিহিত ভাব অনুযায়ী, বাল্যবিবাহ হলে শিশু-কিশোরদের উপযুক্ত শিক্ষায় শিক্ষিত হওয়ার সুযোগ থাকে না।" }
+        ];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const overviewScreen = document.getElementById('overview-screen');
+        const startBtn = document.getElementById('start-btn');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerText = document.getElementById('timer-text');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const overviewTitle = document.getElementById('overview-title');
+        const overviewSummary = document.getElementById('overview-summary');
+        const overviewList = document.getElementById('overview-list');
+        const continueBtn = document.getElementById('continue-btn');
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const TIME_LIMIT = 25;
+        let timeLeft = TIME_LIMIT;
+        let userAnswers = [];
+
+        // --- Data Persistence Functions ---
+        function saveQuizState() {
+            const state = {
+                currentQuestionIndex,
+                score,
+                userAnswers
+            };
+            localStorage.setItem('quizProgress', JSON.stringify(state));
+        }
+
+        function loadQuizState() {
+            const savedState = localStorage.getItem('quizProgress');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                currentQuestionIndex = state.currentQuestionIndex;
+                score = state.score;
+                userAnswers = state.userAnswers;
+                
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+
+        function clearQuizState() {
+            localStorage.removeItem('quizProgress');
+        }
+
+        // Check for saved data on page load
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('quizProgress');
+            if (savedData) {
+                const startButtonsContainer = document.querySelector('.start-buttons-container');
+                const continueSavedBtn = document.createElement('button');
+                continueSavedBtn.id = 'continue-saved-btn';
+                continueSavedBtn.className = 'btn continue-btn';
+                continueSavedBtn.textContent = 'আগেরটি চালিয়ে যান';
+                startButtonsContainer.appendChild(continueSavedBtn);
+                
+                continueSavedBtn.addEventListener('click', loadQuizState);
+            }
+        });
+
+        // --- Core Quiz Functions ---
+
+        startBtn.addEventListener('click', startGame);
+        continueBtn.addEventListener('click', continueQuiz);
+
+        function startGame() {
+            clearQuizState();
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            scoreDisplay.textContent = 'স্কোর: 0';
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            resetState();
+            
+            progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+
+            if(currentQuestionIndex >= questions.length){
+                showOverview(true); 
+                return;
+            }
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionCounter.textContent = `প্রশ্ন ${currentQuestionIndex + 1}/${questions.length}`;
+            questionText.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(button, option));
+                optionsContainer.appendChild(button);
+            });
+            startTimer();
+        }
+        
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerText.textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    selectAnswer(null, null); 
+                }
+            }, 1000);
+        }
+
+        function resetState() {
+            clearInterval(timer);
+            optionsContainer.innerHTML = '';
+        }
+        
+        function selectAnswer(selectedButton, selectedOption) {
+            clearInterval(timer);
+            const correctOption = questions[currentQuestionIndex].answer;
+            const isCorrect = selectedOption === correctOption;
+            
+            userAnswers.push({
+                question: questions[currentQuestionIndex].question,
+                yourAnswer: selectedOption === null ? 'সময় শেষ' : selectedOption,
+                correctAnswer: correctOption,
+                explanation: questions[currentQuestionIndex].explanation,
+                isCorrect: isCorrect,
+            });
+
+            Array.from(optionsContainer.children).forEach(button => {
+                if(button.textContent === correctOption) button.classList.add('correct');
+                if(button === selectedButton && !isCorrect) button.classList.add('incorrect');
+                button.disabled = true;
+            });
+            
+            if (isCorrect) {
+                score++;
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+            }
+
+            saveQuizState(); // Save progress after each answer
+
+            setTimeout(handleNext, 1500);
+        }
+
+        function handleNext(){
+            currentQuestionIndex++;
+            if(currentQuestionIndex % 10 === 0 && currentQuestionIndex > 0) {
+                showOverview(currentQuestionIndex === questions.length);
+            } else {
+                 loadQuestion();
+            }
+        }
+
+        function showOverview(isFinal) {
+            showScreen('overview-screen');
+            if (isFinal) {
+                clearQuizState(); // Clear data when quiz is finished
+            }
+
+            let start = Math.floor((currentQuestionIndex -1) / 10) * 10;
+            let end = currentQuestionIndex;
+
+            overviewTitle.textContent = isFinal ? 'চূড়ান্ত ফলাফল' : `পার্ট ${end/10} এর সারসংক্ষেপ`;
+            
+            overviewList.innerHTML = '';
+            for(let i = 0; i < end; i++){
+                const answer = userAnswers[i];
+                const item = document.createElement('div');
+                item.classList.add('overview-item');
+                const statusIcon = answer.isCorrect ? '✔' : '✖';
+                const statusClass = answer.isCorrect ? 'status-correct' : 'status-incorrect';
+                
+                item.innerHTML = `
+                    <div class="overview-status ${statusClass}">${statusIcon}</div>
+                    <p class="question"><strong>প্রশ্ন ${i + 1}:</strong> ${answer.question}</p>
+                    <p><strong>তোমার উত্তর:</strong> ${answer.yourAnswer}</p>
+                    <p><strong>সঠিক উত্তর:</strong> ${answer.correctAnswer}</p>
+                    <p class="explanation"><strong>ব্যাখ্যা:</strong> ${answer.explanation}</p>
+                `;
+                overviewList.prepend(item);
+            }
+            
+            overviewSummary.innerHTML = `
+                <span class="summary-correct">✔ মোট সঠিক: ${score}</span>
+                <span class="summary-incorrect">✖ মোট ভুল: ${currentQuestionIndex - score}</span>
+            `;
+            
+            if(isFinal) {
+                continueBtn.textContent = 'পুনরায় খেলুন';
+            } else {
+                continueBtn.textContent = 'পরবর্তী ধাপে যান';
+            }
+        }
+
+        function continueQuiz() {
+            if (currentQuestionIndex >= questions.length) {
+                window.location.reload(); // Reload the page to reset everything cleanly
+            } else {
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+    </script>
+</body>
+</html>

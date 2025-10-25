@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>এশিয়ার কয়েকটি দেশ কুইজ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&family=Poppins:wght@600&display=swap');
+
+        :root {
+            --primary-bg: #4e54c8;
+            --secondary-bg: #8f94fb;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #333;
+            --accent-color: #f7b733;
+            --correct-color: #2ecc71;
+            --incorrect-color: #e74c3c;
+            --light-gray: #f0f0f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --border-radius: 15px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary-bg);
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--primary-bg);
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .start-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), #fdc830);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(247, 183, 51, 0.4);
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(247, 183, 51, 0.6);
+        }
+        
+        .btn.continue-btn {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+             box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+        .btn.continue-btn:hover {
+             box-shadow: 0 7px 20px rgba(52, 152, 219, 0.6);
+        }
+
+
+        #quiz-screen .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        #question-counter, #score-display {
+             background: var(--light-gray);
+             padding: 8px 15px;
+             border-radius: 20px;
+        }
+
+        #timer {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-bg);
+        }
+        
+        #progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--correct-color), var(--accent-color));
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+        }
+        
+        #question-text {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            min-height: 80px;
+        }
+        
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .option-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1em;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--light-gray);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-bg);
+            background-color: #f7f7ff;
+            transform: scale(1.02);
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-color);
+            color: white;
+            border-color: var(--incorrect-color);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        #overview-screen h2 { margin-bottom: 10px; }
+        #overview-summary { font-size: 1.2em; font-weight: bold; margin-bottom: 25px; background: var(--light-gray); padding: 15px; border-radius: 10px; display: flex; justify-content: center; gap: 30px; }
+        .summary-correct { color: var(--correct-color); }
+        .summary-incorrect { color: var(--incorrect-color); }
+        #overview-list { max-height: 40vh; overflow-y: auto; text-align: left; margin-bottom: 25px; }
+        .overview-item { background: #fff; border: 1px solid var(--light-gray); border-radius: 10px; padding: 15px; margin-bottom: 10px; position: relative; padding-right: 40px; }
+        .overview-item p { margin-bottom: 8px; font-size: 1em; }
+        .overview-item .question { font-weight: bold; }
+        .overview-item .explanation { font-size: 0.9em; color: #555; background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 5px; }
+        .overview-status { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); font-size: 2em; }
+        .status-correct { color: var(--correct-color); }
+        .status-incorrect { color: var(--incorrect-color); }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
+            #question-text { font-size: 1.2em; min-height: 70px; }
+            #options-container { grid-template-columns: 1fr; }
+            .option-btn { padding: 15px; font-size: 1em; }
+            #quiz-screen .header { flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>এশিয়ার কয়েকটি দেশ কুইজ</h1>
+            <p>এই অধ্যায়ের উপর আপনার দক্ষতা যাচাই করুন। প্রতিটি প্রশ্নের জন্য সময় পাবেন ২৫ সেকেন্ড।</p>
+            <p><strong>মোট ৫০টি প্রশ্ন</strong></p>
+            <div class="start-buttons-container">
+                <button id="start-btn" class="btn">নতুন কুইজ শুরু করুন</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div id="question-counter"></div>
+                <div id="timer">
+                    <span id="timer-text">25</span>
+                </div>
+                <div id="score-display">স্কোর: 0</div>
+            </div>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="question-text"></div>
+            <div id="options-container"></div>
+        </div>
+        
+        <!-- Overview Screen -->
+        <div id="overview-screen" class="screen">
+            <h2 id="overview-title"></h2>
+            <div id="overview-summary"></div>
+            <div id="overview-list"></div>
+            <button id="continue-btn" class="btn continue-btn"></button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // ভারত (1-10)
+            { question: "ভারতের রাজধানী কোথায়?", options: ["মুম্বাই", "কলকাতা", "নয়াদিল্লি", "চেন্নাই"], answer: "নয়াদিল্লি", explanation: "পাঠ-১ অনুযায়ী, ভারতের রাজধানী নয়াদিল্লি।" },
+            { question: "১৯৪৭ সালের ১৫ই আগস্ট ভারত কাদের শাসন থেকে স্বাধীনতা লাভ করে?", options: ["পর্তুগিজদের", "ফরাসিদের", "ইংরেজদের", "মোঘলদের"], answer: "ইংরেজদের", explanation: "পাঠ-১ এ উল্লেখ আছে, ইংরেজদের দু'শ বছরের শাসনের পর ১৯৪৭ সালের ১৫ই আগস্ট ভারতবর্ষ স্বাধীনতা লাভ করে।" },
+            { question: "ভারতের শতকরা কত ভাগ লোক গ্রামে বাস করে?", options: ["৭০ ভাগ", "৮০ ভাগ", "৬০ ভাগ", "৯০ ভাগ"], answer: "৮০ ভাগ", explanation: "পাঠ-১ অনুসারে, ভারতের শতকরা ৮০ ভাগ লোক গ্রামে এবং ২০ ভাগ লোক শহরে বাস করে।" },
+            { question: "কোন শিল্পের জন্য ভারত প্রাচীনকাল থেকে সারা পৃথিবীতে বিখ্যাত ছিল?", options: ["ইস্পাতশিল্প", "চিনিশিল্প", "বস্ত্রশিল্প", "জাহাজশিল্প"], answer: "বস্ত্রশিল্প", explanation: "পাঠ-১ এ বলা হয়েছে, প্রাচীনকাল হতে ভারত তার বস্ত্রশিল্পের জন্য সারা পৃথিবীতে বিখ্যাত ছিল।" },
+            { question: "ভারতের শাসনব্যবস্থা কোন ধরনের?", options: ["রাষ্ট্রপতি শাসিত", "রাজতান্ত্রিক", "সমাজতান্ত্রিক", "সংসদীয় গণতান্ত্রিক"], answer: "সংসদীয় গণতান্ত্রিক", explanation: "পাঠ-১ অনুযায়ী, ভারত পৃথিবীর বৃহত্তম গণতান্ত্রিক দেশ এবং এখানে সংসদীয় গণতান্ত্রিক শাসনব্যবস্থা চালু আছে।" },
+            { question: "১৯৭১ সালের মহান মুক্তিযুদ্ধে কোন প্রতিবেশী দেশটি বাংলাদেশকে সহায়তা করেছিল?", options: ["চীন", "নেপাল", "ভারত", "মালয়েশিয়া"], answer: "ভারত", explanation: "পাঠ-১ এর শেষে বলা হয়েছে, ১৯৭১ সালের মহান মুক্তিযুদ্ধে ভারতের সহায়তার কথা আমরা শ্রদ্ধার সাথে স্মরণ করি।" },
+            { question: "দক্ষিণ এশিয়ায় ভারতের অবস্থান কীরূপ?", options: ["একটি ক্ষুদ্র রাষ্ট্র", "একটি দ্বীপ রাষ্ট্র", "একটি বৃহৎ ও শক্তিশালী রাষ্ট্র", "একটি অনুন্নত রাষ্ট্র"], answer: "একটি বৃহৎ ও শক্তিশালী রাষ্ট্র", explanation: "পাঠ-১ এর শুরুতে বলা হয়েছে, ভারত দক্ষিণ এশিয়ার একটি বৃহৎ ও শক্তিশালী রাষ্ট্র।" },
+            { question: "ভারতের উত্তরে কোন পর্বতমালা অবস্থিত?", options: ["আরাকান পর্বত", "হিন্দুকুশ পর্বত", "হিমালয় পর্বতমালা", "সুলেমান পর্বতমালা"], answer: "হিমালয় পর্বতমালা", explanation: "পাঠ-১ এ ভারতের ভৌগোলিক বর্ণনায় বলা হয়েছে, এর উত্তরে রয়েছে পৃথিবীর বৃহত্তম হিমালয় পর্বতমালা।" },
+            { question: "আগ্রার তাজমহল ও দিল্লির কুতুব মিনার কোন দেশের সভ্যতার প্রাচীনতা বহন করে?", options: ["পাকিস্তান", "বাংলাদেশ", "চীন", "ভারত"], answer: "ভারত", explanation: "পাঠ-১ অনুসারে, আগ্রার তাজমহল, দিল্লির কুতুব মিনার, লালকেল্লা প্রভৃতি ভারতের সভ্যতার প্রাচীনতা পরিচয় বহন করে।" },
+            { question: "ভারতের প্রধান খাদ্যশস্যের মধ্যে কোনটি উল্লেখযোগ্য?", options: ["কফি ও চা", "ভুট্টা ও সয়াবিন", "ধান ও গম", "পাট ও তুলা"], answer: "ধান ও গম", explanation: "পাঠ-১ এ ভারতের প্রধান খাদ্যশস্যের মধ্যে ধান, গম, বার্লি, যব, কফি, চা ইত্যাদির কথা উল্লেখ করা হয়েছে।" },
+            // চীন (11-20)
+            { question: "চীনের রাজধানীর নাম কী?", options: ["সাংহাই", "বেইজিং", "হংকং", "উহান"], answer: "বেইজিং", explanation: "পাঠ-১ এ চীন অংশে বলা হয়েছে, দেশটির রাজধানীর নাম বেইজিং।" },
+            { question: "আয়তনের দিক থেকে চীন বিশ্বের কততম বৃহত্তম দেশ?", options: ["প্রথম", "দ্বিতীয়", "তৃতীয়", "চতুর্থ"], answer: "তৃতীয়", explanation: "পাঠ-১ অনুযায়ী, আয়তনের দিক থেকে বিশ্বের তৃতীয় বৃহত্তম দেশ হলো চীন।" },
+            { question: "চীনের জনসংখ্যার শতকরা কত ভাগ হান চাইনিজ বংশোদ্ভূত?", options: ["৮৫ ভাগ", "৯০ ভাগ", "৯৫ ভাগ", "৯৮ ভাগ"], answer: "৯৫ ভাগ", explanation: "পাঠ-১ এ উল্লেখ আছে, চীনের জনসংখ্যার শতকরা ৯৫ ভাগ হান চাইনিজ বংশোদ্ভূত।" },
+            { question: "চীনের সংখ্যাগরিষ্ঠ মানুষের ভাষা কী?", options: ["ক্যান্টোনিজ", "উইঘুর", "তিব্বতি", "মান্দারিন"], answer: "মান্দারিন", explanation: "পাঠ-১ অনুসারে, চীনের সংখ্যাগরিষ্ঠ মানুষের ভাষা হলো মান্দারিন, যা সারা বিশ্বে চীনা ভাষা নামে পরিচিত।" },
+            { question: "বিশ্বের সর্বোচ্চ পর্বতশৃঙ্গ মাউন্ট এভারেস্ট কোন দুটি দেশের সীমান্তে অবস্থিত?", options: ["ভারত ও নেপাল", "চীন ও ভারত", "নেপাল ও চীন", "ভুটান ও চীন"], answer: "নেপাল ও চীন", explanation: "পাঠ-১ এর চীন অংশে বলা হয়েছে, বিশ্বের সর্বোচ্চ পর্বতশৃঙ্গ মাউন্ট এভারেস্ট নেপাল ও চীনের সীমান্তে বরাবর অবস্থিত।" },
+            { question: "চীনের অর্থনীতি প্রধানত কোন খাতের উপর নির্ভরশীল?", options: ["শুধুমাত্র কৃষি", "শুধুমাত্র শিল্প", "শিল্প ও সেবাখাত", "পর্যটন খাত"], answer: "শিল্প ও সেবাখাত", explanation: "পাঠ-১ অনুযায়ী, চীনের অর্থনীতি প্রধানত শিল্প ও সেবাখাত নির্ভর।" },
+            { question: "চীনের বৃহত্তম দুটি নদীর নাম কী?", options: ["মেকং ও সিন্ধু", "হোয়াংহো ও ইয়াংসি", "ব্রহ্মপুত্র ও ইয়াংসি", "হোয়াংহো ও মেকং"], answer: "হোয়াংহো ও ইয়াংসি", explanation: "পাঠ্যপুস্তকে বলা হয়েছে, হোয়াংহো ও ইয়াংসি চীনের বৃহত্তম নদী।" },
+            { question: "প্রশাসনিকভাবে চীনকে কয়টি প্রদেশে ভাগ করা হয়েছে?", options: ["২০টি", "২২টি", "২৫টি", "২৮টি"], answer: "২২টি", explanation: "পাঠ-১ এর শেষে বলা হয়েছে, প্রশাসনিক দিক থেকে চীনকে ২২টি প্রদেশ এবং ৫টি স্বায়ত্বশাসিত অঞ্চলে ভাগ করা হয়েছে।" },
+            { question: "চীনের শিক্ষার হার কত?", options: ["শতকরা ৯২ ভাগ", "শতকরা ৯৫ ভাগ", "শতকরা ৯৭ ভাগ", "শতকরা ৯৯ ভাগ"], answer: "শতকরা ৯৭ ভাগ", explanation: "পাঠ-১ অনুযায়ী, দেশটির শিক্ষার হার শতকরা ৯৭ ভাগ।" },
+            { question: "চীনের রাষ্ট্রীয় নাম কী?", options: ["চীনা প্রজাতন্ত্র", "গণপ্রজাতন্ত্রী চীন", "চীনা সাম্রাজ্য", "সমাজতান্ত্রিক চীন"], answer: "গণপ্রজাতন্ত্রী চীন", explanation: "পাঠ-১ এ চীনের পরিচয়ে বলা হয়েছে, এর রাষ্ট্রীয় নাম গণপ্রজাতন্ত্রী চীন।" },
+            // জাপান (21-30)
+            { question: "কোন দেশকে 'সূর্যোদয়ের দেশ' বলা হয়?", options: ["কোরিয়া", "চীন", "জাপান", "মালয়েশিয়া"], answer: "জাপান", explanation: "পাঠ-২ অনুযায়ী, এশিয়া মহাদেশের একেবারে পূর্ব প্রান্তে অবস্থিত হওয়ায় জাপানকে 'সূর্যোদয়ের দেশ' বলা হয়।" },
+            { question: "জাপানের রাজধানীর নাম কী?", options: ["ওসাকা", "কিয়োতো", "নাগোয়া", "টোকিও"], answer: "টোকিও", explanation: "পাঠ-২ এ জাপানের পরিচিতিতে এর রাজধানী টোকিও বলে উল্লেখ করা হয়েছে।" },
+            { question: "নিচের কোনটি জাপানের চারটি প্রধান দ্বীপের অন্যতম?", options: ["ওkinawa", "হোক্কাইডো", "সাপ্পোরো", "নাগাসাকি"], answer: "হোক্কাইডো", explanation: "পাঠ-২ অনুসারে, জাপানের প্রধান চারটি দ্বীপ হলো হোক্কাইডো, হনসু, শিকোকু এবং কিউশু।" },
+            { question: "জাপানের শিক্ষার হার কত?", options: ["শতকরা ৯৫ ভাগ", "শতকরা ৯৯ ভাগ", "একশত ভাগ", "শতকরা ৯৮ ভাগ"], answer: "একশত ভাগ", explanation: "পাঠ-২ এ বলা হয়েছে, এ দেশের শিক্ষার হার একশত ভাগ।" },
+            { question: "জাপানিদের জাতিগত ধর্ম কোনটি?", options: ["বৌদ্ধধর্ম", "খ্রিষ্টধর্ম", "শিন্তো", "ইসলাম"], answer: "শিন্তো", explanation: "পাঠ-২ অনুযায়ী, শিন্তো জাপানিদের জাতিগত ধর্ম।" },
+            { question: "জাপানের অর্থনীতির মূল চালিকাশক্তি কোনটি?", options: ["কৃষি", "পর্যটন", "শিল্প", "খনিজ সম্পদ"], answer: "শিল্প", explanation: "পাঠ-২ এ স্পষ্টভাবে বলা হয়েছে, দেশটির অর্থনীতির মূল চালিকাশক্তিই হলো শিল্প।" },
+            { question: "জাপানে কত বছর বয়স পর্যন্ত ছেলেমেয়েদের শিক্ষা বাধ্যতামূলক?", options: ["৫ থেকে ১৪ বছর", "৬ থেকে ১৫ বছর", "৭ থেকে ১৬ বছর", "৬ থেকে ১৮ বছর"], answer: "৬ থেকে ১৫ বছর", explanation: "পাঠ-২ অনুসারে, জাপানে ৬ থেকে ১৫ বছর বয়স পর্যন্ত ছেলেমেয়েদের শিক্ষা বাধ্যতামূলক।" },
+            { question: "বাংলাদেশের রাস্তা-ব্রিজ নির্মাণ ও শিল্প-উন্নয়নে প্রধান সহযোগী দেশ কোনটি?", options: ["চীন", "ভারত", "জাপান", "কোরিয়া"], answer: "জাপান", explanation: "পাঠ-২ এর শেষে বলা হয়েছে, জাপান বাংলাদেশের রাস্তা-ব্রিজ নির্মাণ ও শিল্প-উন্নয়নে প্রধান সহযোগী।" },
+            { question: "জাপানের জলবায়ু কোন মণ্ডলীয়?", options: ["উষ্ণমণ্ডলীয়", "শীতল মণ্ডলীয়", "নাতিশীতষ্ণ মণ্ডলীয়", "মরু মণ্ডলীয়"], answer: "নাতিশীতষ্ণ মণ্ডলীয়", explanation: "পাঠ-২ অনুযায়ী, জাপানের জলবায়ু নাতিশীতষ্ণ মণ্ডলীয়।" },
+            { question: "জাপানের স্থানীয় নাম কী?", options: ["কিংডম অব জাপান", "ঝুংঘু", "কোরিয়া", "নিহন বা নিপ্পন"], answer: "নিহন বা নিপ্পন", explanation: "পাঠ-২ তে উল্লেখ করা হয়েছে, দেশটির স্থানীয় নাম নিহন বা নিপ্পন।" },
+            // কোরিয়া (31-40)
+            { question: "কোরিয়ান উপদ্বীপ কোন মহাদেশের উত্তর-পূর্ব কোণে অবস্থিত?", options: ["ইউরোপ", "আফ্রিকা", "এশিয়া", "অস্ট্রেলিয়া"], answer: "এশিয়া", explanation: "পাঠ-২ এর কোরিয়া অংশে বলা হয়েছে, এটি এশিয়া মহাদেশের উত্তর-পূর্ব কোণে অবস্থিত।" },
+            { question: "দ্বিতীয় বিশ্বযুদ্ধের পর কোরিয়া কয়টি ভাগে বিভক্ত হয়ে যায়?", options: ["দুই ভাগে", "তিন ভাগে", "চার ভাগে", "অবিভক্ত থাকে"], answer: "দুই ভাগে", explanation: "পাঠ-২ অনুযায়ী, দ্বিতীয় বিশ্বযুদ্ধের পরে কোরিয়া দুইভাগে বিভক্ত হয়ে যায়: দক্ষিণ কোরিয়া ও উত্তর কোরিয়া।" },
+            { question: "দক্ষিণ কোরিয়ার সরকারি নাম কী?", options: ["গণপ্রজাতন্ত্রী কোরিয়া", "কোরিয়া প্রজাতন্ত্র", "কোরিয়ান উপদ্বীপ", "কোরিয়া"], answer: "কোরিয়া প্রজাতন্ত্র", explanation: "পাঠ-২ এ বলা হয়েছে, দক্ষিণ কোরিয়ার সরকারি নাম কোরিয়া প্রজাতন্ত্র।" },
+            { question: "দুই অংশ মিলে কোরিয়ার দ্বীপের সংখ্যা প্রায় কত?", options: ["এক হাজার", "দুই হাজার", "তিন হাজার", "চার হাজার"], answer: "তিন হাজার", explanation: "পাঠ-২ অনুসারে, দুই অংশ মিলে কোরিয়ার দ্বীপের সংখ্যা প্রায় তিন হাজার।" },
+            { question: "কোরিয়ানরা জাতিগতভাবে মূলত কী?", options: ["একটি ধর্মীয় গোষ্ঠী", "একটি ভাষাগোষ্ঠীর", "একাধিক জাতির মিশ্রণ", "একটি উপজাতি"], answer: "একটি ভাষাগোষ্ঠীর", explanation: "পাঠ-২ এ উল্লেখ আছে, কোরিয়ানরা জাতিগতভাবে একটি ভাষাগোষ্ঠীর।" },
+            { question: "বাংলাদেশের রাস্তা-ঘাট, ব্রীজ নির্মাণ ও শিল্প-উন্নয়নে কোন দেশ যথেষ্ট সহযোগিতা করে আসছে?", options: ["জাপান", "উত্তর কোরিয়া", "চীন", "দক্ষিণ কোরিয়া"], answer: "দক্ষিণ কোরিয়া", explanation: "পাঠ-২ অনুযায়ী, দক্ষিণ কোরিয়া বাংলাদেশকে রাস্তা-ঘাট, ব্রীজ নির্মাণ ও শিল্প-উন্নয়নে যথেষ্ট সহযোগিতা করে আসছে।" },
+            { question: "কোরিয়ার অধিকাংশ অঞ্চল কী ধরনের?", options: ["সমতলভূমি", "পর্বতময়", "জলাভূমি", "মরুভূমি"], answer: "পর্বতময়", explanation: "পাঠ-২ এ বলা হয়েছে, কোরিয়ার অধিকাংশ অঞ্চলই পর্বতময়।" },
+            { question: "উত্তর কোরিয়ার সরকারি নাম কী?", options: ["কোরিয়া প্রজাতন্ত্র", "গণতান্ত্রিক কোরিয়া", "গণপ্রজাতন্ত্রী কোরিয়া", "উত্তর কোরিয়া"], answer: "গণপ্রজাতন্ত্রী কোরিয়া", explanation: "পাঠ-২ অনুযায়ী, উত্তর কোরিয়ার নাম গণপ্রজাতন্ত্রী কোরিয়া।" },
+            { question: "ভাষাগত ও নৃতাত্ত্বিক বৈশিষ্ট্যের দিক দিয়ে কোরিয়ানরা কাদের থেকে আলাদা?", options: ["ভারতীয় ও নেপালিদের", "চীন ও জাপানিদের", "থাই ও মালয়েশিয়ানদের", "ভিয়েতনাম ও কম্বোডিয়ানদের"], answer: "চীন ও জাপানিদের", explanation: "পাঠ-২ এ বলা হয়েছে, ভাষাগত ও নৃতাত্ত্বিক বৈশিষ্ট্যের দিক দিয়ে কোরিয়ানরা চীন ও জাপানিদের থেকে আলাদা।" },
+            { question: "কোরিয়ার কৃষি পণ্যের মধ্যে কোনটি উল্লেখযোগ্য?", options: ["রাবার ও কফি", "চা ও তামাক", "ধান ও বার্লি", "পাট ও তুলা"], answer: "ধান ও বার্লি", explanation: "পাঠ-২ এ কোরিয়ার কৃষি পণ্যের মধ্যে ধান, বার্লি, বাঁধাকপি, আপেল, আঙুর ইত্যাদির কথা বলা হয়েছে।" },
+            // মালয়েশিয়া (41-50)
+            { question: "মালয়েশিয়া দক্ষিণ-পূর্ব এশিয়ার একটি গুরুত্বপূর্ণ দেশ যা কয়টি প্রদেশ নিয়ে গঠিত?", options: ["১০টি", "১২টি", "১৫টি", "১৮টি"], answer: "১৫টি", explanation: "পাঠ-২ এর মালয়েশিয়া অংশে বলা হয়েছে, মালয়েশিয়া ১৫টি প্রদেশ নিয়ে গঠিত।" },
+            { question: "মালয়েশিয়ার রাজধানীর নাম কী?", options: ["জহর বাহরু", "পেনাং", "কুয়ালালামপুর", "কুচিং"], answer: "কুয়ালালামপুর", explanation: "পাঠ-২ অনুযায়ী, মালয়েশিয়ার রাজধানীর নাম কুয়ালালামপুর।" },
+            { question: "মালয়েশিয়ার জনসংখ্যার শতকরা কত ভাগের বেশি কৃষির উপর নির্ভরশীল?", options: ["৪০ ভাগের বেশি", "৫০ ভাগের বেশি", "৬০ ভাগের বেশি", "৭০ ভাগের বেশি"], answer: "৫০ ভাগের বেশি", explanation: "পাঠ-২ এ উল্লেখ আছে, মোট জনসংখ্যার শতকরা ৫০ ভাগেরও বেশি কৃষির উপর নির্ভরশীল।" },
+            { question: "মালয়েশিয়ার প্রধান খনিজ সম্পদের মধ্যে কোনটি উল্লেখযোগ্য?", options: ["সোনা ও রূপা", "হীরা ও কয়লা", "টিন ও লোহা", "তামা ও অ্যালুমিনিয়াম"], answer: "টিন ও লোহা", explanation: "পাঠ-২ অনুসারে, মালয়েশিয়ার খনিজসম্পদের মধ্যে টিন, লোহা এবং পেট্রোল উল্লেখযোগ্য।" },
+            { question: "জর্জটাউন, ক্ল্যাঙ্গ, কুচিং কোন দেশের প্রধান সমুদ্রবন্দর?", options: ["ভারত", "জাপান", "মালয়েশিয়া", "কোরিয়া"], answer: "মালয়েশিয়া", explanation: "পাঠ-২ এ বলা হয়েছে, জর্জটাউন, ক্ল্যাঙ্গ, কুচিং এবং পেনাং মালয়েশিয়ার প্রধান সমুদ্রবন্দর।" },
+            { question: "বাংলাদেশের বিভিন্ন EPZ-এ (রপ্তানি প্রক্রিয়াকরণ অঞ্চল) কোন দেশটি অনেক অর্থ বিনিয়োগ করেছে?", options: ["ভারত", "জাপান", "চীন", "মালয়েশিয়া"], answer: "মালয়েশিয়া", explanation: "পাঠ-২ অনুযায়ী, বাংলাদেশের বিভিন্ন EPZ-এ মালয়েশিয়া অনেক অর্থ বিনিয়োগ করেছে।" },
+            { question: "মালয়েশিয়া মূলত কোন ধরনের দেশ?", options: ["শিল্পপ্রধান", "সেবা প্রধান", "পর্যটন প্রধান", "কৃষিপ্রধান"], answer: "কৃষিপ্রধান", explanation: "পাঠ-২ এ মালয়েশিয়াকে একটি কৃষিপ্রধান দেশ হিসেবে বর্ণনা করা হয়েছে।" },
+            { question: "বাংলাদেশের জন্য মালয়েশিয়ার কোন বাজারটি একটি বড় ক্ষেত্র হিসেবে পরিচিত?", options: ["শিক্ষা বাজার", "পর্যটন বাজার", "শ্রমবাজার", "পণ্য বাজার"], answer: "শ্রমবাজার", explanation: "পাঠ-২ এর শেষে বলা হয়েছে, মালয়েশিয়ার শ্রমবাজার বাংলাদেশের জন্য একটা বড়ো ক্ষেত্র।" },
+            { question: "মালয়েশিয়ার ভূপ্রকৃতির পশ্চিমাংশে কী রয়েছে?", options: ["পর্বতশ্রেণি", "বালিময় এলাকা", "জলাভূমি", "সমতলভূমি"], answer: "জলাভূমি", explanation: "পাঠ-২ এ মালয়েশিয়ার ভূপ্রকৃতি বর্ণনায় বলা হয়েছে এর পশ্চিমাংশে জলাভূমি রয়েছে।" },
+            { question: "মালয়েশিয়ার প্রধান শিল্পপণ্যের মধ্যে কোনটি অন্যতম?", options: ["ইস্পাত", "সিমেন্ট", "রাবার", "কাগজ"], answer: "রাবার", explanation: "পাঠ-২ অনুযায়ী, মালয়েশিয়ার প্রধান শিল্পপণ্যের মধ্যে রয়েছে রাবার, সার, চীনামাটির দ্রব্য প্রভৃতি।" }
+        ];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const overviewScreen = document.getElementById('overview-screen');
+        const startBtn = document.getElementById('start-btn');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerText = document.getElementById('timer-text');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const overviewTitle = document.getElementById('overview-title');
+        const overviewSummary = document.getElementById('overview-summary');
+        const overviewList = document.getElementById('overview-list');
+        const continueBtn = document.getElementById('continue-btn');
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const TIME_LIMIT = 25;
+        let timeLeft = TIME_LIMIT;
+        let userAnswers = [];
+
+        // --- Data Persistence Functions ---
+        function saveQuizState() {
+            const state = {
+                currentQuestionIndex,
+                score,
+                userAnswers
+            };
+            localStorage.setItem('quizProgress', JSON.stringify(state));
+        }
+
+        function loadQuizState() {
+            const savedState = localStorage.getItem('quizProgress');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                currentQuestionIndex = state.currentQuestionIndex;
+                score = state.score;
+                userAnswers = state.userAnswers;
+                
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+
+        function clearQuizState() {
+            localStorage.removeItem('quizProgress');
+        }
+
+        // Check for saved data on page load
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('quizProgress');
+            if (savedData) {
+                const startButtonsContainer = document.querySelector('.start-buttons-container');
+                const continueSavedBtn = document.createElement('button');
+                continueSavedBtn.id = 'continue-saved-btn';
+                continueSavedBtn.className = 'btn continue-btn';
+                continueSavedBtn.textContent = 'আগেরটি চালিয়ে যান';
+                startButtonsContainer.appendChild(continueSavedBtn);
+                
+                continueSavedBtn.addEventListener('click', loadQuizState);
+            }
+        });
+
+        // --- Core Quiz Functions ---
+
+        startBtn.addEventListener('click', startGame);
+        continueBtn.addEventListener('click', continueQuiz);
+
+        function startGame() {
+            clearQuizState();
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            scoreDisplay.textContent = 'স্কোর: 0';
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            resetState();
+            
+            progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+
+            if(currentQuestionIndex >= questions.length){
+                showOverview(true); 
+                return;
+            }
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionCounter.textContent = `প্রশ্ন ${currentQuestionIndex + 1}/${questions.length}`;
+            questionText.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(button, option));
+                optionsContainer.appendChild(button);
+            });
+            startTimer();
+        }
+        
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerText.textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    selectAnswer(null, null); 
+                }
+            }, 1000);
+        }
+
+        function resetState() {
+            clearInterval(timer);
+            optionsContainer.innerHTML = '';
+        }
+        
+        function selectAnswer(selectedButton, selectedOption) {
+            clearInterval(timer);
+            const correctOption = questions[currentQuestionIndex].answer;
+            const isCorrect = selectedOption === correctOption;
+            
+            userAnswers.push({
+                question: questions[currentQuestionIndex].question,
+                yourAnswer: selectedOption === null ? 'সময় শেষ' : selectedOption,
+                correctAnswer: correctOption,
+                explanation: questions[currentQuestionIndex].explanation,
+                isCorrect: isCorrect,
+            });
+
+            Array.from(optionsContainer.children).forEach(button => {
+                if(button.textContent === correctOption) button.classList.add('correct');
+                if(button === selectedButton && !isCorrect) button.classList.add('incorrect');
+                button.disabled = true;
+            });
+            
+            if (isCorrect) {
+                score++;
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+            }
+
+            saveQuizState(); // Save progress after each answer
+
+            setTimeout(handleNext, 1500);
+        }
+
+        function handleNext(){
+            currentQuestionIndex++;
+            if(currentQuestionIndex % 10 === 0 && currentQuestionIndex > 0) {
+                showOverview(currentQuestionIndex === questions.length);
+            } else {
+                 loadQuestion();
+            }
+        }
+
+        function showOverview(isFinal) {
+            showScreen('overview-screen');
+            if (isFinal) {
+                clearQuizState(); // Clear data when quiz is finished
+            }
+
+            let start = Math.floor((currentQuestionIndex -1) / 10) * 10;
+            let end = currentQuestionIndex;
+
+            overviewTitle.textContent = isFinal ? 'চূড়ান্ত ফলাফল' : `পার্ট ${end/10} এর সারসংক্ষেপ`;
+            
+            overviewList.innerHTML = '';
+            for(let i = 0; i < end; i++){
+                const answer = userAnswers[i];
+                const item = document.createElement('div');
+                item.classList.add('overview-item');
+                const statusIcon = answer.isCorrect ? '✔' : '✖';
+                const statusClass = answer.isCorrect ? 'status-correct' : 'status-incorrect';
+                
+                item.innerHTML = `
+                    <div class="overview-status ${statusClass}">${statusIcon}</div>
+                    <p class="question"><strong>প্রশ্ন ${i + 1}:</strong> ${answer.question}</p>
+                    <p><strong>তোমার উত্তর:</strong> ${answer.yourAnswer}</p>
+                    <p><strong>সঠিক উত্তর:</strong> ${answer.correctAnswer}</p>
+                    <p class="explanation"><strong>ব্যাখ্যা:</strong> ${answer.explanation}</p>
+                `;
+                overviewList.prepend(item);
+            }
+            
+            overviewSummary.innerHTML = `
+                <span class="summary-correct">✔ মোট সঠিক: ${score}</span>
+                <span class="summary-incorrect">✖ মোট ভুল: ${currentQuestionIndex - score}</span>
+            `;
+            
+            if(isFinal) {
+                continueBtn.textContent = 'পুনরায় খেলুন';
+            } else {
+                continueBtn.textContent = 'পরবর্তী ধাপে যান';
+            }
+        }
+
+        function continueQuiz() {
+            if (currentQuestionIndex >= questions.length) {
+                window.location.reload(); // Reload the page to reset everything cleanly
+            } else {
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বাংলাদেশের সংস্কৃতি ও সাংস্কৃতিক বৈচিত্র্য কুইজ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&family=Poppins:wght@600&display=swap');
+
+        :root {
+            --primary-bg: #4e54c8;
+            --secondary-bg: #8f94fb;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #333;
+            --accent-color: #f7b733;
+            --correct-color: #2ecc71;
+            --incorrect-color: #e74c3c;
+            --light-gray: #f0f0f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --border-radius: 15px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary-bg);
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--primary-bg);
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .start-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), #fdc830);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(247, 183, 51, 0.4);
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(247, 183, 51, 0.6);
+        }
+        
+        .btn.continue-btn {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+             box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+        .btn.continue-btn:hover {
+             box-shadow: 0 7px 20px rgba(52, 152, 219, 0.6);
+        }
+
+
+        #quiz-screen .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        #question-counter, #score-display {
+             background: var(--light-gray);
+             padding: 8px 15px;
+             border-radius: 20px;
+        }
+
+        #timer {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-bg);
+        }
+        
+        #progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--correct-color), var(--accent-color));
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+        }
+        
+        #question-text {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            min-height: 80px;
+        }
+        
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .option-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1em;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--light-gray);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-bg);
+            background-color: #f7f7ff;
+            transform: scale(1.02);
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-color);
+            color: white;
+            border-color: var(--incorrect-color);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        #overview-screen h2 { margin-bottom: 10px; }
+        #overview-summary { font-size: 1.2em; font-weight: bold; margin-bottom: 25px; background: var(--light-gray); padding: 15px; border-radius: 10px; display: flex; justify-content: center; gap: 30px; }
+        .summary-correct { color: var(--correct-color); }
+        .summary-incorrect { color: var(--incorrect-color); }
+        #overview-list { max-height: 40vh; overflow-y: auto; text-align: left; margin-bottom: 25px; }
+        .overview-item { background: #fff; border: 1px solid var(--light-gray); border-radius: 10px; padding: 15px; margin-bottom: 10px; position: relative; padding-right: 40px; }
+        .overview-item p { margin-bottom: 8px; font-size: 1em; }
+        .overview-item .question { font-weight: bold; }
+        .overview-item .explanation { font-size: 0.9em; color: #555; background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 5px; }
+        .overview-status { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); font-size: 2em; }
+        .status-correct { color: var(--correct-color); }
+        .status-incorrect { color: var(--incorrect-color); }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
+            #question-text { font-size: 1.2em; min-height: 70px; }
+            #options-container { grid-template-columns: 1fr; }
+            .option-btn { padding: 15px; font-size: 1em; }
+            #quiz-screen .header { flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>বাংলাদেশের সংস্কৃতি ও সাংস্কৃতিক বৈচিত্র্য কুইজ</h1>
+            <p>এই অধ্যায়ের উপর আপনার দক্ষতা যাচাই করুন। প্রতিটি প্রশ্নের জন্য সময় পাবেন ২৫ সেকেন্ড।</p>
+            <p><strong>মোট ৫০টি প্রশ্ন</strong></p>
+            <div class="start-buttons-container">
+                <button id="start-btn" class="btn">নতুন কুইজ শুরু করুন</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div id="question-counter"></div>
+                <div id="timer">
+                    <span id="timer-text">25</span>
+                </div>
+                <div id="score-display">স্কোর: 0</div>
+            </div>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="question-text"></div>
+            <div id="options-container"></div>
+        </div>
+        
+        <!-- Overview Screen -->
+        <div id="overview-screen" class="screen">
+            <h2 id="overview-title"></h2>
+            <div id="overview-summary"></div>
+            <div id="overview-list"></div>
+            <button id="continue-btn" class="btn continue-btn"></button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // পাঠ-১: বাংলাদেশের সাংস্কৃতিক বৈচিত্র্যের ধারণা (1-10)
+            { question: "বাংলাদেশে ইসলাম কাদের মাধ্যমে আসে?", options: ["ব্যবসায়ীদের মাধ্যমে", "পর্যটকদের মাধ্যমে", "সুফিসাধকদের মাধ্যমে", "যুদ্ধজয়ের মাধ্যমে"], answer: "সুফিসাধকদের মাধ্যমে", explanation: "পাঠ-১ অনুযায়ী, ইসলাম এদেশে সুফিসাধকদের মাধ্যমে আসে এবং মধ্যযুগে তুরস্ক, ইরান, ইরাক থেকে আগত মানুষের মাধ্যমে মুসলিম সমাজের প্রসার ঘটে।" },
+            { question: "মুসলমানদের দুটি প্রধান ঈদ উৎসব কী কী?", options: ["শবেবরাত ও ঈদ-এ-মিলাদুন্নবী", "ঈদ-উল-ফিতর ও ঈদ-উল-আজহা", "মহররম ও ঈদে মিলাদুন্নবী", "আশুরা ও ঈদ-উল-ফিতর"], answer: "ঈদ-উল-ফিতর ও ঈদ-উল-আজহা", explanation: "পাঠ্যবই অনুসারে, মুসলমানদের দুটি প্রধান ঈদ উৎসব হলো ঈদ-উল-ফিতর ও ঈদ-উল-আজহা।" },
+            { question: "হিন্দু সম্প্রদায়ের প্রধান উৎসব কোনটি?", options: ["জন্মাষ্টমী", "রথযাত্রা", "কালীপূজা", "দুর্গাপূজা"], answer: "দুর্গাপূজা", explanation: "পাঠ-১ এ উল্লেখ করা হয়েছে যে, হিন্দুদের প্রধান উৎসব দুর্গাপূজা, এছাড়াও কালীপূজা, সরস্বতী পূজা, জন্মাষ্টমী ইত্যাদিও রয়েছে।" },
+            { question: "বৌদ্ধ ধর্মাবলম্বীরা কোন উৎসবটি উৎসবমুখর পরিবেশে আয়োজন করে?", options: ["প্রবারণা পূর্ণিমা", "বড়দিন", "বুদ্ধপূর্ণিমা", "পানি উৎসব"], answer: "বুদ্ধপূর্ণিমা", explanation: "পাঠ-১ অনুযায়ী, বৌদ্ধরা গৌতম বুদ্ধের অনুসারী এবং তারা বুদ্ধপূর্ণিমায় উৎসবমুখর অনুষ্ঠানের আয়োজন করে।" },
+            { question: "খ্রিষ্টান সম্প্রদায় যিশুখ্রিষ্টের জন্মদিনকে কী হিসেবে পালন করে?", options: ["গুড ফ্রাইডে", "ইস্টার সানডে", "নববর্ষ", "বড়দিন"], answer: "বড়দিন", explanation: "এদেশের খ্রিষ্টান সম্প্রদায় যিশুখ্রিষ্টের জন্মদিন উপলক্ষে বড়দিন উৎসব পালন করে থাকে।" },
+            { question: "সব ধর্মের মূল শিক্ষা কী?", options: ["শান্তি ও সম্প্রীতি", "আচার ও অনুষ্ঠান", "রীতি ও নীতি", "জ্ঞান ও প্রজ্ঞা"], answer: "শান্তি ও সম্প্রীতি", explanation: "পাঠ-১ এর শেষে বলা হয়েছে, ধর্মীয় রীতি-নীতিতে পার্থক্য থাকলেও সব ধর্মের মূল শিক্ষা হলো শান্তি ও সম্প্রীতি।" },
+            { question: "বাংলা ভাষায় কোন কোন বিদেশি ভাষার মিশ্রণ ঘটেছে?", options: ["শুধুমাত্র ইংরেজি ও হিন্দি", "অস্ট্রিক, দ্রাবিড়, সংস্কৃত, পালি, আরবি, ফার্সি", "চীনা, জাপানি, কোরিয়ান", "শুধুমাত্র সংস্কৃত ও পালি"], answer: "অস্ট্রিক, দ্রাবিড়, সংস্কৃত, পালি, আরবি, ফার্সি", explanation: "হাজার বছর ধরে নানা জাতির আগমনের ফলে বাংলা ভাষায় অস্ট্রিক, দ্রাবিড়, সংস্কৃত, পালি, আরবি, ফার্সিসহ অনেক বিদেশি ভাষার মিশ্রণ ঘটেছে।" },
+            { question: "বাংলাদেশের অধিকাংশ মানুষের মাতৃভাষা কী?", options: ["চাকমা", "বাংলা", "সাঁওতালি", "মারমা"], answer: "বাংলা", explanation: "ভাষা বিচারে সাংস্কৃতিক বৈচিত্র্য অংশে বলা হয়েছে, বাংলাদেশের অধিকাংশ মানুষ বাংলা ভাষায় কথা বলে।" },
+            { question: "পুঁথিপাঠ ও বাউল গানে কোন সম্প্রদায়ের অবদান রয়েছে?", options: ["শুধুমাত্র মুসলিম", "শুধুমাত্র হিন্দু", "সকল সম্প্রদায়ের", "শুধুমাত্র বৌদ্ধ"], answer: "সকল সম্প্রদায়ের", explanation: "পাঠ-১ এ বলা হয়েছে, বাংলার সংস্কৃতিতে পুঁথিপাঠ, বাউল মুর্শিদি গানসহ বিভিন্ন লোকগানে সকল সম্প্রদায়ের মানুষের অবদান রয়েছে।" },
+            { question: "বিভিন্ন সম্প্রদায়ের জীবনাচরণের মধ্যে ভিন্নতা কোথায় লক্ষ করা যায়?", options: ["শুধুমাত্র পোশাকে", "শুধুমাত্র খাবারে", "খাওয়া দাওয়া, পোশাক, বিয়ে, সম্পত্তিতে অধিকার", "শুধুমাত্র ভাষায়"], answer: "খাওয়া দাওয়া, পোশাক, বিয়ে, সম্পত্তিতে অধিকার", explanation: "সম্প্রদায় বিচারে সাংস্কৃতিক বৈচিত্র্য অংশে বলা হয়েছে যে, খাওয়া দাওয়া, পোশাক, বিয়ের অনুষ্ঠান, সম্পত্তিতে অধিকার ইত্যাদিতে ভিন্নতা রয়েছে।" },
+            // পাঠ-২ ও ৩: বাংলাদেশের গ্রাম ও শহরের সংস্কৃতি (11-25)
+            { question: "এক সময় বাংলাদেশকে কী বলা হতো?", options: ["একটি বড়ো শহর", "নদীর দেশ", "একটি বড়ো গ্রাম", "কৃষির দেশ"], answer: "একটি বড়ো গ্রাম", explanation: "পাঠ-২ ও ৩ অংশে বলা হয়েছে, এক সময় বাংলাদেশকে একটি বড়ো গ্রাম বলা হতো কারণ তখন অর্থনীতির প্রধান উৎস ছিল কৃষি।" },
+            { question: "'মাছ ভাতে বাঙালি' কথাটা কাদের জন্য প্রযোজ্য ছিল?", options: ["শহরের মানুষের জন্য", "সকল বাঙালির জন্য", "গ্রামের মানুষের জন্য", "জেলেদের জন্য"], answer: "গ্রামের মানুষের জন্য", explanation: "কিছুকাল আগেও গ্রামের মানুষের জন্য 'মাছ ভাতে বাঙালি' কথাটা প্রযোজ্য ছিল কারণ তাদের গোলায় ধান ও নদী-নালায় প্রচুর মাছ থাকতো।" },
+            { question: "গ্রামীণ জীবনে যাতায়াতের প্রধান বাহন একসময় কী ছিল?", options: ["মোটর গাড়ি ও রিক্সা", "গরুর গাড়ি ও নৌকা", "সাইকেল ও ট্রেন", "বাস ও ট্রাক"], answer: "গরুর গাড়ি ও নৌকা", explanation: "গ্রামের মানুষ একসময় পায়ে হেঁটে, গরুর গাড়িতে এবং বর্ষায় নৌকায় যাতায়াত করত।" },
+            { question: "গ্রামের সকল ধর্মের মানুষ একসাথে কোন উৎসবগুলো উদযাপন করে?", options: ["শুধুমাত্র ঈদ ও পূজা", "বৈশাখী মেলা, নবান্ন উৎসব, নৌকাবাইচ", "বড়দিন ও বুদ্ধপূর্ণিমা", "শুধুমাত্র বিয়ে"], answer: "বৈশাখী মেলা, নবান্ন উৎসব, নৌকাবাইচ", explanation: "পাঠ অনুযায়ী, বৈশাখী মেলা, নবান্ন উৎসব, হালখাতা, নৌকাবাইচ, বিয়ে ইত্যাদি সকল ধর্মের মানুষ একসাথে উদযাপন করে।" },
+            { question: "শহরের মানুষের অন্যতম বিনোদন কোনটি?", options: ["যাত্রা ও পালাগান", "কবিগানের আসর", "টেলিভিশন ও সিনেমা", "নৌকাবাইচ"], answer: "টেলিভিশন ও সিনেমা", explanation: "পাঠ-২ ও ৩ অনুসারে, টেলিভিশন ও সিনেমার পাশাপাশি মঞ্চনাটক দেখাও শহরের মানুষের জন্য একটি অন্যতম বিনোদন।" },
+            { question: "শহরের সংস্কৃতিতে গ্রামীণ সংস্কৃতির প্রভাব পড়ার কারণ কী?", options: ["শহরের মানুষ গ্রামে বেড়াতে যায়", "গ্রাম থেকে অনেকে শহরে কাজ করতে আসে", "টেলিভিশনে গ্রামের দৃশ্য দেখায়", "শহরের খাবার গ্রামে পাওয়া যায়"], answer: "গ্রাম থেকে অনেকে শহরে কাজ করতে আসে", explanation: "গ্রাম থেকে আসা ঠেলাগাড়ি, ভ্যানগাড়ি চালক, মুটে-মজুরদের মাধ্যমে গ্রামীামীণ সংস্কৃতির কোনো কোনো বিষয় শহুরে সংস্কৃতিতে প্রভাব ফেলে।" },
+            { question: "শহরের শিশুদের খেলাধুলা ও ছুটাছুটি করার সুযোগ কম কেন?", options: ["তারা পড়তে ভালোবাসে", "বাবা-মা খেলতে দেয় না", "শহরে খোলা মাঠ পাওয়া কঠিন", "তারা কম্পিউটার গেম খেলে"], answer: "শহরে খোলা মাঠ পাওয়া কঠিন", explanation: "পাঠ্যবইয়ে বলা হয়েছে, শহরে খোলা মাঠ পাওয়া কঠিন হওয়ায় শিশুদের খেলাধুলা ও ছুটাছুটি করার সুযোগ কম থাকে।" },
+            { question: "কোন উৎসবটি শহরে বেশি জাঁকজমকের সাথে পালন করা হয়?", options: ["নবান্ন", "পহেলা বৈশাখ", "হালখাতা", "নৌকাবাইচ"], answer: "পহেলা বৈশাখ", explanation: "পাঠ্যাংশ অনুযায়ী, শহরে পহেলা বৈশাখ এবং পহেলা ফাল্গুন অনেক বেশি জাঁকজমকের সাথে পালন করা হয়।" },
+            { question: "পূর্বে গ্রামের পুরুষেরা সাধারণত কী পোশাক পরতেন?", options: ["প্যান্ট-শার্ট", "পাজামা-পাঞ্জাবি", "লুঙ্গি পরে খালি গায়ে বা গেঞ্জি/ফতুয়া পরে", "ধুতি-পাঞ্জাবি"], answer: "লুঙ্গি পরে খালি গায়ে বা গেঞ্জি/ফতুয়া পরে", explanation: "একসময় গ্রামের পুরুষেরা লুঙ্গি পরে খালি গায়ে অথবা গেঞ্জি বা ফতুয়া পরে কৃষিকাজ করতেন।" },
+            { question: "গ্রামের মানুষের বিনোদনের উল্লেখযোগ্য বিষয় কী ছিল?", options: ["সিনেমা হল", "পার্কে ভ্রমণ", "যাত্রা, পালাগান, কবিগান", "শপিং মল"], answer: "যাত্রা, পালাগান, কবিগান", explanation: "আগে গ্রামে বিনোদনের জন্য রাতভর যাত্রা, পালাগান, কবিগানের আসর বসতো।" },
+            { question: "শহরবাসীর সামাজিক জীবনের গন্ডি ছোটো কেন?", options: ["তারা অসামাজিক", "তারা নিজেদের পেশা নিয়ে ব্যস্ত থাকে", "শহরের আয়তন ছোট", "তারা ভিন্ন ভিন্ন ভাষায় কথা বলে"], answer: "তারা নিজেদের পেশা নিয়ে ব্যস্ত থাকে", explanation: "শহরের মানুষ নিজ নিজ পেশা নিয়ে ব্যস্ত থাকায় এবং একই দালানে থেকেও প্রতিবেশীদের সাথে তেমন যোগাযোগ না রাখায় তাদের সামাজিক বন্ধন ততটা অটুট নয়।" },
+            { question: "নদী-নালা ভরাট এবং জমিতে কীটনাশক ব্যবহারের প্রভাব কী?", options: ["মাছ সহজলভ্য হয়েছে", "মাছের উৎপাদন বেড়েছে", "ছোট মাছ ও মাছের ডিম নষ্ট হয়ে যাচ্ছে", "ফসলের উৎপাদন কমে গেছে"], answer: "ছোট মাছ ও মাছের ডিম নষ্ট হয়ে যাচ্ছে", explanation: "জমিতে কীটনাশক ও রাসায়নিক সার ব্যবহারের ফলে এর নির্যাস পানিতে পড়ে ছোট মাছ এবং মাছের ডিম নষ্ট হয়ে যাচ্ছে।" },
+            { question: "গ্রামীণ সংস্কৃতি বলতে কী বোঝায়?", options: ["শুধুমাত্র কৃষকদের জীবন", "গ্রামের মানুষের পেশা, আচরণ, সৃষ্টি ও ভূমিকার একত্রিত রূপ", "শুধুমাত্র গ্রামের উৎসব", "গ্রামের মানুষের পোশাক"], answer: "গ্রামের মানুষের পেশা, আচরণ, সৃষ্টি ও ভূমিকার একত্রিত রূপ", explanation: "গ্রামের মানুষ যে নানা ধরনের পেশার সাথে যুক্ত থাকে, এবং এর ফলে সে যে আচরণ করে, যা সৃষ্টি করে বা যে ভূমিকা রাখে তার একত্রিত রূপই গ্রামীণ সংস্কৃতি।" },
+            { question: "শহরের মানুষের কাছে কোন খাবারগুলো প্রিয়?", options: ["পিঠাপুলি", "পান্তা ভাত", "স্যান্ডউইচ, বার্গার", "মাছ, ভাত, শাকসবজি"], answer: "স্যান্ডউইচ, বার্গার", explanation: "শহরের মানুষের খাবারে ভিন্নতা রয়েছে এবং অনেকের কাছেই ফাস্ট ফুড যেমন স্যান্ডউইচ, বার্গার ইত্যাদি প্রিয়।" },
+            { question: "একুশের বইমেলা এখন কীসের মতো উদযাপন করা হয়?", options: ["একটি সাধারণ মেলা", "একটি শোক দিবস", "একটি প্রতিবাদ", "একটি উৎসব"], answer: "একটি উৎসব", explanation: "পাঠ-২ ও ৩ অনুযায়ী, একুশের বইমেলাও এখন উৎসবের মতো উদযাপন করা হয়।" },
+            // পাঠ-৪: বাংলাদেশের লোকসংস্কৃতি ও এর বিভিন্ন উপাদান (26-35)
+            { question: "লোকসংস্কৃতি বলতে কী বোঝায়?", options: ["শিক্ষিত মানুষের সংস্কৃতি", "শহরের মানুষের সংস্কৃতি", "সাধারণ মানুষ ও তার সমাজের সংস্কৃতি", "আধুনিক সংস্কৃতি"], answer: "সাধারণ মানুষ ও তার সমাজের সংস্কৃতি", explanation: "সাধারণ মানুষ যুগ যুগ ধরে যে সংস্কৃতি লালন করে আসছে, অর্থাৎ লোকসমাজের সংস্কৃতিই হলো লোকসংস্কৃতি।" },
+            { question: "লোকসংস্কৃতির জন্ম কোথায়?", options: ["রাজদরবারে", "শহরের মঞ্চে", "সাধারণ মানুষের মুখে মুখে, চিন্তায় ও কর্মে", "বইয়ের পাতায়"], answer: "সাধারণ মানুষের মুখে মুখে, চিন্তায় ও কর্মে", explanation: "লোকসংস্কৃতির জন্ম সাধারণ মানুষের মুখে মুখে, তাদের চিন্তা ও কর্মের মাধ্যমে এবং এটি এক প্রজন্ম থেকে আরেক প্রজন্মে ছড়িয়ে পড়ে।" },
+            { question: "ভূত তাড়ানোর জন্য ওঝারা কী প্রয়োগ করে বলে লোকবিশ্বাসে প্রচলিত?", options: ["আধুনিক চিকিৎসা", "বৈজ্ঞানিক পদ্ধতি", "ঝাড়ফুঁক, হলুদ পোড়া, মরিচ পোড়া", "মিষ্টি বিতরণ"], answer: "ঝাড়ফুঁক, হলুদ পোড়া, মরিচ পোড়া", explanation: "লোকবিশ্বাস অনুযায়ী, মামদো ভূত, পেতনি ইত্যাদি তাড়াতে ওঝারা ঝাড়ফুঁক, হলুদ পোড়া, মরিচ পোড়া ইত্যাদি প্রয়োগ করে।" },
+            { question: "বস্তুগত লোকসংস্কৃতির উপাদান কোনটি?", options: ["লোককাহিনি", "প্রবাদ-প্রবচন", "তাঁতশিল্প, নকশিকাঁথা, মৃৎশিল্প", "লোকসংগীত"], answer: "তাঁতশিল্প, নকশিকাঁথা, মৃৎশিল্প", explanation: "যেসব উপাদান ধরা বা ছোঁয়া যায়, যেমন তাঁতশিল্প, কাঁসাশিল্প, মৃৎশিল্প, নকশিকাঁথা ইত্যাদি বস্তুগত উপাদানের অন্তর্ভুক্ত।" },
+            { question: "অবস্তুগত লোকসংস্কৃতির উপাদান কোনটি?", options: ["নৌকা, পালকি", "লোককাহিনি, লোকগীতি, ধাঁধা", "লাঙল-কাস্তে", "বেতশিল্প"], answer: "লোককাহিনি, লোকগীতি, ধাঁধা", explanation: "যেসব সাংস্কৃতিক বিষয় ধরা বা ছোঁয়া যায় না, যেমন লোককাহিনি, লোকগীতি, প্রবাদ-প্রবচন, ধাঁধা ইত্যাদি অবস্তুগত উপাদান।" },
+            { question: "বৃষ্টি নামানোর জন্য গ্রামের মেয়েরা কী অনুষ্ঠান করে?", options: ["পূজা করে", "গান গেয়ে নাচ করে", "কুলা নিয়ে বাড়ি বাড়ি গিয়ে গান গায়", "বিশেষ প্রার্থনা করে"], answer: "কুলা নিয়ে বাড়ি বাড়ি গিয়ে গান গায়", explanation: "অনেক দিন বৃষ্টি না হলে গ্রামের মেয়েরা কুলা নিয়ে বাড়ি বাড়ি যায়, মুখে বৃষ্টির গান গায় এবং বাড়ির মেয়েরা কুলার ওপর পানি ঢেলে দেয়।" },
+            { question: "বাচ্চার ওপর অশুভ দৃষ্টি কাটানোর জন্য কী করা হয় বলে লোকবিশ্বাসে আছে?", options: ["মাদুলি পরানো হয়", "বাচ্চার কপালে কাজলের টিপ দেওয়া হয়", "তাকে ঘরে আটকে রাখা হয়", "বিশেষ পোশাক পরানো হয়"], answer: "বাচ্চার কপালে কাজলের টিপ দেওয়া হয়", explanation: "লোকসমাজে বিশ্বাস করা হয়, বাচ্চার ওপর অশুভ দৃষ্টি বা 'চোখ লাগা' থেকে বাঁচাতে তার কপালের পাশে কাজলের টিপ দেওয়া হয়।" },
+            { question: "'লোকসাহিত্য' কোন ধরনের উপাদান?", options: ["বস্তুগত", "অবস্তুগত", "বৈজ্ঞানিক", "আধুনিক"], answer: "অবস্তুগত", explanation: "লোকসাহিত্য মানুষের মুখে মুখে তৈরি ও প্রসারিত হয়, এর লিখিত রূপ নেই, তাই এটি লোকসংস্কৃতির অবস্তুগত উপাদান।" },
+            { question: "লোকসংস্কৃতির যাত্রা কোথা থেকে শুরু হয়েছে?", options: ["শহুরে শিল্প সমাজ থেকে", "গ্রামীণ কৃষিজীবী সমাজ থেকে", "রাজাদের دربار থেকে", "বিদেশি সংস্কৃতি থেকে"], answer: "গ্রামীণ কৃষিজীবী সমাজ থেকে", explanation: "পাঠ-৪ অনুসারে, লোকসংস্কৃতির যাত্রা শুরু হয়েছে গ্রামীণ কৃষিজীবী সমাজের মধ্য থেকে।" },
+            { question: "নিচের কোনটি লোকযান?", options: ["মোটরগাড়ি", "রিক্সা", "নৌকা, পালকি", "ট্রেন"], answer: "নৌকা, পালকি", explanation: "নৌকা, পালকি ইত্যাদি লোকসংস্কৃতির বস্তুগত উপাদানের মধ্যে লোকযান হিসেবে পরিচিত।" },
+            // পাঠ-৫: বাংলাদেশের বিভিন্ন নৃগোষ্ঠীর সংস্কৃতি (36-50)
+            { question: "পার্বত্য চট্টগ্রাম অঞ্চলে কোন নৃগোষ্ঠীর বাস?", options: ["গারো, হাজং", "খাসিয়া, মণিপুরি", "চাকমা, মারমা, ত্রিপুরা", "সাঁওতাল, ওঁরাও"], answer: "চাকমা, মারমা, ত্রিপুরা", explanation: "বাঙালির বাইরে অন্য নৃগোষ্ঠীর অধিকাংশ, যেমন চাকমা, মারমা, ত্রিপুরা, বম ইত্যাদি পার্বত্য চট্টগ্রাম অঞ্চলে বাস করে।" },
+            { question: "গারো ও হাজং নৃগোষ্ঠী প্রধানত কোন অঞ্চলে বাস করে?", options: ["সিলেট", "বৃহত্তর ময়মনসিংহ", "উত্তরবঙ্গ", "কক্সবাজার"], answer: "বৃহত্তর ময়মনসিংহ", explanation: "বৃহত্তর ময়মনসিংহে বসবাসকারী ভিন্ন নৃগোষ্ঠী হচ্ছে গারো, হাজং।" },
+            { question: "মারমা ও রাখাইনরা নববর্ষে কোন উৎসব পালন করে?", options: ["বৈসাবি", "ফাগুয়া", "জল উৎসব", "সোহরাই"], answer: "জল উৎসব", explanation: "মারমা ও রাখাইনরা নববর্ষের উৎসবে ধুমধামের সাথে জল উৎসব পালন করে থাকে।" },
+            { question: "চাকমা মেয়েদের পোশাকের নিচের অংশের নাম কী?", options: ["থামি", "দকমান্দা", "পিনোন", "লুঙ্গি"], answer: "পিনোন", explanation: "চাকমা মেয়েরা সাধারণত নিচের অংশে যে পোশাক পরে তার নাম 'পিনোন', যা লাল ও কালো রঙের হয়।" },
+            { question: "মাতৃসূত্রীয় সমাজব্যবস্থা কোন নৃগোষ্ঠীর মধ্যে প্রচলিত?", options: ["চাকমা ও মারমা", "সাঁওতাল ও ওঁরাও", "খাসিয়া ও গারো", "ত্রিপুরা ও বম"], answer: "খাসিয়া ও গারো", explanation: "খাসিয়া ও গারো মাতৃসূত্রীয় সমাজে মায়ের কাছ থেকে কন্যারা সম্পত্তি পায়, তাই মেয়ের জামাইকে স্ত্রীর পরিবারে বাস করতে হয়।" },
+            { question: "'বৈসাবি' উৎসবটি কোন কোন নৃগোষ্ঠীর উৎসবের সমন্বয়?", options: ["চাকমা, মারমা, গারো", "ত্রিপুরা, চাকমা, সাঁওতাল", "বৈসুক, সাংগ্রাই ও বিজু", "গারো, খাসিয়া, মণিপুরি"], answer: "বৈসুক, সাংগ্রাই ও বিজু", explanation: "পার্বত্য চট্টগ্রামের ক্ষুদ্র নৃগোষ্ঠীর বৈসুক (ত্রিপুরা), সাংগ্রাই (মারমা) ও বিজু (চাকমা) - এই তিনটিকে সমন্বয় করে 'বৈসাবি' পালন করা হয়।" },
+            { question: "গারোদের প্রিয় খাবার 'নাখাম' কী দিয়ে তৈরি?", options: ["তাজা মাছ", "মাংস", "বাঁশের কোঁড়ল", "শুঁটকি মাছ"], answer: "শুঁটকি মাছ", explanation: "'নাখাম' অর্থাৎ শুঁটকি মাছ গারোদের একটি বিশেষ প্রিয় খাবার।" },
+            { question: "'টোটেম' কী?", options: ["একটি ধর্মীয় উৎসব", "একটি বিশেষ পোশাক", "গোত্রের প্রতীক হিসেবে বিবেচিত নির্দিষ্ট প্রাণী বা বস্তু", "একটি লোকসংগীত"], answer: "গোত্রের প্রতীক হিসেবে বিবেচিত নির্দিষ্ট প্রাণী বা বস্তু", explanation: "কোনো কোনো নৃগোষ্ঠী বিশ্বাস করে একটি নির্দিষ্ট প্রাণী তাদের গোত্রের প্রতীক, যাকে 'টোটেম' বলে এবং সেই টোটেম খাওয়া নিষিদ্ধ থাকে।" },
+            { question: "মণিপুরিদের সবচেয়ে প্রিয় নাচ কোনটি?", options: ["গোপী নাচ", "ঝুমুর নাচ", "বিহু নাচ", "সাঁওতালি নাচ"], answer: "গোপী নাচ", explanation: "রাধা-কৃষ্ণের উদ্দেশ্যে কীর্তন ও নাচ করা মণিপুরিদের সবচেয়ে প্রিয়, যা 'গোপী নাচ' নামে পরিচিত।" },
+            { question: "ওঁরাওরা কোন মাস থেকে বছর গণনা শুরু করে?", options: ["বৈশাখ", "পৌষ", "ফাল্গুন", "চৈত্র"], answer: "ফাল্গুন", explanation: "ওঁরাওরা ফাল্গুন মাস থেকে তাদের বছর গণনা শুরু করে এবং নববর্ষকে বরণ করতে 'ফাগুয়া' উৎসব পালন করে।" },
+            { question: "সাঁওতালদের একটি উৎসবের নাম কী?", options: ["সাংগ্রাই", "বিজু", "সোহরাই", "বৈসুক"], answer: "সোহরাই", explanation: "সাঁওতালরা সোহরাই, বাহা, পাসকা পরবসহ নানা উৎসব পালন করে থাকে।" },
+            { question: "পার্বত্য চট্টগ্রামের নৃগোষ্ঠীর কাছে 'নাপ্পি' বা 'সিঁদোল' কী?", options: ["একটি পানীয়", "ভাত দিয়ে তৈরি খাবার", "চিংড়ি বা শুঁটকি মাছের গুঁড়া", "একটি সবজি"], answer: "চিংড়ি বা শুঁটকি মাছের গুঁড়া", explanation: "পার্বত্য চট্টগ্রামের অধিকাংশ ভিন্ন নৃগোষ্ঠীর কাছে নাপ্পি বা সিঁদোল (চিংড়ি বা এ জাতীয় শুঁটকি মাছের গুঁড়া) অতি প্রিয়।" },
+            { question: "গারো নারীদের ঐতিহ্যবাহী পোশাক কোনটি?", options: ["পিনোন", "থামি", "দকমান্দা", "শাড়ি"], answer: "দকমান্দা", explanation: "গারো নারীদের ঐতিহ্যগত পোশাক হলো দকমান্দা, দকশাড়ি ইত্যাদি।" },
+            { question: "কোন নৃগোষ্ঠী জুলাই মাসে বিয়ে করা অশুভ মনে করে?", options: ["খাসিয়া", "মাহাতো", "পাংখোয়া", "গারো"], answer: "পাংখোয়া", explanation: "পাংখোয়া নৃগোষ্ঠী জুলাই মাসে বিয়ে করা এবং বিয়ের প্রস্তাব দেওয়াও নিষিদ্ধ মনে করে, কারণ তাদের বিশ্বাস এতে সংসার সুখের হয় না।" },
+            { question: "সিলেট অঞ্চলে কোন নৃগোষ্ঠীর বাস?", options: ["গারো ও হাজং", "চাকমা ও মারমা", "খাসিয়া ও মণিপুরি", "সাঁওতাল ও ওঁরাও"], answer: "খাসিয়া ও মণিপুরি", explanation: "সিলেট অঞ্চলে খাসিয়া ও মণিপুরিদের বাস রয়েছে।" }
+        ];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const overviewScreen = document.getElementById('overview-screen');
+        const startBtn = document.getElementById('start-btn');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerText = document.getElementById('timer-text');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const overviewTitle = document.getElementById('overview-title');
+        const overviewSummary = document.getElementById('overview-summary');
+        const overviewList = document.getElementById('overview-list');
+        const continueBtn = document.getElementById('continue-btn');
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const TIME_LIMIT = 25; // Timer set to 25 seconds as requested
+        let timeLeft = TIME_LIMIT;
+        let userAnswers = [];
+
+        // --- Data Persistence Functions ---
+        function saveQuizState() {
+            const state = {
+                currentQuestionIndex,
+                score,
+                userAnswers
+            };
+            localStorage.setItem('quizProgress', JSON.stringify(state));
+        }
+
+        function loadQuizState() {
+            const savedState = localStorage.getItem('quizProgress');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                currentQuestionIndex = state.currentQuestionIndex;
+                score = state.score;
+                userAnswers = state.userAnswers;
+                
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+
+        function clearQuizState() {
+            localStorage.removeItem('quizProgress');
+        }
+
+        // Check for saved data on page load
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('quizProgress');
+            if (savedData) {
+                const startButtonsContainer = document.querySelector('.start-buttons-container');
+                const continueSavedBtn = document.createElement('button');
+                continueSavedBtn.id = 'continue-saved-btn';
+                continueSavedBtn.className = 'btn continue-btn';
+                continueSavedBtn.textContent = 'আগেরটি চালিয়ে যান';
+                startButtonsContainer.appendChild(continueSavedBtn);
+                
+                continueSavedBtn.addEventListener('click', loadQuizState);
+            }
+        });
+
+        // --- Core Quiz Functions ---
+
+        startBtn.addEventListener('click', startGame);
+        continueBtn.addEventListener('click', continueQuiz);
+
+        function startGame() {
+            clearQuizState();
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            scoreDisplay.textContent = 'স্কোর: 0';
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            resetState();
+            
+            progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+
+            if(currentQuestionIndex >= questions.length){
+                showOverview(true); 
+                return;
+            }
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionCounter.textContent = `প্রশ্ন ${currentQuestionIndex + 1}/${questions.length}`;
+            questionText.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(button, option));
+                optionsContainer.appendChild(button);
+            });
+            startTimer();
+        }
+        
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerText.textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    selectAnswer(null, null); 
+                }
+            }, 1000);
+        }
+
+        function resetState() {
+            clearInterval(timer);
+            optionsContainer.innerHTML = '';
+        }
+        
+        function selectAnswer(selectedButton, selectedOption) {
+            clearInterval(timer);
+            const correctOption = questions[currentQuestionIndex].answer;
+            const isCorrect = selectedOption === correctOption;
+            
+            userAnswers.push({
+                question: questions[currentQuestionIndex].question,
+                yourAnswer: selectedOption === null ? 'সময় শেষ' : selectedOption,
+                correctAnswer: correctOption,
+                explanation: questions[currentQuestionIndex].explanation,
+                isCorrect: isCorrect,
+            });
+
+            Array.from(optionsContainer.children).forEach(button => {
+                if(button.textContent === correctOption) button.classList.add('correct');
+                if(button === selectedButton && !isCorrect) button.classList.add('incorrect');
+                button.disabled = true;
+            });
+            
+            if (isCorrect) {
+                score++;
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+            }
+
+            saveQuizState(); // Save progress after each answer
+
+            setTimeout(handleNext, 1500);
+        }
+
+        function handleNext(){
+            currentQuestionIndex++;
+            if(currentQuestionIndex % 10 === 0 && currentQuestionIndex > 0) {
+                showOverview(currentQuestionIndex === questions.length);
+            } else {
+                 loadQuestion();
+            }
+        }
+
+        function showOverview(isFinal) {
+            showScreen('overview-screen');
+            if (isFinal) {
+                clearQuizState(); // Clear data when quiz is finished
+            }
+
+            let start = Math.floor((currentQuestionIndex -1) / 10) * 10;
+            let end = currentQuestionIndex;
+
+            overviewTitle.textContent = isFinal ? 'চূড়ান্ত ফলাফল' : `পার্ট ${end/10} এর সারসংক্ষেপ`;
+            
+            overviewList.innerHTML = '';
+            // Display all answers up to the current point, most recent first
+            const answersToShow = userAnswers.slice(0, end);
+            answersToShow.reverse().forEach((answer, index) => {
+                const originalIndex = end - 1 - index;
+                const item = document.createElement('div');
+                item.classList.add('overview-item');
+                const statusIcon = answer.isCorrect ? '✔' : '✖';
+                const statusClass = answer.isCorrect ? 'status-correct' : 'status-incorrect';
+                
+                item.innerHTML = `
+                    <div class="overview-status ${statusClass}">${statusIcon}</div>
+                    <p class="question"><strong>প্রশ্ন ${originalIndex + 1}:</strong> ${answer.question}</p>
+                    <p><strong>তোমার উত্তর:</strong> ${answer.yourAnswer}</p>
+                    <p><strong>সঠিক উত্তর:</strong> ${answer.correctAnswer}</p>
+                    <p class="explanation"><strong>ব্যাখ্যা:</strong> ${answer.explanation}</p>
+                `;
+                overviewList.appendChild(item); // Append instead of prepend to maintain the reversed order
+            });
+            
+            overviewSummary.innerHTML = `
+                <span class="summary-correct">✔ মোট সঠিক: ${score}</span>
+                <span class="summary-incorrect">✖ মোট ভুল: ${currentQuestionIndex - score}</span>
+            `;
+            
+            if(isFinal) {
+                continueBtn.textContent = 'পুনরায় খেলুন';
+            } else {
+                continueBtn.textContent = 'পরবর্তী ধাপে যান';
+            }
+        }
+
+
+        function continueQuiz() {
+            if (currentQuestionIndex >= questions.length) {
+                window.location.reload(); // Reload the page to reset everything cleanly
+            } else {
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+    </script>
+</body>
+</html>

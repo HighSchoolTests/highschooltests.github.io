@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বাংলাদেশ ও আন্তর্জাতিক সহযোগিতা কুইজ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&family=Poppins:wght@600&display=swap');
+
+        :root {
+            --primary-bg: #4e54c8;
+            --secondary-bg: #8f94fb;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #333;
+            --accent-color: #f7b733;
+            --correct-color: #2ecc71;
+            --incorrect-color: #e74c3c;
+            --light-gray: #f0f0f0;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --border-radius: 15px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary-bg);
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: var(--primary-bg);
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .start-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), #fdc830);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(247, 183, 51, 0.4);
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(247, 183, 51, 0.6);
+        }
+        
+        .btn.continue-btn {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+             box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+        .btn.continue-btn:hover {
+             box-shadow: 0 7px 20px rgba(52, 152, 219, 0.6);
+        }
+
+
+        #quiz-screen .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        #question-counter, #score-display {
+             background: var(--light-gray);
+             padding: 8px 15px;
+             border-radius: 20px;
+        }
+
+        #timer {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary-bg);
+        }
+        
+        #progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--correct-color), var(--accent-color));
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+        }
+        
+        #question-text {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            min-height: 80px;
+        }
+        
+        #options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .option-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1em;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--light-gray);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-bg);
+            background-color: #f7f7ff;
+            transform: scale(1.02);
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect-color);
+            color: white;
+            border-color: var(--incorrect-color);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+
+        #overview-screen h2 { margin-bottom: 10px; }
+        #overview-summary { font-size: 1.2em; font-weight: bold; margin-bottom: 25px; background: var(--light-gray); padding: 15px; border-radius: 10px; display: flex; justify-content: center; gap: 30px; }
+        .summary-correct { color: var(--correct-color); }
+        .summary-incorrect { color: var(--incorrect-color); }
+        #overview-list { max-height: 40vh; overflow-y: auto; text-align: left; margin-bottom: 25px; }
+        .overview-item { background: #fff; border: 1px solid var(--light-gray); border-radius: 10px; padding: 15px; margin-bottom: 10px; position: relative; padding-right: 40px; }
+        .overview-item p { margin-bottom: 8px; font-size: 1em; }
+        .overview-item .question { font-weight: bold; }
+        .overview-item .explanation { font-size: 0.9em; color: #555; background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 5px; }
+        .overview-status { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); font-size: 2em; }
+        .status-correct { color: var(--correct-color); }
+        .status-incorrect { color: var(--incorrect-color); }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
+            #question-text { font-size: 1.2em; min-height: 70px; }
+            #options-container { grid-template-columns: 1fr; }
+            .option-btn { padding: 15px; font-size: 1em; }
+            #quiz-screen .header { flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>বাংলাদেশ ও আন্তর্জাতিক সহযোগিতা কুইজ</h1>
+            <p>এই অধ্যায়ের উপর আপনার দক্ষতা যাচাই করুন। প্রতিটি প্রশ্নের জন্য সময় পাবেন ২৫ সেকেন্ড।</p>
+            <p><strong>মোট ৫০টি প্রশ্ন</strong></p>
+            <div class="start-buttons-container">
+                <button id="start-btn" class="btn">নতুন কুইজ শুরু করুন</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <div id="question-counter"></div>
+                <div id="timer">
+                    <span id="timer-text">25</span>
+                </div>
+                <div id="score-display">স্কোর: 0</div>
+            </div>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="question-text"></div>
+            <div id="options-container"></div>
+        </div>
+        
+        <!-- Overview Screen -->
+        <div id="overview-screen" class="screen">
+            <h2 id="overview-title"></h2>
+            <div id="overview-summary"></div>
+            <div id="overview-list"></div>
+            <button id="continue-btn" class="btn continue-btn"></button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // পাঠ-১: আন্তর্জাতিক সহযোগিতা (1-5)
+            { question: "বৈদেশিক নীতির মূলে কী রয়েছে?", options: ["যুদ্ধ প্রস্তুতি", "অর্থনৈতিক সমৃদ্ধি", "পারস্পরিক নির্ভরশীলতা", "সাংস্কৃতিক বিনিময়"], answer: "পারস্পরিক নির্ভরশীলতা", explanation: "পাঠ-১ অনুযায়ী, বৈদেশিক নীতির মূলে রয়েছে পারস্পরিক নির্ভরশীলতার মাধ্যমে নিজ দেশের স্বার্থ সংরক্ষণ করা।" },
+            { question: "কেনো দেশই সম্পূর্ণ আত্মনির্ভরশীল নয় কেন?", options: ["ভৌগোলিক বিচ্ছিন্নতার কারণে", "ভাষাগত ভিন্নতার কারণে", "সম্পদের সীমাবদ্ধতার কারণে", "বিভিন্ন ধরনের সমস্যার কারণে"], answer: "বিভিন্ন ধরনের সমস্যার কারণে", explanation: "পাঠ-১ এ বলা হয়েছে, দেশগুলোতে বিভিন্ন ধরনের সমস্যা থাকায় এবং সেগুলো একা সমাধান করা সম্ভব না হওয়ায় কোনো দেশই সম্পূর্ণ আত্মনির্ভরশীল নয়।" },
+            { question: "বিশ্বের দেশগুলোর মধ্যে সহযোগিতা ও বন্ধুত্ব গড়ে ওঠার কারণ কী?", options: ["বাণিজ্যিক চুক্তি", "পারস্পরিক সহযোগিতার প্রয়োজনীয়তা", "একই ধরনের শাসনব্যবস্থা", "জাতিগত সংঘাত"], answer: "পারস্পরিক সহযোগিতার প্রয়োজনীয়তা", explanation: "পাঠ-১ অনুসারে, বিশ্বের দেশগুলো স্বাধীন হলেও তাদের মধ্যে পারস্পরিক সহযোগিতার প্রয়োজনীয়তা ও বন্ধুত্বের মনোভাব রয়েছে।" },
+            { question: "নিরক্ষরতা দূর করার জন্য ইউনিসেফ ও ইউনেস্কো দেশগুলোকে কী ধরনের সাহায্য দেয়?", options: ["শুধুমাত্র সামরিক", "শুধুমাত্র রাজনৈতিক", "আর্থিক ও প্রযুক্তিগত", "শুধুমাত্র পরামর্শমূলক"], answer: "আর্থিক ও প্রযুক্তিগত", explanation: "উদাহরণ-১ এ বলা হয়েছে, ইউনিসেফ, ইউনেস্কোসহ বিশ্বের অন্যান্য আন্তর্জাতিক সংস্থা নিরক্ষরতা দূর করার জন্য আর্থিক ও প্রযুক্তিগত সাহায্য দিচ্ছে।" },
+            { question: "'টেকসই উন্নয়ন লক্ষ্যমাত্রা'র (SDG) যাত্রা কত সাল থেকে শুরু হয়?", options: ["২০১৪", "২০১৫", "২০১৬", "২০১৭"], answer: "২০১৬", explanation: "পাঠ-১ এর উদাহরণে বলা হয়েছে, 'সহস্রাব্দ উন্নয়ন লক্ষ্যমাত্রা' ২০১৫ সালে মেয়াদ উত্তীর্ণ হওয়ার পর 'টেকসই উন্নয়ন লক্ষ্যমাত্রা'র যাত্রা ২০১৬ হতে শুরু হয়।" },
+
+            // পাঠ-২: জাতিসংঘ গঠন (6-15)
+            { question: "বিংশ শতাব্দীতে ২৫ বছরের ব্যবধানে পৃথিবীতে কয়টি বিশ্বযুদ্ধ সংঘটিত হয়?", options: ["একটি", "দুটি", "তিনটি", "চারটি"], answer: "দুটি", explanation: "পাঠ-২ অনুযায়ী, বিংশ শতাব্দীর প্রথম ভাগে মাত্র ২৫ বছরের ব্যবধানে পৃথিবীতে দুটি বিশ্বযুদ্ধ সংঘটিত হয়।" },
+            { question: "প্রথম বিশ্বযুদ্ধের পর বিশ্বশান্তি প্রতিষ্ঠার জন্য কোন সংস্থা গঠিত হয়েছিল?", options: ["জাতিসংঘ", "কমনওয়েলথ", "সম্মিলিত জাতিপুঞ্জ বা লীগ অব নেশনস", "ন্যাটো"], answer: "সম্মিলিত জাতিপুঞ্জ বা লীগ অব নেশনস", explanation: "পাঠ-২ এ বলা হয়েছে, প্রথম বিশ্বযুদ্ধের পর বিশ্বশান্তি প্রতিষ্ঠার জন্য ১৯২০ সালে গঠিত হয়েছিল সম্মিলিত জাতিপুঞ্জ বা লীগ অব নেশনস।" },
+            { question: "লীগ অব নেশনস কেন স্থায়িত্ব লাভ করতে পারেনি?", options: ["সদস্য দেশের অভাবে", "আর্থিক সংকটের কারণে", "বিভিন্ন দেশের স্বার্থপরতার কারণে", "সদর দপ্তর না থাকায়"], answer: "বিভিন্ন দেশের স্বার্থপরতার কারণে", explanation: "পাঠ-২ অনুযায়ী, বিভিন্ন দেশের স্বার্থপরতার কারণে লীগ অব নেশনস স্থায়িত্ব লাভ করতে পারেনি।" },
+            { question: "জাতিসংঘ কখন প্রতিষ্ঠা লাভ করে?", options: ["১৯২০ সালের ১০ই জানুয়ারি", "১৯৩৯ সালের ১লা সেপ্টেম্বর", "১৯৪৫ সালের ২৪-এ অক্টোবর", "১৯৭১ সালের ১৬ই ডিসেম্বর"], answer: "১৯৪৫ সালের ২৪-এ অক্টোবর", explanation: "পাঠ-২ অনুসারে, দীর্ঘদিন আলাপ আলোচনার মাধ্যমে ১৯৪৫ সালের ২৪-এ অক্টোবর তারিখে জাতিসংঘ প্রতিষ্ঠা লাভ করে।" },
+            { question: "জাতিসংঘ প্রতিষ্ঠার উদ্যোগে কোন দুজন বিশ্বনেতা অগ্রণী ভূমিকা পালন করেন?", options: ["স্ট্যালিন ও হিটলার", "উইনস্টন চার্চিল ও রুজভেল্ট", "মুসোলিনি ও তোজো", "নেহেরু ও মাও সে তুং"], answer: "উইনস্টন চার্চিল ও রুজভেল্ট", explanation: "পাঠ-২ এ উল্লেখ আছে, তৎকালীন বৃটিশ প্রধানমন্ত্রী উইনস্টন চার্চিল এবং যুক্তরাষ্ট্রের প্রেসিডেন্ট রুজভেল্ট-এর উদ্যোগে জাতিসংঘ প্রতিষ্ঠার প্রচেষ্টা শুরু হয়।" },
+            { question: "জাতিসংঘের মোট কয়টি প্রধান শাখা বা সংস্থা রয়েছে?", options: ["চারটি", "পাঁচটি", "ছয়টি", "সাতটি"], answer: "ছয়টি", explanation: "পাঠ-২ এর 'জাতিসংঘ গঠন' অংশে বলা হয়েছে, জাতিসংঘ মোট ছয়টি সংস্থা বা শাখা নিয়ে গঠিত।" },
+            { question: "জাতিসংঘের কোন পরিষদে বিশ্বের বিভিন্ন সমস্যা নিয়ে আলোচনা করা হয়?", options: ["নিরাপত্তা পরিষদ", "অছি পরিষদ", "অর্থনৈতিক ও সামাজিক পরিষদ", "সাধারণ পরিষদ"], answer: "সাধারণ পরিষদ", explanation: "পাঠ-২ এর ছক অনুযায়ী, সাধারণ পরিষদে বিভিন্ন সদস্য শাখায় নির্বাচন, বিশ্বের বিভিন্ন সমস্যা নিয়ে আলোচনা ইত্যাদি গুরুত্বপূর্ণ কাজ হয়।" },
+            { question: "জাতিসংঘের সকল প্রশাসনিক কাজ কোন শাখা পরিচালনা করে?", options: ["সচিবালয়", "সাধারণ পরিষদ", "নিরাপত্তা পরিষদ", "আন্তর্জাতিক আদালত"], answer: "সচিবালয়", explanation: "পাঠ-২ এর ছক অনুযায়ী, সচিবালয় জাতিসংঘের সকল প্রশাসনিক কাজ পরিচালনা করে।" },
+            { question: "বিশ্বের শান্তি ও নিরাপত্তা রক্ষার দায়িত্ব জাতিসংঘের কোন পরিষদের?", options: ["সাধারণ পরিষদ", "অছি পরিষদ", "নিরাপত্তা পরিষদ", "অর্থনৈতিক ও সামাজিক পরিষদ"], answer: "নিরাপত্তা পরিষদ", explanation: "পাঠ-২ এর ছক অনুযায়ী, নিরাপত্তা পরিষদ বিশ্বের শান্তি ও নিরাপত্তা রক্ষার দায়িত্ব পালন করে।" },
+            { question: "সদস্য দেশগুলোর মধ্যে সীমানাসহ যেকোনো বিরোধ মীমাংসা করা কার কাজ?", options: ["সচিবালয়", "সাধারণ পরিষদ", "অছি পরিষদ", "আন্তর্জাতিক আদালত"], answer: "আন্তর্জাতিক আদালত", explanation: "পাঠ-২ এর ছক অনুযায়ী, সদস্য রাষ্ট্রগুলোর মধ্যে সীমানাসহ যেকোনো বিরোধ মীমাংসা করা আন্তর্জাতিক আদালতের কাজ।" },
+
+            // পাঠ-২: জাতিসংঘ গঠন - বিস্তারিত (16-25)
+            { question: "কত সালে বাংলাদেশি হুমায়ুন রশীদ চৌধুরী জাতিসংঘের সাধারণ পরিষদের সভাপতি নির্বাচিত হয়েছিলেন?", options: ["১৯৭৪ সালে", "১৯৮৬ সালে", "১৯৯৬ সালে", "২০০১ সালে"], answer: "১৯৮৬ সালে", explanation: "পাঠ-২ এর ছকে বলা হয়েছে, ১৯৮৬ সালে বাংলাদেশের হুমায়ুন রশীদ চৌধুরী সাধারণ পরিষদের সভাপতির দায়িত্ব পালন করেছেন।" },
+            { question: "জাতিসংঘের বর্তমান মহাসচিবের নাম কী (পাঠ্যবই অনুযায়ী)?", options: ["বান কি মুন", "কফি আনান", "ট্রিগভেলি", "অ্যান্টনিও গুতেরেস"], answer: "অ্যান্টনিও গুতেরেস", explanation: "পাঠ-২ এর ছকে জাতিসংঘের বর্তমান মহাসচিব হিসেবে পর্তুগালের অ্যান্টনিও গুতেরেসের নাম উল্লেখ করা হয়েছে।" },
+            { question: "নিরাপত্তা পরিষদের স্থায়ী সদস্য রাষ্ট্র কয়টি?", options: ["৩টি", "৫টি", "১০টি", "১৫টি"], answer: "৫টি", explanation: "পাঠ-২ এর ছক অনুযায়ী, নিরাপত্তা পরিষদের পাঁচটি সদস্য রাষ্ট্র হলো যুক্তরাজ্য, যুক্তরাষ্ট্র, রাশিয়া, ফ্রান্স ও গণচীন।" },
+            { question: "নিচের কোন দেশটি নিরাপত্তা পরিষদের স্থায়ী সদস্য নয়?", options: ["যুক্তরাষ্ট্র", "ফ্রান্স", "গণচীন", "জার্মানি"], answer: "জার্মানি", explanation: "নিরাপত্তা পরিষদের পাঁচটি স্থায়ী সদস্য হলো যুক্তরাজ্য, যুক্তরাষ্ট্র, রাশিয়া, ফ্রান্স ও গণচীন। জার্মানি স্থায়ী সদস্য নয়।" },
+            { question: "বাংলাদেশ কতবার নিরাপত্তা পরিষদের অস্থায়ী সদস্য হিসেবে দায়িত্ব পালন করেছে?", options: ["একবার", "দুইবার", "তিনবার", "কখনোই করেনি"], answer: "দুইবার", explanation: "পাঠ-২ এর ছকে উল্লেখ করা হয়েছে, বাংলাদেশ দুইবার নিরাপত্তা পরিষদের অস্থায়ী সদস্য হিসেবে দায়িত্ব পালন করেছে।" },
+            { question: "জাতিসংঘের সদর দপ্তর কোথায় অবস্থিত?", options: ["জেনেভা", "প্যারিস", "লন্ডন", "নিউইয়র্ক"], answer: "নিউইয়র্ক", explanation: "পাঠ-২ এর শেষে বলা হয়েছে, জাতিসংঘের সদর দপ্তর যুক্তরাষ্ট্রের নিউইয়র্ক শহরে অবস্থিত।" },
+            { question: "বাংলাদেশ জাতিসংঘের সদস্যপদ লাভ করে কত সালে?", options: ["১৯৭১ সালে", "১৯৭২ সালে", "১৯৭৪ সালে", "১৯৮৮ সালে"], answer: "১৯৭৪ সালে", explanation: "পাঠ-২ অনুযায়ী, বাংলাদেশ ১৯৭৪ সালে জাতিসংঘের সদস্যপদ লাভ করে।" },
+            { question: "জাতিসংঘের দাপ্তরিক ভাষা কয়টি?", options: ["দুটি", " চারটি", "ছয়টি", "দশটি"], answer: "ছয়টি", explanation: "পাঠ-২ এর শেষে বলা হয়েছে, জাতিসংঘের দাপ্তরিক ভাষা ছয়টি: আরবি, চাইনিজ, ইংরেজি, ফরাসি, রাশিয়ান ও স্পেনিশ।" },
+            { question: "জাতিসংঘের পতাকার মাঝখানে কীসের মানচিত্র রয়েছে?", options: ["এশিয়ার", "ইউরোপের", "আমেরিকার", "বিশ্বের"], answer: "বিশ্বের", explanation: "পাঠ-২ অনুযায়ী, জাতিসংঘের পতাকার মাঝখানে সাদার ভিতরে বিশ্বের বৃত্তাকার মানচিত্র রয়েছে।" },
+            { question: "বঙ্গোপসাগরের সমুদ্রসীমা নিয়ে মিয়ানমারের সাথে বিরোধে কোন আদালতে বাংলাদেশ নিজের পক্ষে রায় পায়?", options: ["বাংলাদেশ সুপ্রিম কোর্ট", "হেগের আন্তর্জাতিক আদালত", "দক্ষিণ এশীয় আদালত", "জাতিসংঘের নিরাপত্তা পরিষদ"], answer: "হেগের আন্তর্জাতিক আদালত", explanation: "পাঠ-২ এর ছকে আন্তর্জাতিক আদালতের বিবরণে বলা হয়েছে, ২০১২ সালে মিয়ানমারের সাথে বিরোধে আন্তর্জাতিক আদালতে বাংলাদেশ নিজের পক্ষে রায় পায়।" },
+
+            // পাঠ-৩: জাতিসংঘ গঠনের উদ্দেশ্য ও মৌলিক নীতি (26-33)
+            { question: "জাতিসংঘের অন্যতম প্রধান উদ্দেশ্য কী?", options: ["বিশ্ব বাণিজ্য নিয়ন্ত্রণ", "সাংস্কৃতিক বিনিময় বৃদ্ধি", "বিশ্ব শান্তি, শৃঙ্খলা ও নিরাপত্তা নিশ্চিত করা", "মহাকাশ গবেষণা"], answer: "বিশ্ব শান্তি, শৃঙ্খলা ও নিরাপত্তা নিশ্চিত করা", explanation: "পাঠ-৩ এর উদ্দেশ্য অংশে প্রথম উদ্দেশ্য হিসেবে শান্তির প্রতি হুমকি ও আক্রমণাত্মক কার্যকলাপ প্রতিরোধ করে বিশ্ব শান্তি, শৃঙ্খলা ও নিরাপত্তা নিশ্চিত করার কথা বলা হয়েছে।" },
+            { question: "জাতিসংঘের মৌলিক নীতি কয়টি?", options: ["পাঁচটি", "ছয়টি", "সাতটি", "আটটি"], answer: "সাতটি", explanation: "পাঠ-৩ এ বলা হয়েছে, জাতিসংঘের সাতটি মৌলিক নীতি আছে যা সদস্য রাষ্ট্রগুলোকে মেনে চলতে হয়।" },
+            { question: "জাতিসংঘের নীতি অনুযায়ী সকল সদস্য রাষ্ট্র কীসের অধিকারী?", options: ["পারমাণবিক ক্ষমতার", "ভেটো ক্ষমতার", "সমান মর্যাদা ও সার্বভৌমত্বের", "অর্থনৈতিক নিয়ন্ত্রণের"], answer: "সমান মর্যাদা ও সার্বভৌমত্বের", explanation: "পাঠ-৩ এর প্রথম নীতি হলো, জাতিসংঘের সকল সদস্য রাষ্ট্র সমান মর্যাদা ও সমান সার্বভৌমত্বের অধিকারী হবে।" },
+            { question: "কোনো সদস্য রাষ্ট্র কি অন্য রাষ্ট্রের বিরুদ্ধে বল প্রয়োগের হুমকি দিতে পারে?", options: ["হ্যাঁ, পারে", "না, পারে না", "শুধু স্থায়ী সদস্যরা পারে", "শর্তসাপেক্ষে পারে"], answer: "না, পারে না", explanation: "জাতিসংঘের একটি মৌলিক নীতি হলো, কোনো সদস্য রাষ্ট্র অন্য রাষ্ট্রের বিরুদ্ধে বল প্রয়োগ করতে বা বল প্রয়োগের হুমকি দিতে পারবে না।" },
+            { question: "জাতিসংঘ কি কোনো রাষ্ট্রের অভ্যন্তরীণ ব্যাপারে হস্তক্ষেপ করে?", options: ["সবসময় করে", "কখনোই করে না", "শুধু আগ্রাসী তৎপরতা চালালে করে", "শুধু অর্থনৈতিক বিষয়ে করে"], answer: "শুধু আগ্রাসী তৎপরতা চালালে করে", explanation: "জাতিসংঘের একটি নীতি হলো, কোনো রাষ্ট্রের অভ্যন্তরীণ ব্যাপারে জাতিসংঘ হস্তক্ষেপ করবে না। তবে কোনো রাষ্ট্র যদি আগ্রাসী তৎপরতা চালায় তাহলে জাতিসংঘ হস্তক্ষেপ করতে পারবে।" },
+            { question: "জাতিসংঘের উদ্দেশ্য অনুসারে, সকল উপনিবেশিক রাষ্ট্র ও জনগণকে কী প্রদান করতে হবে?", options: ["অর্থনৈতিক সাহায্য", "সামরিক সুরক্ষা", "স্বাধীনতা", "শিক্ষার সুযোগ"], answer: "স্বাধীনতা", explanation: "পাঠ-৩ এর উদ্দেশ্য অংশে বলা হয়েছে, সকল উপনিবেশিক রাষ্ট্র ও জনগণকে স্বাধীনতা প্রদান করা জাতিসংঘের একটি উদ্দেশ্য।" },
+            { question: "জাতিসংঘের সকল সদস্য রাষ্ট্রকে কোনটির নীতিমালা পরিপূর্ণ বিশ্বাসের সাথে অনুসরণ করতে হবে?", options: ["নিরাপত্তা পরিষদের", "জাতিসংঘ সনদের", "আন্তর্জাতিক আদালতের", "মহাসচিবের"], answer: "জাতিসংঘ সনদের", explanation: "পাঠ-৩ এর দ্বিতীয় নীতি হলো, সকল সদস্য রাষ্ট্রকে পরিপূর্ণ বিশ্বাসের সাথে জাতিসংঘ সনদের নীতিমালা অনুসরণ করতে হবে।" },
+            { question: "আন্তর্জাতিক বিরোধের ক্ষেত্রে সদস্য রাষ্ট্রগুলোর করণীয় কী?", options: ["যুদ্ধ ঘোষণা করা", "সম্পর্ক ছিন্ন করা", "শান্তিপূর্ণ মীমাংসা করা", "জাতিসংঘ ত্যাগ করা"], answer: "শান্তিপূর্ণ মীমাংসা করা", explanation: "জাতিসংঘের একটি মৌলিক নীতি হলো, সকল সদস্য রাষ্ট্রকে আন্তর্জাতিক বিরোধের শান্তিপূর্ণ মীমাংসা করতে হবে।" },
+
+            // পাঠ-৪ ও ৫: বিশ্বশান্তি প্রতিষ্ঠায় জাতিসংঘের ভূমিকা (34-40)
+            { question: "জাতিসংঘ প্রতিষ্ঠার সবচেয়ে বড় অবদান কোনটি?", options: ["অর্থনৈতিক উন্নয়ন", "দারিদ্র্য বিমোচন", "তৃতীয় বিশ্বযুদ্ধ সংঘটিত না হওয়া", "মহাকাশ বিজয়"], answer: "তৃতীয় বিশ্বযুদ্ধ সংঘটিত না হওয়া", explanation: "পাঠ-৫ অনুযায়ী, জাতিসংঘের সবচেয়ে বড়ো অবদান হলো এটি প্রতিষ্ঠার পর বিশ্বে আজ পর্যন্ত কোনো বিশ্বযুদ্ধ সংঘটিত হয় নাই।" },
+            { question: "বিশ্ব শান্তি রক্ষার প্রধান দায়িত্ব কোন পরিষদের?", options: ["সাধারণ পরিষদ", "অছি পরিষদ", "অর্থনৈতিক ও সামাজিক পরিষদ", "নিরাপত্তা পরিষদ"], answer: "নিরাপত্তা পরিষদ", explanation: "পাঠ-৫ এ বলা হয়েছে, বিশ্বশান্তি রক্ষার প্রধান দায়িত্ব নিরাপত্তা পরিষদের।" },
+            { question: "দক্ষিণ সুদানের স্বাধীনতা অর্জন কিসের উদাহরণ?", options: ["জাতিসংঘের ব্যর্থতা", "জাতিসংঘের তত্ত্বাবধানে শান্তি প্রতিষ্ঠা", "আঞ্চলিক সহযোগিতা", "দ্বিপাক্ষিক চুক্তি"], answer: "জাতিসংঘের তত্ত্বাবধানে শান্তি প্রতিষ্ঠা", explanation: "পাঠ-৫ অনুযায়ী, দীর্ঘদিনের গৃহযুদ্ধের অবসান ঘটিয়ে জাতিসংঘের তত্ত্বাবধানে দক্ষিণ সুদানের স্বাধীনতা অর্জন, এর একটি অন্যতম উদাহরণ।" },
+            { question: "মানবাধিকারের সর্বজনীন ঘোষণার মাধ্যমে জাতিসংঘ কী প্রতিষ্ঠা করতে কাজ করে?", options: ["বিশ্ব বাণিজ্য", "মানুষের অধিকার", "পরিবেশ সুরক্ষা", "সামরিক জোট"], answer: "মানুষের অধিকার", explanation: "পাঠ-৫ এর একটি পয়েন্টে বলা হয়েছে, মানবাধিকারের সর্বজনীন ঘোষণার মাধ্যমে জাতিসংঘ বিশ্বের বিভিন্ন দেশে মানুষের অধিকার প্রতিষ্ঠায় কাজ করছে।" },
+            { question: "বিশ্বকে নিরক্ষরতা থেকে মুক্ত করার জন্য জাতিসংঘ কোন সংস্থার মাধ্যমে কাজ করে?", options: ["WHO ও FAO", "ইউনেস্কো ও ইউনিসেফ", "IMF ও World Bank", "UNDP ও UNHCR"], answer: "ইউনেস্কো ও ইউনিসেফ", explanation: "পাঠ-৫ অনুযায়ী, বিশ্বকে নিরক্ষরতা থেকে মুক্ত করার জন্য জাতিসংঘ ইউনেস্কো, ইউনিসেফ এর মাধ্যমে বিভিন্ন কার্যক্রম বাস্তবায়ন করছে।" },
+            { question: "দারিদ্র্য ও ক্ষুধা নিরসনে জাতিসংঘ কী করে?", options: ["শুধু পরামর্শ দেয়", "বিভিন্ন কর্মসূচি গ্রহণ ও বাস্তবায়ন করে", "সরাসরি খাদ্য সরবরাহ করে", "কোনো ভূমিকা রাখে না"], answer: "বিভিন্ন কর্মসূচি গ্রহণ ও বাস্তবায়ন করে", explanation: "পাঠ-৫ এ বলা হয়েছে, পৃথিবী থেকে দারিদ্র্য ও ক্ষুধা নিরসনে জাতিসংঘ বিভিন্ন কর্মসূচি গ্রহণ ও বাস্তবায়ন করছে।" },
+            { question: "আন্তর্জাতিক বিরোধ নিষ্পত্তির জন্য জাতিসংঘ কোন শাখা ব্যবহার করে?", options: ["সাধারণ পরিষদ", "সচিবালয়", "আন্তর্জাতিক আদালত", "অর্থনৈতিক ও সামাজিক পরিষদ"], answer: "আন্তর্জাতিক আদালত", explanation: "পাঠ-৪ এ জাতিসংঘের কাজের বিবরণে আন্তর্জাতিক আদালতের মাধ্যমে আন্তর্জাতিক বিরোধ নিষ্পত্তির কথা বলা হয়েছে।" },
+
+            // পাঠ-৬: বিশ্ব শান্তিরক্ষায় বাংলাদেশের ভূমিকা (41-50)
+            { question: "বাংলাদেশ সর্বপ্রথম কত সালে জাতিসংঘ শান্তিরক্ষা বাহিনীতে সশস্ত্রবাহিনীর সদস্য প্রেরণ করে?", options: ["১৯৭৪ সালে", "১৯৮৬ সালে", "১৯৮৮ সালে", "১৯৯০ সালে"], answer: "১৯৮৮ সালে", explanation: "পাঠ-৬ অনুযায়ী, বাংলাদেশ সর্বপ্রথম ১৯৮৮ সালে শান্তিরক্ষা বাহিনীতে সশস্ত্রবাহিনীর সদস্য প্রেরণ করে।" },
+            { question: "২০১৫ সালের আগস্ট পর্যন্ত বাংলাদেশ কয়টি দেশে শান্তিরক্ষা মিশনে কাজ করেছে?", options: ["৩০টি", "৪০টি", "৫০টি", "৬০টি"], answer: "৪০টি", explanation: "পাঠ-৬ এ উল্লেখ আছে, ২০১৫ সালের আগস্ট পর্যন্ত বাংলাদেশের সদস্যরা ৪০টি দেশে ৫০টি মিশনে কাজ করেছে।" },
+            { question: "সশস্ত্রবাহিনী ছাড়াও বাংলাদেশের কোন বাহিনীর সদস্যরা শান্তিরক্ষা মিশনে কাজ করে?", options: ["বিজিবি", "র‍্যাব", "আনসার", "পুলিশ"], answer: "পুলিশ", explanation: "পাঠ-৬ অনুসারে, বাংলাদেশের সেনা, নৌ ও বিমান বাহিনীর পাশাপাশি পুলিশ বাহিনীর সদস্যরাও শান্তিরক্ষা মিশনে কাজ করছে।" },
+            { question: "জাতিসংঘ শান্তিরক্ষা বাহিনীতে অংশগ্রহণের ফলে বিশ্বে বাংলাদেশের কী বৃদ্ধি পেয়েছে?", options: ["ঋণের পরিমাণ", "মর্যাদা ও পরিচিতি", "জনসংখ্যা", "রাজনৈতিক প্রভাব"], answer: "মর্যাদা ও পরিচিতি", explanation: "পাঠ-৬ এ বলা হয়েছে, এ সুনাম অর্জনের মধ্য দিয়ে বাংলাদেশের সশস্ত্রবাহিনী ও পুলিশ বাহিনীর সদস্যরা বাংলাদেশকে বিশ্বের বুকে নতুনভাবে পরিচিত করছে এবং দেশের মর্যাদা বৃদ্ধি করেছে।" },
+            { question: "জাতিসংঘ শান্তিরক্ষা বাহিনীতে বাংলাদেশের অবস্থানকে কিসের সাথে তুলনা করা হয়েছে?", options: ["একটি маяк", "একটি বটবৃক্ষ", "উজ্জ্বল নক্ষত্র", "একটি পর্বত"], answer: "উজ্জ্বল নক্ষত্র", explanation: "পাঠ-৬ এ বলা হয়েছে, 'আসলে জাতিসংঘ শান্তিরক্ষা বাহিনীতে বাংলাদেশ সশস্ত্রবাহিনীর অবস্থান উজ্জ্বল নক্ষত্রের মতো'।" },
+            { question: "শান্তিরক্ষা মিশনে অংশগ্রহণ বাংলাদেশকে কোন দিক থেকে সমৃদ্ধ করছে?", options: ["সাংস্কৃতিক দিক থেকে", "রাজনৈতিক দিক থেকে", "অর্থনৈতিকভাবে", "ঐতিহাসিকভাবে"], answer: "অর্থনৈতিকভাবে", explanation: "পাঠ-৬ এর শেষে বলা হয়েছে, জাতিসংঘ শান্তিরক্ষা বাহিনীতে বাংলাদেশিদের অংশগ্রহণ দেশকে অর্থনৈতিকভাবেও সমৃদ্ধ করছে।" },
+            { question: "জাতিসংঘের প্রথম মহাসচিব কে ছিলেন?", options: ["অ্যান্টনিও গুতেরেস", "বান কি মুন", "ট্রিগভেলি", "হুমায়ুন রশীদ চৌধুরী"], answer: "ট্রিগভেলি", explanation: "পাঠ-২ অনুযায়ী, নরওয়ের অধিবাসী ট্রিগভেলি ছিলেন জাতিসংঘের প্রথম মহাসচিব।" },
+            { question: "শান্তিরক্ষা মিশনে কৃতিত্বের স্বীকৃতি হিসেবে বাংলাদেশি কর্মকর্তাদের কী পদে নিয়োগ দেয়া হয়েছে?", options: ["দূত হিসেবে", "উপদেষ্টা হিসেবে", "কমান্ডার ও ঊর্ধ্বতন পদে", "স্থায়ী প্রতিনিধি হিসেবে"], answer: "কমান্ডার ও ঊর্ধ্বতন পদে", explanation: "পাঠ-৬ এ বলা হয়েছে, অবদানের স্বীকৃতি হিসেবে বাংলাদেশ সশস্ত্রবাহিনীর অনেক ঊর্ধ্বতন কর্মকর্তাকে শান্তিরক্ষা বাহিনীতে কমান্ডার হিসেবে ও ঊর্ধ্বতন পদে নিয়োগ দেওয়া হয়েছে।" },
+            { question: "শান্তিরক্ষা কার্যক্রমে কাদের অংশগ্রহণ বিদেশের মাটিতে বাংলাদেশের সুনাম বৃদ্ধি করেছে?", options: ["শুধুমাত্র পুরুষ সদস্যদের", "শুধুমাত্র সেনা সদস্যদের", "মহিলা সদস্যদের", "শুধুমাত্র পুলিশ সদস্যদের"], answer: "মহিলা সদস্যদের", explanation: "পাঠ-৬ অনুযায়ী, মহিলা সদস্যরাও দক্ষতা এবং সাহসিকতার সাথে অংশগ্রহণ করছে ও বিদেশের মাটিতে যথেষ্ট সুনাম কুড়িয়েছে।" },
+            { question: "জাতিসংঘের কোন কাজটি শান্তিরক্ষী বাহিনী মোতায়েনের সাথে সরাসরি সম্পর্কিত?", options: ["দারিদ্র্য বিমোচন", "মানবাধিকার প্রতিষ্ঠা", "বিরোধপূর্ণ অঞ্চলে শান্তি প্রতিষ্ঠা ও যুদ্ধ বন্ধ করা", "নিরক্ষরতা দূরীকরণ"], answer: "বিরোধপূর্ণ অঞ্চলে শান্তি প্রতিষ্ঠা ও যুদ্ধ বন্ধ করা", explanation: "পাঠ-৪ এ জাতিসংঘের অন্যতম কাজ হিসেবে শান্তিপ্রতিষ্ঠা ও যুদ্ধ বন্ধের জন্য শান্তিরক্ষা বাহিনী মোতায়েন করার কথা বলা হয়েছে।" }
+        ];
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const overviewScreen = document.getElementById('overview-screen');
+        const startBtn = document.getElementById('start-btn');
+        const questionCounter = document.getElementById('question-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const timerText = document.getElementById('timer-text');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const overviewTitle = document.getElementById('overview-title');
+        const overviewSummary = document.getElementById('overview-summary');
+        const overviewList = document.getElementById('overview-list');
+        const continueBtn = document.getElementById('continue-btn');
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timer;
+        const TIME_LIMIT = 25;
+        let timeLeft = TIME_LIMIT;
+        let userAnswers = [];
+
+        // --- Data Persistence Functions ---
+        function saveQuizState() {
+            const state = {
+                currentQuestionIndex,
+                score,
+                userAnswers
+            };
+            localStorage.setItem('quizProgress', JSON.stringify(state));
+        }
+
+        function loadQuizState() {
+            const savedState = localStorage.getItem('quizProgress');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                currentQuestionIndex = state.currentQuestionIndex;
+                score = state.score;
+                userAnswers = state.userAnswers;
+                
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+
+        function clearQuizState() {
+            localStorage.removeItem('quizProgress');
+        }
+
+        // Check for saved data on page load
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('quizProgress');
+            if (savedData) {
+                const startButtonsContainer = document.querySelector('.start-buttons-container');
+                const continueSavedBtn = document.createElement('button');
+                continueSavedBtn.id = 'continue-saved-btn';
+                continueSavedBtn.className = 'btn continue-btn';
+                continueSavedBtn.textContent = 'আগেরটি চালিয়ে যান';
+                startButtonsContainer.appendChild(continueSavedBtn);
+                
+                continueSavedBtn.addEventListener('click', loadQuizState);
+            }
+        });
+
+        // --- Core Quiz Functions ---
+
+        startBtn.addEventListener('click', startGame);
+        continueBtn.addEventListener('click', continueQuiz);
+
+        function startGame() {
+            clearQuizState();
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            scoreDisplay.textContent = 'স্কোর: 0';
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            resetState();
+            
+            progressBar.style.width = `${((currentQuestionIndex) / questions.length) * 100}%`;
+
+            if(currentQuestionIndex >= questions.length){
+                showOverview(true); 
+                return;
+            }
+
+            const currentQuestion = questions[currentQuestionIndex];
+            questionCounter.textContent = `প্রশ্ন ${currentQuestionIndex + 1}/${questions.length}`;
+            questionText.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn');
+                button.addEventListener('click', () => selectAnswer(button, option));
+                optionsContainer.appendChild(button);
+            });
+            startTimer();
+        }
+        
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            timerText.textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    selectAnswer(null, null); 
+                }
+            }, 1000);
+        }
+
+        function resetState() {
+            clearInterval(timer);
+            optionsContainer.innerHTML = '';
+        }
+        
+        function selectAnswer(selectedButton, selectedOption) {
+            clearInterval(timer);
+            const correctOption = questions[currentQuestionIndex].answer;
+            const isCorrect = selectedOption === correctOption;
+            
+            userAnswers.push({
+                question: questions[currentQuestionIndex].question,
+                yourAnswer: selectedOption === null ? 'সময় শেষ' : selectedOption,
+                correctAnswer: correctOption,
+                explanation: questions[currentQuestionIndex].explanation,
+                isCorrect: isCorrect,
+            });
+
+            Array.from(optionsContainer.children).forEach(button => {
+                if(button.textContent === correctOption) button.classList.add('correct');
+                if(button === selectedButton && !isCorrect) button.classList.add('incorrect');
+                button.disabled = true;
+            });
+            
+            if (isCorrect) {
+                score++;
+                scoreDisplay.textContent = `স্কোর: ${score}`;
+            }
+
+            saveQuizState(); // Save progress after each answer
+
+            setTimeout(handleNext, 1500);
+        }
+
+        function handleNext(){
+            currentQuestionIndex++;
+            if(currentQuestionIndex % 10 === 0 && currentQuestionIndex > 0) {
+                showOverview(currentQuestionIndex === questions.length);
+            } else {
+                 loadQuestion();
+            }
+        }
+
+        function showOverview(isFinal) {
+            showScreen('overview-screen');
+            if (isFinal) {
+                clearQuizState(); // Clear data when quiz is finished
+            }
+
+            let start = Math.floor((currentQuestionIndex -1) / 10) * 10;
+            let end = currentQuestionIndex;
+
+            overviewTitle.textContent = isFinal ? 'চূড়ান্ত ফলাফল' : `পার্ট ${end/10} এর সারসংক্ষেপ`;
+            
+            overviewList.innerHTML = '';
+            for(let i = 0; i < end; i++){
+                const answer = userAnswers[i];
+                const item = document.createElement('div');
+                item.classList.add('overview-item');
+                const statusIcon = answer.isCorrect ? '✔' : '✖';
+                const statusClass = answer.isCorrect ? 'status-correct' : 'status-incorrect';
+                
+                item.innerHTML = `
+                    <div class="overview-status ${statusClass}">${statusIcon}</div>
+                    <p class="question"><strong>প্রশ্ন ${i + 1}:</strong> ${answer.question}</p>
+                    <p><strong>তোমার উত্তর:</strong> ${answer.yourAnswer}</p>
+                    <p><strong>সঠিক উত্তর:</strong> ${answer.correctAnswer}</p>
+                    <p class="explanation"><strong>ব্যাখ্যা:</strong> ${answer.explanation}</p>
+                `;
+                overviewList.prepend(item);
+            }
+            
+            overviewSummary.innerHTML = `
+                <span class="summary-correct">✔ মোট সঠিক: ${score}</span>
+                <span class="summary-incorrect">✖ মোট ভুল: ${currentQuestionIndex - score}</span>
+            `;
+            
+            if(isFinal) {
+                continueBtn.textContent = 'পুনরায় খেলুন';
+            } else {
+                continueBtn.textContent = 'পরবর্তী ধাপে যান';
+            }
+        }
+
+        function continueQuiz() {
+            if (currentQuestionIndex >= questions.length) {
+                window.location.reload(); // Reload the page to reset everything cleanly
+            } else {
+                showScreen('quiz-screen');
+                loadQuestion();
+            }
+        }
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+    </script>
+</body>
+</html>
